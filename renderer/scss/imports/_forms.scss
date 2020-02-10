@@ -1,0 +1,26 @@
+.form-row {
+    display: flex;
+    flex-direction: column;
+
+    .form-input {
+        padding: .5em .5em;
+        font-size: 1em;
+        /*border-radius: 1em;*/
+        margin-bottom: 1em;
+        border: 0;
+        border-bottom: 1px solid $border-color-primary;
+        background: transparent;
+        color: #fafafa;
+
+        /*box-shadow: 0 5px .3em lighten(rgba(24, 24, 38, .3), 15%);*/
+
+        &:focus {
+            // border: 0;
+            outline: 0
+        }
+
+        &::placeholder {
+            color: darken(#fafafa, 15%);
+        }
+    }
+}

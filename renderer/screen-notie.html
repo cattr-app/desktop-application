@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Cattr</title>
+  <style>
+
+    @keyframes fadeout {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+      }
+    }
+
+    html {
+
+      margin: 0;
+      padding: 0;
+
+    }
+
+    body {
+
+      animation: fadein .5s;
+      box-sizing: border-box;
+      color: #444;
+      display: flex;
+      font-family: "Roboto", "Segoe UI", Helvetica, sans-serif;
+      flex-flow: column nowrap;
+      height: 100%;
+      justify-content: center;
+      margin: 0;
+      overflow: hidden;
+
+      -webkit-font-smoothing: subpixel-antialiased;
+      -webkit-user-select: none;
+
+    }
+
+    .main {
+
+      align-items: center;
+      border-radius: 4px;
+      box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.33);
+      background: white;
+      display: flex;
+      flex-flow: row nowrap;
+      overflow: hidden;
+      margin: 15px;
+
+    }
+
+    .modal-body {
+      padding: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .cell {
+      padding: 6px;
+    }
+
+    .text {
+      display: flex;
+      flex-flow: column nowrap;
+    }
+
+    .buttons {
+
+      display: flex;
+      flex: 1;
+      flex-flow: row nowrap;
+      padding: 0;
+      justify-content: center;
+      align-items: center;
+
+    }
+
+    .buttons button {
+
+      background-color: white;
+      opacity: 0.3;
+      transition: opacity 0.2s;
+      border: none;
+      padding: 5px;
+      cursor: pointer;
+
+    }
+
+    .buttons button:hover {
+      opacity: 1;
+      transition: opacity 0.2s;
+    }
+
+    #button-close {
+
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAACAwAAAgMB08fyjgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAOUSURBVGiB1Zo/aBxHFIe/t1tEKW0UDpKAO91a5Z0TSJeQVD52C7sTGEKaKFJCSreHGxdpBIkvItjBTTobiR2dXNmoSpUiEDDac5MmkcgfbDBud1LoxpzPo7udnVlJ+VVCO/Pm93GzOzPvjTClXq93TkRuiMgV4C3gMbChlLo73bZJZVn2mdb6a+Ai8BdwvyzL/nA4fDrZTqY6va21fggklpgDpdSXgG7KtPGUpukt4AvLs30R+TjP8z9fNjZ/ZFnW0lo/ApZnBL/d7XY/7/f7ZTi/r0iyLPtWa70+o80TrfVHOzs7f8AYoKJ5o6Ygqpg3egkhvV7vXBRFP2OfNvaRRDbzPF8j3HSSLMsGWutVhz77cRx/ELfb7W9E5LLjgJeSJGkVRbHr2M+mOuYBFsuyfDMSkat1RtVar2ZZNmDqQ+CouuYBiKLoagScrzu6J4SX+fH4ixGwXzfAOEgdCG/zYz2OgA3PIK4QocwDbMSj0ejXdrvdAt7zDFblxQ5pfqCUuhkBKKXWReSWb0St9Wqapj/0+/3I8th850OYv93tdr8CiM1/iqJ4kCTJIvC+Z/DOwcHBOysrK8O9vT2zTrgsUvP0ykIaTz5pCIKmzIP9pQs2T0VkE46mVohYttXfNld1nudrod6JUHO+0+msY9m6xJbGQNDp5KuZm8djAeBMQMzd+c4EgFOFqLRtnwsApwJR+cxRCQBOFMLpwFQZAE4Ewvm05wQAjULUOqo6A0AjELXP2baF7H+lOr9AyI2ZkW0DWEmuAE2YN6oF4QLQpHkjZ4iqACdh3sgJogrASZo3qgwxD+A0zBtVgpgFcJrmjeZCHAdwFswbzYSwAZgj5ZrvyCKyKSK/AJc8Q3UODw+tKZvplTho6qPT6ayHPJ7aUjaTv0BjqY8mUzYGoDHzRk1BCECapgPsNSknVSh8hEwtfq+UWpNxNfCObzSHqk3IvNOn8dLS0l2g5RnIqeRUFMVukiQt/L9OFyKg7ROhZr3MJM82fcYGLkbAv3V7exb7QkD8HQH36vQMVKn0hbgXlWXZx7HMFLjMWhdiP47jG9FwOHwqIh9ydCeiio5NtHrINaH8RGv9yfb29rMYoCiKF0mS3Acuc3TB4zg1etWg4mL3+lUDozN02eM7wLaZfO2yx3SF5vny8vJPWusFEXkXeAP4DbiulLrZqO0JjUaj3SRJfgcucFTHPgB+XFhYuLa1tfXPZNv/AHi5gPfY33nLAAAAAElFTkSuQmCC');
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      width: 16px;
+      height: 16px;
+      margin-left: 1em;
+
+    }
+
+    #button-delete {
+
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      width: 16px;
+      height: 16px;
+
+    }
+
+    .btn-delete-tick {
+
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAsSAAALEgHS3X78AAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1cbXjNgAAABZ0RVh0Q3JlYXRpb24gVGltZQAxMi8yOS8xMSw86+oAAAAeUExURQAAADMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM5g5C1kAAAAJdFJOUwAgMFBggKDA8PWr7RYAAAC9SURBVCjPZVIxDsIwDDS0Ek+AsQsSbGysWbuy8YRuRSwwUgmhrlWrxr/FduMk4Bui+HSxz3YAGPsH4ucCEWcU3DXeYsBtiYteCX8SosaIUQSYgSW7nHgR8cyJ+e8Fv9nE+8TVWjhGwh3oGOCaSq5JMqWcDkrJ2idP7NCDRI0KEIUYSxUEwkGtAiF8BavYoyTtqIMg8FKWJCqYF2OdCsiYWPeVTmkIzb3Vb2vbNwOyIzRDNmuwizKrtMv++Q5fe6LfMur4z8YAAAAASUVORK5CYII=');
+
+    }
+
+    .btn-delete-bin {
+
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAA3CAYAAABKB8k/AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAABlgAAAZYBofSv5QAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAHlSURBVGiB7Zo9S8NQFIaf1IKgYrGgkw66OLgIguLsrP4EwUl/gdC1g7gIxa3/wr2rIuoqRQsKFiehKH5RStEht1pjkps0H6fF+8CB5HLuyfvm5kBILkRjHCgC10AT+AwYTTWnqGqIMA3UPASGiRtVK1WGgNOIwrvjVNVMjd0YxXdiJy3xeeAxAQMNYDINA2UPAQVgLmAUPGqUkxa/BLRdLnwBZELUyQBnLnXawEqMegNfdLmHel4345IQDZ0FRoFNYEyTu4D73akCiyrCUlV1u1kCDoErzdxX4BigQvwNmVZULOxlDPP89hNtC9vJwJIB6tIiInBvAavAHnYzzwMzjqQ69ouXBH563oAD54QSfxullKxGX7R6BrV5vzEGpMnGUGMEGFbHTeA95nxfoq7ABvCM/SrcUMfrMeZriWpgjd+rmFVjceVrSaIHrITzfzHwTWwMSGMMSGMMSGMMSGMMSGMMSGMMSGMMSGMMSGMMSBPVwIfLmN+HqrD5WqJ+mTsCpvj5v/aixuLK1xLVwAOwnWC+ln/fA+IMvIEgPZDD3t8gQU6X4DTw5JKzpaJfaHSfOB+hkxSF9Iqvxgz2ZgvpLQRecU6Avp0D7vpArDNugVmd+A557J/INaAlKLqlNOwDE25CvwDnc1xoP3kiJgAAAABJRU5ErkJggg==');
+
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .body {
+      font-size: 0.8rem;
+    }
+
+    #screenshot {
+
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      height: 20vh;
+      padding: 0 3vw;
+      width: 20vw;
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="main">
+
+    <div class="modal-body">
+
+      <div class="cell" id="screenshot"></div>
+
+      <div class="cell text">
+        <div class="title">Cattr</div>
+        <div class="body"></div>
+      </div>
+
+    </div>
+
+    <div class="cell buttons">
+      <button id="button-delete" class="btn-delete-bin" />
+      <button id="button-close" />
+    </div>
+
+  </div>
+  <script>
+    const {ipcRenderer, remote} = require('electron');
+    const IPCRouter = require('@amazingcat/electron-ipc-router');
+
+    const notificationRouter = new IPCRouter(ipcRenderer, 'screenshot-notie');
+
+    /**
+     * Properties of the assigned intevals
+     * @type {Object|null}
+     */
+    let windowInterval = null;
+
+    /**
+     * Notie duration in millis
+     * @type {Number|null}
+     */
+    let windowDuration = null;
+
+    let windowCloseTimer = null;
+
+    let windowClosing = false;
+
+    // Listener to handle delete request from FE
+    notificationRouter.serve('notification/screenshot', request => {
+
+      // Get screenshot
+      const screenshotBuff = request.packet.body.screenshot;
+
+      // Translate to b64
+      document.querySelector('#screenshot').style['background-image'] = `url('data:image/jpeg;base64,${screenshotBuff.toString('base64')}')`;
+
+      // Save screenshot id for possible delete
+      windowInterval = request.packet.body.interval;
+
+      remote.getCurrentWindow().showInactive();
+
+    });
+
+    // Listener to handle notification duration
+    notificationRouter.serve('notification/duration', async request => {
+
+      // Setting window close timer
+      windowDuration = request.packet.body.duration;
+      windowCloseTimer = setTimeout(() => window.close(), windowDuration);
+
+    });
+
+    // Listener to handle translations
+    notificationRouter.serve('notification/translation', async request => {
+
+      document.querySelector('div.body').innerHTML = request.packet.body.body;
+      document.querySelector('#button-close').title = request.packet.body.close;
+      document.querySelector('#button-delete').title = request.packet.body.delete;
+
+    });
+
+    // Main flow
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const style = document.createElement('style');
+      style.innerHTML = '@keyframes fadein {\n' +
+        '  from {\n' +
+        `    transform: translateX(${remote.getCurrentWindow().getSize()[0]}px);\n` +
+        '  }\n' +
+        '  to {\n' +
+        '    transform: translateX(0px);\n' +
+        '  }\n' +
+        '}';
+      document.querySelector('head').appendChild(style);
+
+      document.querySelector('#button-close').addEventListener('click', () => {
+
+        if (!windowClosing) {
+
+          clearTimeout(windowCloseTimer);
+          window.close();
+
+        }
+
+      });
+
+      document.querySelector('#button-delete').addEventListener('click', e => {
+
+        if (!windowClosing) {
+
+          clearTimeout(windowCloseTimer);
+
+          if (windowInterval) {
+
+            notificationRouter.request('notification/delete', { interval: windowInterval });
+            windowInterval = null;
+
+            document.querySelector('#button-close').style.display = 'none';
+            e.target.classList.toggle('btn-delete-bin');
+            e.target.classList.toggle('btn-delete-tick');
+            e.target.style.opacity = 1;
+
+            setTimeout(() => window.close(), 200);
+            return;
+
+          }
+
+          window.close();
+
+        }
+
+      });
+
+    });
+
+    window.addEventListener('beforeunload', event => {
+
+      if (!windowClosing) {
+
+        windowClosing = true;
+        event.preventDefault();
+        event.returnValue = '';
+        document.querySelector('body').style.animation = 'fadeout .3s';
+        setTimeout(() => remote.getCurrentWindow().close(), 300);
+
+      }
+
+    });
+
+  </script>
+</body>
+
+</html>

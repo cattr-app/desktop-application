@@ -1,0 +1,35 @@
+/* cyrillic */
+@font-face {
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: local('Rubik'), local('Rubik-Regular'), url('fonts/Rubik-Regular.ttf') format('truetype');
+}
+
+/* cyrillic */
+@font-face {
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: local('Rubik Bold'), local('Rubik-Bold'), url('fonts/Rubik-Bold.ttf') format('truetype');
+}
+
+/* cyrillic */
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url('fonts/SourceSansPro-Regular.ttf') format('truetype');
+}
+
+/* cyrillic */
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url('fonts/SourceSansPro-Bold.ttf') format('truetype');
+}

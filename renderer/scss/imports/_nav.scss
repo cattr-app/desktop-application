@@ -1,0 +1,11 @@
+a {
+    color: darken($font-color-primary, 10%);
+
+    &:active {
+        color: darken($font-color-primary, 30%);
+    }
+
+    &:visited {
+        color: $font-color-primary;
+    }
+}
