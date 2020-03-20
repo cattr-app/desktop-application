@@ -1,5 +1,5 @@
 const keytar = require('keytar');
-const Log = require('../utils/log');
+const Log = require('./log');
 const config = require('../base/config');
 
 const logger = new Log('Keychain');

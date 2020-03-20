@@ -1,5 +1,5 @@
 const fs = require('fs');
-const Log = require('../utils/log');
+const Log = require('./log');
 const config = require('../base/config');
 
 const log = new Log('TranslationsLoader');

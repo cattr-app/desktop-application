@@ -3,15 +3,10 @@ const { app, BrowserWindow } = require('electron');
 const fs = require('fs');
 
 const config = require('./base/config');
+const appIcons = require('./utils/icons');
 
 // Show unhandled errors to user
 require('electron-unhandled')();
-
-const appIcons = require('./utils/icons');
-
-// Setup MacOS dock icon
-if (process.platform === 'darwin' && app.dock && app.dock.setIcon)
-  app.dock.setIcon(appIcons.LOADING_HIGHDPI);
 
 /**
  * Object, containing Electron browser window

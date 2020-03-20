@@ -1,5 +1,5 @@
 const EventEmitter = require('events');
-const auth = require('../base/authentication');
+const auth = require('./authentication');
 const Log = require('../utils/log');
 
 const log = new Log('OfflineMode');
