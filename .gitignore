@@ -6,9 +6,6 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-develop-api/
-renderer/build/
-
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -98,6 +95,8 @@ native/*.node
 # Theming toolkit
 theming/
 
-# Builds
-build/
-target/
+# Binary distribution
+target
+
+# Built frontend
+build

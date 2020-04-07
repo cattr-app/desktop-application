@@ -13,7 +13,7 @@ const appId = 'cattr-develop';
   process.stdout.write('Keychain cleaned up\n');
 
   // Removing database, logs and config
-  rimraf.sync(`${path.resolve(app.getPath('appData'), appId)}`);
+  rimraf.sync(`${path.resolve(app.getPath('appData'), appId)}`, { disableGlob: true });
   process.stdout.write(`Appdata purged ${path.resolve(app.getPath('appData'), appId)}\n`);
   process.exit(0);
 

@@ -1,20 +1,27 @@
+const path = require('path');
 const mix = require('laravel-mix');
 
-mix.setPublicPath('build/');
+mix.setPublicPath('./build');
 mix.disableSuccessNotifications();
 mix.webpackConfig({ target: 'electron-renderer' });
 
-// Build sourcemaps only in production mode
+/* Build JS */
 if (mix.inProduction)
-  mix.js('./renderer/js/app.js', `${__dirname}/build/renderer/app.js`).sourceMaps();
+  mix.js('./app/renderer/js/app.js', 'app.js').sourceMaps();
 else
-  mix.js('./renderer/js/app.js', `${__dirname}/build/renderer/app.js`);
+  mix.js('./app/renderer/js/app.js', 'app.js');
 
+/* Build Sass */
 mix
-  .copy('./renderer/app.html', `${__dirname}/build/renderer/app.html`)
-  .copy('./node_modules/element-ui/packages/theme-chalk/lib/fonts/element-icons.woff', `${__dirname}/build/renderer/fonts/element-icons.woff`)
-  .copy('./renderer/fonts/**/*', `${__dirname}/build/renderer/fonts`)
-  .copy('./renderer/assets/**/*', `${__dirname}/build/renderer/assets`)
-  .copy('./renderer/screen-notie.html', `${__dirname}/build/renderer/screen-notie.html`);
+  .sass('./app/renderer/scss/app.scss', 'app.css')
+  .options({ processCssUrls: false });
 
-mix.sass('./renderer/scss/app.scss', `${__dirname}/build/renderer/app.css`).options({ processCssUrls: false });
+/* Copy static assets & templates */
+mix
+  .copy('./app/renderer/app.html', path.resolve(__dirname, 'build', 'app.html'))
+  .copy('./app/renderer/fonts/**/*', path.resolve(__dirname, 'build', 'fonts'))
+  .copy('./app/renderer/screen-notie.html', path.resolve(__dirname, 'build', 'screen-notie.html'))
+  .copy(
+    './node_modules/element-ui/packages/theme-chalk/lib/fonts/element-icons.woff',
+    path.resolve(__dirname, 'build', 'fonts', 'element-icons.woff'),
+  );

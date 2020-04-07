@@ -3,17 +3,17 @@
 	"version": "2.3.1",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
-	"main": "app.js",
+	"main": "app/src/app.js",
 	"scripts": {
 		"lint": "npx eslint .",
 		"postinstall": "electron-builder install-app-deps",
-		"start": "npx electron ./build",
-		"dev": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron ./build",
-		"dev-no-scr": "npx cross-env AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron ./build",
-		"dev-win": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron.cmd ./build",
+		"start": "npx electron ./app/src/app.js",
+		"dev": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron .",
+		"dev-no-scr": "npx cross-env AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
+		"dev-win": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron.cmd .",
 		"build-watch": "npm run build-development -- --watch",
-		"build-development": "npx cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=webpack.config.js",
-		"build-production": "npx cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=webpack.config.js",
+		"build-development": "npx cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=./node_modules/laravel-mix/setup/webpack.config.js",
+		"build-production": "npx cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"package-linux": "npx electron-builder -l",
 		"package-windows": "npx electron-builder -w",
 		"package-mac": "npx electron-builder -m",
@@ -29,19 +29,9 @@
 			"output": "target"
 		},
 		"files": [
-			"./node_modules",
-			"!build/renderer/app.js.map",
-			"!build/app.js.map",
-			{
-				"from": "build",
-				"to": "./",
-				"filter": "**/*"
-			},
-			{
-				"from": "build",
-				"to": "./",
-				"filter": "app.js"
-			}
+			"app/**",
+			"!app/renderer",
+			"build/**"
 		],
 		"mac": {
 			"target": "dmg",
@@ -111,32 +101,12 @@
 			}
 		},
 		"rules": {
-			"comma-dangle": [
-				"off"
-			],
 			"max-len": [
 				"warn",
 				{
 					"code": 120,
-					"ignoreComments": true,
-					"ignoreTrailingComments": true,
-					"ignoreUrls": true,
-					"ignoreStrings": true,
-					"ignoreTemplateLiterals": true,
-					"ignoreRegExpLiterals": true
+					"ignoreTemplateLiterals": true
 				}
-			],
-			"no-underscore-dangle": [
-				"off"
-			],
-			"import/no-extraneous-dependencies": [
-				"warn",
-				{
-					"devDependencies": true
-				}
-			],
-			"consistent-return": [
-				"off"
 			],
 			"nonblock-statement-body-position": [
 				"warn",
@@ -144,10 +114,7 @@
 			],
 			"operator-linebreak": [
 				"warn",
-				"after"
-			],
-			"no-param-reassign": [
-				"off"
+				"before"
 			],
 			"arrow-parens": [
 				"warn",
@@ -185,65 +152,73 @@
 			"curly": [
 				"error",
 				"multi-or-nest"
+			],
+			"no-underscore-dangle": [
+				"off"
+			],
+			"import/no-extraneous-dependencies": [
+				"error",
+				{
+					"devDependencies": true
+				}
 			]
 		}
 	},
 	"eslintIgnore": [
 		"node_modules",
 		"build",
-		"target"
+		"target",
+		"resources"
 	],
 	"dependencies": {
 		"@amazingcat/amazing-iohook": "8.1.1",
 		"@amazingcat/electron-ipc-router": "1.2.2",
 		"@amazingcat/node-cattr": "2.0.2",
 		"@sentry/electron": "^1.3.0",
-		"chalk": "^3.0.0",
+		"chalk": "^4.0.0",
 		"electron-hotkey": "0.0.1-alpha.1",
 		"electron-unhandled": "^3.0.2",
 		"keytar": "^5.4.0",
 		"merge-img": "^2.1.3",
-		"sequelize": "^5.21.5",
+		"sequelize": "^5.21.6",
 		"sqlite3": "^4.1.1",
-		"umzug": "^2.2.0",
-		"uuid": "^7.0.2"
+		"umzug": "^2.3.0",
+		"uuid": "^7.0.3"
 	},
 	"devDependencies": {
-		"@sentry/browser": "^5.14.2",
-		"@sentry/integrations": "^5.14.2",
-		"babel-loader": "^8.0.6",
+		"@sentry/browser": "^5.15.4",
+		"@sentry/integrations": "^5.15.4",
+		"babel-loader": "^8.1.0",
 		"copy-webpack-plugin": "^5.1.1",
 		"cross-env": "^7.0.2",
-		"css-loader": "^3.4.2",
+		"css-loader": "^3.5.1",
 		"debug": "^4.1.1",
 		"dotenv": "^8.2.0",
-		"electron": "8.1.1",
+		"electron": "8.2.1",
 		"electron-builder": "^22.4.1",
-		"electron-notarize": "^0.2.1",
+		"electron-notarize": "^0.3.0",
 		"element-theme-chalk": "^2.13.0",
 		"element-ui": "^2.13.0",
 		"eslint": "^6.8.0",
 		"eslint-config-airbnb-base": "^14.1.0",
-		"eslint-plugin-import": "^2.20.1",
+		"eslint-plugin-import": "^2.20.2",
 		"eslint-plugin-vue": "^6.2.2",
 		"fstream": "^1.0.12",
 		"laravel-mix": "^5.0.4",
 		"minimist": "^1.2.5",
 		"node-abi": "^2.15.0",
-		"node-loader": "^0.6.0",
 		"resolve-url-loader": "^3.1.1",
 		"sass": "^1.26.3",
 		"sass-loader": "^8.0.2",
 		"sequelize-cli": "^5.5.1",
-		"symlink-webpack-plugin": "^0.2.0",
+		"symlink-webpack-plugin": "^1.0.0",
 		"vue": "^2.6.11",
-		"vue-i18n": "^8.15.5",
+		"vue-i18n": "^8.16.0",
 		"vue-loader": "^15.9.1",
 		"vue-router": "^3.1.6",
 		"vue-template-compiler": "^2.6.11",
 		"vuex": "^3.1.3",
-		"webpack": "^4.42.0",
-		"webpack-cli": "^3.3.11",
-		"webpack-node-externals": "^1.7.2"
+		"webpack": "^4.42.1",
+		"webpack-cli": "^3.3.11"
 	}
 }
