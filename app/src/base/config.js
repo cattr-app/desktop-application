@@ -37,16 +37,16 @@ const configuration = {
 configuration.sentry = {
 
   // Is Sentry enabled?
-  enabled: false,
+  enabled: true,
 
   // Main application DSN
-  dsn: '<Enter your main application DSN here>',
+  dsn: 'https://b3c99721c14c4e2399de2d46dc89caba@sentry.amazingcat.net/2',
 
   // Frontend application DSN
-  dsnFrontend: '<Enter your frontend DSN here>',
+  dsnFrontend: 'https://2bc3716988cd42979e511f629a8e97a3@sentry.amazingcat.net/4',
 
   // Setting the current release
-  release: 'cattr@2.3.0',
+  release: 'cattr-desktop@2.3.1',
 
 };
 
