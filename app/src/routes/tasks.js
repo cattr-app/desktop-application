@@ -40,10 +40,14 @@ module.exports = router => {
 
   router.serve('tasks/create', async request => {
 
+    const task = request.packet.body;
+
     try {
 
       // Starting sync routine
       log.debug('Task creation initiated from frontend');
+      await Tasks.createTask(task);
+
       return request.send(200, {});
 
     } catch (error) {

@@ -88,7 +88,7 @@ export default {
 
       this.$refs.task.validate(valid => {
 
-        // Checking is project selected
+        // Checking if the project is selected
         if (this.task.projectId.length === 0) {
 
           this.taskSelectorError = 'Project should be selected';
@@ -104,6 +104,8 @@ export default {
         console.log(this.$ipc);
 
       });
+
+      this.$ipc.emit('tasks/create', this.task);
 
     },
 

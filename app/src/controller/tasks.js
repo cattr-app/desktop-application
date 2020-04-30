@@ -2,6 +2,7 @@ const EventEmitter = require('events');
 const api = require('../base/api');
 const { models } = require('../models').db;
 const storage = require('../models');
+const projectController = require('./projects');
 const auth = require('../base/authentication');
 const Log = require('../utils/log');
 const OfflineMode = require('../base/offline-mode');
@@ -15,7 +16,6 @@ const taskEmitter = new EventEmitter();
  */
 const HIGHLIGHT_LAST_X_TASKS = 10;
 
-/* eslint camelcase: 0 */
 /* eslint no-warning-comments: 0 */
 
 /**
@@ -327,6 +327,33 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
   if (fetch)
     return module.exports.getTasksList(highlight);
   return true;
+
+};
+
+module.exports.createTask = async (task) => {
+
+  const { name, projectId, description } = task;
+  const project = await projectController.getProjectByInternalId(projectId[0]);
+  const projectExternalId = project.externalId;
+  const user = await auth.getCurrentUser();
+
+  const taskToCreate = {
+    project_id: projectExternalId,
+    task_name: name,
+    description,
+    active: 1,
+    user_id: user.id,
+    assigned_by: user.id,
+    url: null,
+    priority_id: 1
+  };
+
+  console.log(taskToCreate);
+  console.log(typeof taskToCreate)
+  const taskCreateResponse = await api.tasks.create(taskToCreate);
+
+  console.log(taskCreateResponse);
+
 
 };
 
