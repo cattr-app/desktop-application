@@ -4,11 +4,8 @@
  * Reworked by amazingcat LLC
  */
 
-/* eslint-disable no-param-reassign */
-
 const EventEmitter = require('events');
 const path = require('path');
-const debug = require('debug')('iohook');
 
 // Building module path
 let modulePath = path.resolve(__dirname, './native', 'iohook.');
@@ -16,10 +13,8 @@ modulePath += (process.platform === 'win64') ? 'win' : process.platform;
 modulePath += (process.arch.length === 3 && process.arch[0] === 'x') ? process.arch.substring(1) : process.arch;
 modulePath += '.node';
 
-if (process.env.DEBUG)
-  debug('Loading native binary:', modulePath);
-
-const NodeHookAddon = require(modulePath); // eslint-disable-line import/no-dynamic-require
+if (process.env.DEBUG) console.info('Loading native binary:', modulePath);
+const NodeHookAddon = require(modulePath);
 
 const events = {
 
@@ -31,7 +26,7 @@ const events = {
   8: 'mouseup',
   9: 'mousemove',
   10: 'mousedrag',
-  11: 'mousewheel',
+  11: 'mousewheel'
 
 };
 
@@ -51,17 +46,20 @@ class IOHook extends EventEmitter {
     this.lastKeydownMeta = false;
 
     this.load();
+    this.setDebug(false);
 
   }
 
   /**
    * Start hook process
+   * @param {Boolean} enableLogger Turn on debug logging
    */
-  start() {
+  start(enableLogger) {
 
     if (!this.active) {
 
       this.active = true;
+      this.setDebug(enableLogger);
 
     }
 
@@ -72,8 +70,7 @@ class IOHook extends EventEmitter {
    */
   stop() {
 
-    if (this.active)
-      this.active = false;
+    if (this.active) this.active = false;
 
   }
 
@@ -89,11 +86,7 @@ class IOHook extends EventEmitter {
     const shortcut = {};
     const shortcutId = Date.now() + Math.random();
 
-    keys.forEach(keyCode => {
-
-      shortcut[keyCode] = false;
-
-    });
+    keys.forEach(keyCode => (shortcut[keyCode] = false));
 
     shortcut.id = shortcutId;
     shortcut.callback = callback;
@@ -112,8 +105,7 @@ class IOHook extends EventEmitter {
 
     this.shortcuts.forEach((shortcut, i) => {
 
-      if (shortcut.id === shortcutId)
-        this.shortcuts.splice(i, 1);
+      if (shortcut.id === shortcutId) this.shortcuts.splice(i, 1);
 
     });
 
@@ -126,30 +118,27 @@ class IOHook extends EventEmitter {
   unregisterShortcutByKeys(keyCodes) {
 
     // A traditional loop is used in order to access `this` from inside
-    for (let i = 0; i < this.shortcuts.length; i += 1) {
+    for (let i = 0; i < this.shortcuts.length; i++) {
 
       const shortcut = this.shortcuts[i];
 
       // Convert any keycode numbers to strings
       keyCodes.forEach((key, index) => {
 
-        if (typeof key !== 'string' && !(key instanceof String))
-          keyCodes[index] = key.toString();
+        if (typeof key !== 'string' && !(key instanceof String)) keyCodes[index] = key.toString();
 
       });
 
       // Check if this is our shortcut
       Object.keys(shortcut).every(key => {
 
-        if (key === 'callback' || key === 'id')
-          return undefined;
+        if (key === 'callback' || key === 'id') return undefined;
 
         // Remove all given keys from keyCodes
         // If any are not in this shortcut, then this shortcut does not match
         // If at the end we have eliminated all codes in keyCodes, then we have succeeded
         const index = keyCodes.indexOf(key);
-        if (index === -1)
-          return false;
+        if (index === -1) return false;
 
         // Remove this key from the given keyCodes array
         keyCodes.splice(index, 1);
@@ -202,7 +191,7 @@ class IOHook extends EventEmitter {
    * Enable or disable native debug output
    * @param {Boolean} mode Is debug mode enabled
    */
-  static setDebug(mode) {
+  setDebug(mode) {
 
     NodeHookAddon.debugEnable(mode);
 
@@ -224,6 +213,27 @@ class IOHook extends EventEmitter {
   }
 
   /**
+   * Disable mouse click propagation.
+   * The click event are captured and the event emitted but not propagated to the window.
+   */
+  disableClickPropagation() {
+
+    // NodeHookAddon.grabMouseClick(true);
+    console.log('disableClickPropagation feature was disabled in library sources according to the latest updates of libuiohook');
+
+  }
+
+  /**
+   * Enable mouse click propagation (enabled by default).
+   * The click event are emitted and propagated.
+   */
+  enableClickPropagation() {
+
+    console.log('disableClickPropagation feature was disabled in library sources according to the latest updates of libuiohook');
+
+  }
+
+  /**
    * Local event handler. Don't use it in your code!
    * @param {Object} msg Raw event message
    * @private
@@ -231,8 +241,7 @@ class IOHook extends EventEmitter {
   _handler(msg) {
 
 
-    if (this.active === false || !msg)
-      return;
+    if (this.active === false || !msg) return;
     if (events[msg.type]) {
 
       const event = msg.mouse || msg.keyboard || msg.wheel;
@@ -247,8 +256,7 @@ class IOHook extends EventEmitter {
       this.emit(events[msg.type], event);
 
       // If there is any registered shortcuts then handle them.
-      if ((event.type === 'keydown' || event.type === 'keyup') && this.shortcuts.length > 0)
-        this._handleShortcut(event);
+      if ((event.type === 'keydown' || event.type === 'keyup') && iohook.shortcuts.length > 0) this._handleShortcut(event);
 
     }
 
@@ -262,12 +270,9 @@ class IOHook extends EventEmitter {
    */
   _handleShift(event) {
 
-    if (event.type === 'keyup' && event.shiftKey)
-      this.lastKeydownShift = false;
-    if (event.type === 'keydown' && event.shiftKey)
-      this.lastKeydownShift = true;
-    if (this.lastKeydownShift)
-      event.shiftKey = true;
+    if (event.type === 'keyup' && event.shiftKey) this.lastKeydownShift = false;
+    if (event.type === 'keydown' && event.shiftKey) this.lastKeydownShift = true;
+    if (this.lastKeydownShift) event.shiftKey = true;
 
   }
 
@@ -279,12 +284,9 @@ class IOHook extends EventEmitter {
    */
   _handleAlt(event) {
 
-    if (event.type === 'keyup' && event.altKey)
-      this.lastKeydownAlt = false;
-    if (event.type === 'keydown' && event.altKey)
-      this.lastKeydownAlt = true;
-    if (this.lastKeydownAlt)
-      event.altKey = true;
+    if (event.type === 'keyup' && event.altKey) this.lastKeydownAlt = false;
+    if (event.type === 'keydown' && event.altKey) this.lastKeydownAlt = true;
+    if (this.lastKeydownAlt) event.altKey = true;
 
   }
 
@@ -296,12 +298,9 @@ class IOHook extends EventEmitter {
    */
   _handleCtrl(event) {
 
-    if (event.type === 'keyup' && event.ctrlKey)
-      this.lastKeydownCtrl = false;
-    if (event.type === 'keydown' && event.ctrlKey)
-      this.lastKeydownCtrl = true;
-    if (this.lastKeydownCtrl)
-      event.ctrlKey = true;
+    if (event.type === 'keyup' && event.ctrlKey) this.lastKeydownCtrl = false;
+    if (event.type === 'keydown' && event.ctrlKey) this.lastKeydownCtrl = true;
+    if (this.lastKeydownCtrl) event.ctrlKey = true;
 
   }
 
@@ -313,12 +312,9 @@ class IOHook extends EventEmitter {
    */
   _handleMeta(event) {
 
-    if (event.type === 'keyup' && event.metaKey)
-      this.lastKeydownMeta = false;
-    if (event.type === 'keydown' && event.metaKey)
-      this.lastKeydownMeta = true;
-    if (this.lastKeydownMeta)
-      event.metaKey = true;
+    if (event.type === 'keyup' && event.metaKey) this.lastKeydownMeta = false;
+    if (event.type === 'keydown' && event.metaKey) this.lastKeydownMeta = true;
+    if (this.lastKeydownMeta) event.metaKey = true;
 
   }
 
@@ -329,65 +325,59 @@ class IOHook extends EventEmitter {
    */
   _handleShortcut(event) {
 
-    if (this.active === false)
-      return;
+    if (this.active === false) return;
 
     // Keep track of shortcuts that are currently active
     const { activatedShortcuts } = this;
 
-    if (event.type === 'keydown') {
+    if (event.type === 'keydown') this.shortcuts.forEach(shortcut => {
 
-      this.shortcuts.forEach(shortcut => {
+      if (shortcut[event[this.eventProperty]] !== undefined) {
 
-        if (shortcut[event[this.eventProperty]] !== undefined) {
+        shortcut[event[this.eventProperty]] = true;
 
-          shortcut[event[this.eventProperty]] = true;
+        const keysTmpArray = [];
+        let callme = true;
 
-          const keysTmpArray = [];
-          let callme = true;
+        // Iterate through each keyboard key in this shortcut
+        Object.keys(shortcut).forEach(key => {
 
-          // Iterate through each keyboard key in this shortcut
-          Object.keys(shortcut).forEach(key => {
+          if (key === 'callback' || key === 'releaseCallback' || key === 'id') return;
 
-            if (key === 'callback' || key === 'releaseCallback' || key === 'id')
-              return;
+          // If one of the keys aren't pressed...
+          if (shortcut[key] === false) {
 
-            // If one of the keys aren't pressed...
-            if (shortcut[key] === false) {
-
-              // Don't call the callback and empty our temp tracking array
-              callme = false;
-              keysTmpArray.splice(0, keysTmpArray.length);
-              return;
-
-            }
-
-            // Otherwise, this key is being pressed.
-            // Add it to the array of keyboard keys we will send as an argument
-            // to our callback
-            keysTmpArray.push(key);
-
-          });
-
-          if (callme) {
-
-            shortcut.callback(keysTmpArray);
-            if (activatedShortcuts.indexOf(shortcut) === -1)
-              activatedShortcuts.push(shortcut);
+            // Don't call the callback and empty our temp tracking array
+            callme = false;
+            keysTmpArray.splice(0, keysTmpArray.length);
+            return;
 
           }
 
+          // Otherwise, this key is being pressed.
+          // Add it to the array of keyboard keys we will send as an argument
+          // to our callback
+          keysTmpArray.push(key);
+
+        });
+
+        if (callme) {
+
+          shortcut.callback(keysTmpArray);
+          if (activatedShortcuts.indexOf(shortcut) === -1) activatedShortcuts.push(shortcut);
+
         }
 
-      });
+      }
 
-    } else if (event.type === 'keyup') {
+    });
+
+    else if (event.type === 'keyup') {
 
       // Mark this key as currently not being pressed in all of our shortcuts
       this.shortcuts.forEach(shortcut => {
 
-        if (shortcut[event[this.eventProperty]] !== undefined)
-          shortcut[event[this.eventProperty]] = false;
+        if (shortcut[event[this.eventProperty]] !== undefined) shortcut[event[this.eventProperty]] = false;
 
       });
 
@@ -396,35 +386,30 @@ class IOHook extends EventEmitter {
       // longer being pressed
       this.activatedShortcuts.forEach(shortcut => {
 
-        if (shortcut[event[this.eventProperty]] === undefined)
-          return;
+        if (shortcut[event[this.eventProperty]] === undefined) return;
 
         let shortcutReleased = true;
         const keysTmpArray = [];
 
         Object.keys(shortcut).forEach(key => {
 
-          if (key === 'callback' || key === 'releaseCallback' || key === 'id')
-            return;
+          if (key === 'callback' || key === 'releaseCallback' || key === 'id') return;
           keysTmpArray.push(key);
 
           // If any key is true, and thus still pressed, the shortcut is still
           // being held
-          if (shortcut[key])
-            shortcutReleased = false;
+          if (shortcut[key]) shortcutReleased = false;
 
         });
 
         if (shortcutReleased) {
 
           // Call the released function handler
-          if (shortcut.releaseCallback)
-            shortcut.releaseCallback(keysTmpArray);
+          if (shortcut.releaseCallback) shortcut.releaseCallback(keysTmpArray);
 
           // Remove this shortcut from our activate shortcuts array
           const index = this.activatedShortcuts.indexOf(shortcut);
-          if (index !== -1)
-            this.activatedShortcuts.splice(index, 1);
+          if (index !== -1) this.activatedShortcuts.splice(index, 1);
 
         }
 

@@ -6,9 +6,6 @@ const path = require('path');
 const config = require('./base/config');
 const appIcons = require('./utils/icons');
 
-// Show unhandled errors to user
-require('electron-unhandled')();
-
 /**
  * Object, containing Electron browser window
  * @type {Object}
