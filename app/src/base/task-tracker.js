@@ -1,5 +1,5 @@
 const EventEmitter = require('events');
-const IOHook = require('@amazingcat/amazing-iohook');
+const IOHook = require('../libs/iohook');
 const { Ticker } = require('../utils/ticker');
 const Log = require('../utils/log');
 const IntervalsController = require('../controller/time-intervals');
