@@ -152,8 +152,6 @@ module.exports.syncProjects = async () => {
  */
 module.exports.getProjectsList = async () => database.Project.findAll();
 
-module.exports.getProjectByInternalId = async (internalId) => {
-  return database.Project.findByPk(internalId);
-};
+module.exports.getProjectByInternalId = async internalId => database.Project.findByPk(internalId);
 
 module.exports.events = projectEmitter;

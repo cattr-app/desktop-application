@@ -179,11 +179,6 @@ class OSIntegration extends EventEmitter {
 
     log.debug('Goodby.');
     Log._closeLogStream();
-
-    // Unloading iohook
-    Tracker.unloadIOHook();
-    log.debug('Event listener was unloaded');
-
     app.quit();
 
   }

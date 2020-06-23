@@ -330,7 +330,7 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
 
 };
 
-module.exports.createTask = async (task) => {
+module.exports.createTask = async task => {
 
   const { name, projectId, description } = task;
   const project = await projectController.getProjectByInternalId(projectId[0]);
@@ -345,11 +345,11 @@ module.exports.createTask = async (task) => {
     user_id: user.id,
     assigned_by: user.id,
     url: null,
-    priority_id: 1
+    priority_id: 1,
   };
 
   console.log(taskToCreate);
-  console.log(typeof taskToCreate)
+  console.log(typeof taskToCreate);
   const taskCreateResponse = await api.tasks.create(taskToCreate);
 
   console.log(taskCreateResponse);

@@ -10,13 +10,13 @@ const log = new Log('Controller:Time-Intervals');
 
 /**
  * Backs up the interval into local database
- * @param   {Object}  interval    object representing interval
- * @param   {Buffer}  screenshot  binary formatted screenshot
- * @returns {Object}  interval    created interval
+ * @param   {Object}  interval      object representing interval
+ * @param   {Buffer}  [screenshot]  binary formatted screenshot
+ * @returns {Object}  interval      created interval
  */
 module.exports.backupInterval = async (interval, screenshot) => {
 
-  // Hotfix to ensure that both data structures (v1 & v1-ng)
+  // Hotfix to keep consinstency between API v1 & v1-ng
   const convertedInterval = (typeof interval.task_id !== 'undefined')
     ? {
       taskId: interval.task_id,
@@ -52,12 +52,12 @@ module.exports.backupInterval = async (interval, screenshot) => {
 };
 
 /**
- * Push time interval and associated screenshot to server
+ * Push time interval, and (optionally) associated screenshot to the backend
  * @param   {Object}  interval             interval to push
- * @param   {Buffer}  intervalScreenshot   screenshot to push
+ * @param   {Buffer}  [intervalScreenshot]   screenshot to push
  * @returns {Object}  Pushed interval
  */
-module.exports.pushTimeIntervalAndScreenshot = async (interval, intervalScreenshot) => {
+module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
 
   const actualInterval = {
 
@@ -80,8 +80,13 @@ module.exports.pushTimeIntervalAndScreenshot = async (interval, intervalScreensh
 
   try {
 
-    // Interval was pushed
-    const pushedInterval = (await api.intervals.createWithScreenshot(actualInterval, intervalScreenshot));
+    // Push interval to the backend
+    let pushedInterval = null;
+    if (intervalScreenshot)
+      pushedInterval = await api.intervals.createWithScreenshot(actualInterval, intervalScreenshot);
+    else
+      pushedInterval = await api.intervals.create(actualInterval);
+
     log.debug(`Interval was synced (assigned ID is ${pushedInterval.id})`);
 
     // Trigger connection restore in OfflineMode
@@ -163,7 +168,7 @@ module.exports.backedUpIntervalsPush = async () => {
         count_keyboard: interval.eventsKeyboards,
       };
 
-      intervalPushPromises.push(module.exports.pushTimeIntervalAndScreenshot(formattedInterval, interval.screenshot));
+      intervalPushPromises.push(module.exports.pushTimeInterval(formattedInterval, interval.screenshot));
 
     });
 

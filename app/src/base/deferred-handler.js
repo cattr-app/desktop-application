@@ -58,7 +58,7 @@ const deferredIntervalsPush = async () => {
       };
 
       // Push deferred interval
-      const res = await IntervalsController.pushTimeIntervalAndScreenshot(preparedInterval, rawInterval.screenshot);
+      const res = await IntervalsController.pushTimeInterval(preparedInterval, rawInterval.screenshot);
       log.debug(`Deferred interval (${res.id}) has been pushed`);
 
       // Remove raw interval from database

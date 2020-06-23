@@ -1,68 +1,92 @@
-const EventEmitter = require('events');
-const IOHook = require('../libs/iohook');
-const { Ticker } = require('../utils/ticker');
+const { EventEmitter } = require('events');
+const { powerMonitor } = require('electron');
 const Log = require('../utils/log');
-const IntervalsController = require('../controller/time-intervals');
+const { Task } = require('../models').db.models;
+const { Ticker } = require('../utils/ticker');
+const { UIError } = require('../utils/errors');
+const OfflineMode = require('./offline-mode');
+const Screenshot = require('../utils/screenshot');
+const Authentication = require('./authentication');
 const TimeController = require('../controller/time');
 const TaskController = require('../controller/tasks');
-const Screenshot = require('../utils/screenshot');
-const { UIError } = require('../utils/errors');
-const { Task } = require('../models').db.models;
-const Authentication = require('./authentication');
-const OfflineMode = require('./offline-mode');
-const cryptoRandom = require('../utils/crypto-random');
+const IntervalsController = require('../controller/time-intervals');
 
 const log = new Log('TaskTracker');
 
-/**
- * Task tracker
- * @extends EventEmitter
- */
 class TaskTracker extends EventEmitter {
 
-  /**
-   * Initializes class
-   */
   constructor() {
 
-    // Inherit constructor
     super();
 
     /**
-     * Current task
-     * @type {Model<Task>|null}
-     * @private
+     * Tracker status (active or not)
+     * @type {Boolean}
      */
-    this._currentTask = null;
+    this.active = false;
 
     /**
-     * Previous task
-     * @type {Model<Task>|null}
-     */
-    this._previousTask = null;
-
-    /**
-     * Instance of relatively stable ticker timer
+     * Designated time counter (ticker)
      * @type {Ticker}
-     * @private
      */
-    this._ticker = new Ticker();
+    this.ticker = new Ticker();
 
     /**
-     * Current interval properties
-     * @type {Object}
-     * @private
+     * Duration of activity proof countdown popup
+     * @type {Number} Amount of seconds given to prove activity
      */
-    this._currentInterval = {
+    this.activityProofDuration = 60;
+
+    /**
+     * Current tracking task
+     * @type {Model<Task>|null}
+     */
+    this.currentTask = null;
+
+    /**
+     * Previous (last tracked) task
+     * @type {Model<Task>|null}
+     */
+    this.previousTask = null;
+
+    /**
+     * Identifier of inactivity detection timer
+     * @type {Number|null}
+     */
+    this.inactivityDetectionTimerId = null;
+
+    /**
+     * Identifier of timer, responsible for negative prove result of activity popup
+     * @type {Number|null}
+     */
+    this.activityProofTimeoutTimerId = null;
+
+    /**
+     * Inactivity tracking timeout (i.e., how many seconds of inactivity is allowed)
+     * @type {Number|null} Inactivity timeout in seconds
+     */
+    this.inactivityTimeLimit = null;
+
+    /**
+     * Time between interval capture and send
+     * @type {Number|null} Amount of seconds between interval capture
+     */
+    this.captureInterval = null;
+
+    /**
+     * Properties of active (currently tracked) interval
+     * @type {Object}
+     */
+    this.currentInterval = {
 
       /**
-       * When this interval was started
+       * Timestamp of beggining of this interval
        * @type {Date|null}
        */
       startedAt: null,
 
       /**
-       * Is this interval ever paused?
+       * Flag indicates does this interval being paused / interrupted
        * @type {Boolean}
        */
       everPaused: false,
@@ -70,598 +94,396 @@ class TaskTracker extends EventEmitter {
     };
 
     /**
-     * Events counters
-     * @type {Object}
-     * @private
-     */
-    this._hidEvents = {};
-    this._hidEvents.now = { click: 0, move: 0, keys: 0 };
-    this._hidEvents.previous = { click: 0, move: 0, keys: 0 };
-    this._hidEvents.currentInterval = { click: 0, move: 0, keys: 0 };
-
-    /**
-     * Inactivity detection thresholds
-     * @type {Object}
-     * @private
-     */
-    this._hidEvents.thresholds = { click: 0, move: 25, keys: 0 };
-
-    /**
-     * Activity check timer
+     * Amount of time, tracked to active task for today
      * @type {Number|null}
-     * @private
      */
-    this._checkTimer = null;
+    this.currentTaskTimeTrackedToday = null;
 
     /**
-     * Delay before tracking will be stopped if inactivity detected
-     * @type {number}
-     * @private
+     * Handles result of activity proving verification round
      */
-    this._stopTimeIfNoActivity = 60 * 1000;
-
-    this._stopTimerIfNoActivity = null;
-
-    /**
-     * Interval of the intervals capture
-     * @type {Number|null}
-     * @private
-     */
-    this._captureTimerInterval = null;
-
-    /**
-     * Safe border to be sure that we will complete all the things before interval maximum time
-     * In other words, how much seconds we will deduct from the screenshot_time value from server?
-     * @type {Number}
-     * @private
-     */
-    this._intervalSafeBorder = 10;
-
-    /**
-     * Max delay (interval length) for automatical interval capture
-     * @type {Number}
-     * @private
-     */
-    this._maximumIntervalCaptureDelay = null;
-
-    /**
-     * Min delay (interval length) for automatical interval capture
-     * @type {Number}
-     * @private
-     */
-    this._minimumIntervalCaptureDelay = 120 - this._intervalSafeBorder;
-
-    /**
-     * Delay for the activity check
-     * @type {Number|null}
-     * @private
-     */
-    this._checkActivityInterval = null;
-
-    /**
-     * If current HID IO events amount will be less than previous * THIS_COEFFICIENT,
-     * we will detect the lower activity
-     * @type {Number}
-     * @private
-     */
-    this._lowerActivityCoefficient = 0.5;
-
-    // Setup event counters
-    IOHook.on('keydown', () => {
-
-      this._hidEvents.now.keys += 1;
-      this._hidEvents.currentInterval.keys += 1;
-
-    });
-
-    IOHook.on('mousemove', () => {
-
-      this._hidEvents.now.move += 1;
-      this._hidEvents.currentInterval.move += 1;
-
-    });
-
-    IOHook.on('mousewheel', () => {
-
-      this._hidEvents.now.move += 1;
-      this._hidEvents.currentInterval.move += 1;
-
-    });
-
-    IOHook.on('mousedown', () => {
-
-      this._hidEvents.now.click += 1;
-      this._hidEvents.currentInterval.click += 1;
-
-    });
-
-    // Pass each tracked second to frontend
-    this._ticker.on('tick', () => {
-
-      // Increment overall tracked time counter
-      this._currentTaskTrackedTime += 1;
-
-      // Pass tick event to the TimeTracker context
-      this.emit('tick', this._currentTaskTrackedTime);
-
-      // Capture interval if time is up
-      if (this._ticker.ticks === this._captureTimerInterval) {
-
-        // Emitting an event
-        this.emit('interval-capture', {});
-
-      }
-
-    });
-
-    this.on('interval-removed', async interval => {
-
-      await TimeController.saveTrackedTime(interval.task.id, interval.duration, 'subtract');
-      if (this._currentTask && this._currentTask.id === interval.task.id)
-        this._currentTaskTrackedTime -= interval.duration;
-
-      if (this._currentTaskTrackedTime < 0)
-        this._currentTaskTrackedTime = 0;
-
-    });
-
-    // Passing ticker counter reset event to renderer
-    this._ticker.on('reset-counter', () => this.emit('reset', {}));
-
-    /**
-     * Activity check function
-     */
-    this.on('activity-check', async () => {
-
-      // Checking activity
-      if (
-
-        // Mouse move activity
-        (this._hidEvents.now.move <= this._hidEvents.thresholds.move)
-
-        // Mouse click activity
-        && (this._hidEvents.now.click <= this._hidEvents.thresholds.click)
-
-        // Keyboard press activity
-        && (this._hidEvents.now.keys <= this._hidEvents.thresholds.keys)
-
-      ) {
-
-        // Inactivity detected
-        log.debug('Inactivity detected, countdown emission');
-
-        await this._stopCheckActivityTimer();
-
-        // Emitting inactivity event to frontend
-        this.emit('activity-proof-request', this._stopTimeIfNoActivity);
-
-        if (!this._stopTimerIfNoActivity) {
-
-          this._stopTimerIfNoActivity = setTimeout(
-            () => this.emit('activity-proof-result', false),
-            this._stopTimeIfNoActivity + 10000,
-          );
-
-        }
-
-      }
-
-      // Clear "now" counters
-      this.clearEventCounters(true, false, false);
-
-    });
-
-    // Handles signal from renderer on inactivity confirmation
     this.on('activity-proof-result', async result => {
 
-      if (this._stopTimerIfNoActivity) {
+      // Disarm kill-switch/timeout keeper of this prove request
+      if (this.activityProofTimeoutTimerId) {
 
-        clearTimeout(this._stopTimerIfNoActivity);
-        this._stopTimerIfNoActivity = null;
+        clearTimeout(this.activityProofTimeoutTimerId);
+        this.activityProofTimeoutTimerId = null;
 
       }
 
+      // Soft-fail if tracker is not active
       if (!this.active)
         return;
 
-      // Activity confirmed by user iteraction
+      // Keep tracking, if request has been proven
       if (result) {
 
-        log.debug('Activity confirmed');
+        // Dispatch activity proven event
+        log.debug('Activity proven by interactive popup');
+        this.emit('activity-proof-result-accepted', true);
 
-        this.emit('activity-proof-result-accepted', result);
-
-        await this._startCheckActivityTimer();
-
-        this.clearEventCounters(true, false, false);
+        // Start inactivity detection
+        this.startInactivityDetection();
         return;
 
       }
 
-      // Inactivity confirmed, stopping the tracker
-      log.debug('Activity not confirmed, stopping timer');
-
+      // Inactivity is not detected, dispatching corresponding event
+      log.debug('Activity is not confirmed via interactive popup, stopping tracker');
       this.emit('activity-proof-result-not-accepted', {
-        duration: this._ticker.ticks,
+        duration: this.ticker.ticks,
         task: { id: this.currentTask.id },
       });
 
-      // Stopping the ticker
+      // Stopping the tracker
       await this.stop(false);
 
     });
 
     /**
-     * Interval / Screenshot capture function
+     * Handles each tick of ticker
+     */
+    this.ticker.on('tick', () => {
+
+      // Increment time tracked for current task
+      this.currentTaskTimeTrackedToday += 1;
+
+      // Dispatch tick event into tracker context
+      this.emit('tick', this.currentTaskTimeTrackedToday);
+
+      // Dispatch interval capture transactional event, if it is the right time
+      if (this.ticker.ticks === this.captureInterval)
+        this.emit('interval-capture');
+
+    });
+
+    /**
+     * Handles "interval-removed" event from some other source
+     */
+    this.on('interval-removed', async interval => {
+
+      // Commit subtractioned interval time
+      await TimeController.saveTrackedTime(interval.task.id, interval.duration, 'subtract');
+
+      // Subtract time from local buffer, if this interval is rely on current task
+      if (this.currentTask && this.currentTask.id === interval.task.id) {
+
+        this.currentTaskTimeTrackedToday -= interval.duration;
+
+        // Keep tracked time gte than zero, in case of some unpredicted deviations
+        if (this.currentTaskTimeTrackedToday < 0)
+          this.currentTaskTimeTrackedToday = 0;
+
+      }
+
+    });
+
+    /**
+     * Handles the "interval-capture" transactional event
      */
     this.on('interval-capture', async () => {
 
-      // рнting current amount of ticks, then resetting the timer
-      const { ticks } = this._ticker;
-      this._ticker.reset();
+      // Saving current ticks counter value, then reset the ticker
+      const { ticks } = this.ticker;
+      this.ticker.reset();
 
-      // Push interval
-      await this.captureInterval(ticks);
+      // Capture & push interval
+      await this.captureCurrentInterval(ticks);
 
-      // Calculate next screenshot interval
-      const updatedCaptureDelay = await this.calculateNextCaptureDelay();
+      // Reset currentInterval properties
+      this.currentInterval.startedAt = new Date();
+      this.currentInterval.everPaused = false;
 
-      // Dump all counters to the "previous" block
-      this._hidEvents.previous.keys = this._hidEvents.currentInterval.keys;
-      this._hidEvents.previous.move = this._hidEvents.currentInterval.move;
-      this._hidEvents.previous.click = this._hidEvents.currentInterval.click;
-
-      // Clear events counters
-      this.clearEventCounters(false, false, true);
-
-      // Clear flags
-      this._currentInterval.startedAt = new Date();
-      this._currentInterval.everPaused = false;
-
-      // Apply new capture interval
-      this._captureTimerInterval = updatedCaptureDelay;
-      log.debug(`Updater interval capture duration is ${updatedCaptureDelay} seconds`);
+      log.debug('Interval captured by timer request');
 
     });
 
   }
 
   /**
-   * Returns tracker status
-   * @return {Boolean} Is tracking active?
+   * Starts inactivity detection
+   * @returns {Number} ID of corresponding inactivity detection timer
    */
-  get active() {
+  startInactivityDetection() {
 
-    return (this._ticker && this._ticker.status === true);
+    // Restrict more than one inactivity detectors at a time
+    if (this.inactivityDetectionTimerId)
+      throw new UIError(500, 'Reject request to spawn overlapping inactivity detector');
+
+    // Starts new interval timer to check idle time each second
+    this.inactivityDetectionTimerId = setInterval(() => {
+
+      // Get system idle time counter
+      const currentIdleTime = powerMonitor.getSystemIdleTime();
+
+      // Handle inactivity, if system idle time is over the limit for this account
+      if (currentIdleTime > this.inactivityTimeLimit) {
+
+        // Dispatch corresponing event
+        this.emit('inactivity-detected');
+
+        // Trigger inactivity detection routine
+        this.triggerInactivityDetection();
+
+        // Stops this interval timer
+        clearInterval(this.inactivityDetectionTimerId);
+        this.inactivityDetectionTimerId = null;
+
+      }
+
+    }, 1000);
+
+    return this.inactivityDetectionTimerId;
 
   }
 
   /**
-   * Returns current task
-   * @return {Model<Task>|null}  Current task (null, if tracker is stopped)
+   * Stops inactivity detection
+   * @returns {Boolean} True, if everything is OK. False if soft-failed.
    */
-  get currentTask() {
+  stopInactivityDetection() {
 
-    return this._currentTask;
+    // Soft-fail if inactivity detector is not running
+    if (!this.inactivityDetectionTimerId)
+      return false;
+
+    // Stop interval timer, then clear detection timer ID
+    clearInterval(this.inactivityDetectionTimerId);
+    this.inactivityDetectionTimerId = null;
+    return true;
 
   }
 
   /**
-   * Returns current interval duration in seconds
-   * @return {Number} Amount of ticks on ticker timer
+   * Routine, triggers on inactivity detection
    */
-  get currentTicks() {
+  triggerInactivityDetection() {
 
-    return this._ticker.ticks;
+    log.debug('Inactivity detected, emit activity proof request');
+
+    // Dispatch activity proof request event
+    this.emit('activity-proof-request', this.activityProofDuration * 1000);
+
+    // Starting kill-switch / timeout for activity proof
+    // If activity won't be verified within allowed time, this
+    // timeout will report "false" verification result
+    this.activityProofTimeoutTimerId = setTimeout(
+      () => this.emit('activity-proof-result', false),
+      (this.activityProofDuration + 1) * 1000,
+    );
 
   }
 
   /**
-   * Unloads HID event listener
+   * Pause ticker & inactivity detector
+   * For example, this method invokes by power-manager to keep tracker state correct
+   * between sleep or hybernation procedures
    */
-  unloadIOHook() {
+  async pauseTicker() {
 
-    /* eslint class-methods-use-this: 0 */
-    IOHook.unload();
+    // Pausing ticker
+    if (!this.ticker.paused)
+      this.ticker.pause();
+
+    // Stopping inactivity detector
+    this.stopInactivityDetection();
+
+    // Mark interval as interrupted
+    if (this.active)
+      this.currentInterval.everPaused = true;
 
   }
 
   /**
-   * Clears the different event counters groups
-   * @param  {Boolean} [now=true]             Should we clear "now" counters group
-   * @param  {Boolean} [previous=true]        Should we clear "previous" counters group
-   * @param  {Boolean} [currentInterval=true] Should we clear counters for the current interval
+   * Resume ticker & inactivity detection after pause
    */
-  clearEventCounters(now = true, previous = true, currentInterval = true) {
+  async resumeTicker() {
 
-    // Clear "now" event counters
-    if (now) {
+    // Starting tracker
+    if (this.ticker.paused)
+      this.ticker.resume();
 
-      this._hidEvents.now.keys = 0;
-      this._hidEvents.now.move = 0;
-      this._hidEvents.now.click = 0;
-
-    }
-
-    // Clear event counters for the last interval
-    if (previous) {
-
-      this._hidEvents.previous.keys = 0;
-      this._hidEvents.previous.move = 0;
-      this._hidEvents.previous.click = 0;
-
-    }
-
-    // Clear event counters for the current interval
-    if (currentInterval) {
-
-      this._hidEvents.currentInterval.keys = 0;
-      this._hidEvents.currentInterval.move = 0;
-      this._hidEvents.currentInterval.click = 0;
-
-    }
+    // Starting inactivity detector
+    this.startInactivityDetection();
 
   }
-
-  /**
-   * Calculate interval length according to the user activity
-   * @return {Promise<Number>} Recalculated interval length
-   */
-  async calculateNextCaptureDelay() {
-
-    // Checking is current interval activity lower than at previous one
-    if (
-
-      (this._hidEvents.currentInterval.keys <= this._hidEvents.previous.keys * this._lowerActivityCoefficient)
-      && (this._hidEvents.currentInterval.move <= this._hidEvents.currentInterval.move * this._lowerActivityCoefficient)
-
-    ) {
-
-      // Generate new interval, less than current
-      let newDelay = await cryptoRandom(this._minimumIntervalCaptureDelay, this._captureTimerInterval);
-      newDelay = Math.floor(newDelay / 2);
-
-      // If new interval delay is too short, return the minimum possible one
-      if (newDelay < this._minimumIntervalCaptureDelay)
-        return this._minimumIntervalCaptureDelay;
-
-      // Return
-      return newDelay;
-
-    }
-
-    let newIntervalDelay = await cryptoRandom(this._minimumIntervalCaptureDelay, this._captureTimerInterval);
-    newIntervalDelay += this._minimumIntervalCaptureDelay;
-    newIntervalDelay = Math.floor(newIntervalDelay);
-
-    // Checking if this interval delay greater than maximum allowed one
-    if (newIntervalDelay > this._maximumIntervalCaptureDelay)
-      return this._maximumIntervalCaptureDelay;
-
-    return newIntervalDelay;
-
-  }
-
-  /**
-   * Start activity check timer
-   * @return {Promise<void>}
-   * @private
-   */
-  async _startCheckActivityTimer() {
-
-    if (!this._checkTimer)
-      this._checkTimer = setInterval(() => this.emit('activity-check'), this._checkActivityInterval * 1000);
-
-  }
-
-  /**
-   * Stopping activity check timer
-   * @return {Promise<void>}
-   * @private
-   */
-  async _stopCheckActivityTimer() {
-
-    if (this._checkTimer) {
-
-      clearInterval(this._checkTimer);
-      this._checkTimer = null;
-
-    }
-
-  }
-
 
   /**
    * Starts tracking
-   * @param  {String}           [taskId]  Identifier of the target task (last task will be tracked if ID is not set)
-   * @return {Promise<Boolean>}           True, if task is started, Error otherwise
+   * @async
+   * @param {String} [taskId] UUID of task to track (default: last tracked task)
    */
   async start(taskId) {
 
-    /**
-     * Type of action we will perform (task start / switch)
-     * @type {String}
-     */
-    let startAction = '';
+    // Action to dispatch (task "started" or "switched")
+    let action = null;
 
-    // Checking input argument
-    if (typeof taskId === 'undefined') {
+    // Handle re-start of last tracked task case
+    if (typeof taskId !== 'string') {
 
-      // Is current task running?
-      if (this._currentTask)
-        throw new UIError(500, 'TaskTracker.start called without taskId when current task is running', 'ETSTR0');
+      // Fail if tracker is already active
+      if (this.active || this.currentTask)
+        throw new UIError(500, 'Overlapping tracker start request rejected');
 
-      // Checking for last task prescense
-      if (!this._previousTask)
-        throw new UIError(500, 'TaskTracker.start called without taskId for the first time after launch', 'ETSTR1');
+      // Fail if there is nothing to switch back to
+      if (!this.previousTask)
+        throw new UIError(500, 'Tracker re-start request rejected due to lack of previous task');
 
-      // Set previous task as a current one
-      this._currentTask = this._previousTask;
-      startAction = 'started';
+      // Set previous task as current
+      this.currentTask = this.previousTask;
+      action = 'started';
 
     } else {
 
-      // Getting task by identifier
-      const targetTask = await Task.findOne({ where: { id: taskId } });
+      // Getting task by defined UUID
+      const task = await Task.findByPk(taskId);
+      if (!task)
+        throw new UIError(500, `Tracker start request rejected due to inability to find a task with id: ${taskId}`);
 
-      // Is this task exists
-      if (!targetTask)
-        throw new UIError(404, 'TaskTracker.start called with taskId which is not exists');
+      // If tracker is active, initialise task switching
+      if (this.status && this.currentTask) {
 
-      // Stopping current task if it is active
-      if (this._currentTask) {
+        // Dispatch switching event with target task info
+        action = 'switched';
+        this.emit('switching', { from: this.currentTask.id, to: task.id });
 
-        this.emit('switching', { from: this._currentTask.id, to: taskId });
-
+        // Stopping current task
         await this.stop(true, false);
-        startAction = 'switched';
 
-      } else
-        startAction = 'started';
+      } else {
 
-      // Set target task as current
-      this._currentTask = targetTask;
+        // Dispatch "started" event when tracker start-up routine will be finished
+        action = 'started';
+
+      }
+
+      // Set target task as current one
+      this.currentTask = task;
 
     }
 
-    // Calculating the interval duration
-    // Server returns time popup in minutes, so we have to transfer it to seconds
-    // Decreasing it by 10 seconds to make sure that we will capture interval in a time
+    // Get current user properties, then calculate all necessary intervals
     const currentUser = await Authentication.getCurrentUser();
-    this._checkActivityInterval = currentUser.inactivityTimeout * 60;
-    this._maximumIntervalCaptureDelay = (currentUser.screenshotsInterval * 60) - this._intervalSafeBorder;
-    this._captureTimerInterval = this._maximumIntervalCaptureDelay;
-    await this._startCheckActivityTimer();
+    this.inactivityTimeLimit = currentUser.inactivityTimeout * 60;
+    this.captureInterval = currentUser.screenshotsInterval * 60;
 
-    // Time tracked to current task
-    this._currentTaskTrackedTime = await TaskController.getTaskTodayTime(this._currentTask.id);
+    // Populate necessary properties
+    this.currentInterval.startedAt = new Date();
+    this.currentInterval.everPaused = false;
+    this.currentTaskTimeTrackedToday = await TaskController.getTaskTodayTime(this.currentTask.id);
 
-    // Interval start timestamp
-    this._currentInterval.startedAt = new Date();
+    // Enable inactivity detection
+    this.startInactivityDetection();
 
-    // Starting listening for the events
-    IOHook.start();
+    // Reset & start time counter
+    this.ticker.reset();
+    this.ticker.start();
 
-    // Resetting and starting the ticker
-    this._ticker.reset();
-    this._ticker.start();
-    log.debug(`Started tracking task "${this._currentTask.name}" (period duration is ${this._captureTimerInterval}s)`);
-
-    // Emit proper event
-    this.emit(startAction, this._currentTask.id);
+    // Dispatch corresponding event
+    this.active = true;
+    this.emit(action, this.currentTask.id);
+    log.debug(`Started task "${this.currentTask.name}" with ${this.captureInterval}s capture interval`);
 
   }
 
   /**
    * Stops tracking
-   * @param  {Boolean}                 [pushInterval=true]  Should we push this interval
-   * @param  {Boolean}                 [emitEvent=true]     Should we emit "stopped" event
-   * @return {Promise<Boolean|Error>}                       True if success, Error otherwise
+   * @async
+   * @param {Boolean} [pushInterval = true] Will this interval be pushed to backend?
+   * @param {Boolean} [emitEvent = true] Will 'stopping' and 'stopped' events be dispatched?
    */
   async stop(pushInterval = true, emitEvent = true) {
 
+    // Soft-fail if tracker is not active
     if (!this.active)
       return false;
 
+    // Dispatch transactional event
     if (emitEvent)
       this.emit('stopping');
 
-    // Getting ticks amount and stopping ticker
-    const { ticks } = this._ticker;
-    this._ticker.stop(false);
 
-    // Stop event handling
-    log.debug(`Stops task tracking (push = ${pushInterval ? 'ok' : 'no'}, event = ${emitEvent ? 'ok' : 'no'})`);
+    // Stop inactivity detection
+    this.stopInactivityDetection();
 
-    // Stopping activity check timer
-    this._stopCheckActivityTimer();
+    // Get amount of ticks, then stop the timer
+    const { ticks } = this.ticker;
+    this.ticker.stop(true);
 
-    // Pushing interval
-    if (pushInterval) {
+    log.debug(`Executing tracker stop request (push = ${pushInterval}, dispatch = ${emitEvent})`);
 
-      // Capturing interval if it's longer than one second
-      if (ticks >= 1)
-        await this.captureInterval();
-      else
-        log.warning('Ignoring interval which is less than one second');
+    // Capturing & pushing interval, if it is longer than one second
+    if (pushInterval && (ticks >= 1))
+      await this.captureCurrentInterval(ticks);
 
-    } else
-      log.debug('no interval sending');
+    // Move current task to previous, reset active flag
+    this.active = false;
+    this.previousTask = this.currentTask;
+    this.currentTask = null;
 
+    // Reset current interval states
+    this.currentInterval.startedAt = null;
+    this.currentInterval.everPaused = false;
 
-    // Emit event if it is not restricted
+    // Ensure that activity proof timeout is suspended
+    if (this.activityProofTimeoutTimerId) {
+
+      clearTimeout(this.activityProofTimeoutTimerId);
+      this.activityProofTimeoutTimerId = null;
+
+    }
+
+    // Emit transactional event
     if (emitEvent)
       this.emit('stopped');
 
-    // Move current task to previous
-    this._previousTask = this._currentTask;
-    this._currentTask = null;
-
-    // Reset everPaused flag
-    this._currentInterval.everPaused = false;
-
-    // Resets all the counters
-    this.clearEventCounters(true, true, true);
-
-    // That's all
     return true;
 
   }
 
-  async pauseTicker() {
-
-    if (!this._ticker.paused)
-      this._ticker.pause();
-
-  }
-
-  async resumeTicker() {
-
-    if (this._ticker.paused)
-      this._ticker.resume();
-
-  }
-
   /**
-   * Captures an interval and pushed it to the server
-   * @param  {Number}           [rawTicks] Amount of ticks to override the ticker value
-   * @return {Promise<Boolean>}            Returns true if succeed, error otherwise
+   * Captures current time interval, then submits it to the backend
+   * @async
+   * @param {Number} [ticksOverride] Amount of ticks tracked during this time interval
    */
-  async captureInterval(rawTicks) {
+  async captureCurrentInterval(ticksOverride) {
 
-    if (!this._currentTask) {
-
-      log.debug('Can\t find current task!');
-      return false;
-
-    }
+    // Fail if timer is stopped, or current task canno't be obtained
+    if (!this.active || !this.currentTask)
+      throw new UIError(500, 'Rejected interval capture due to stopped tracker');
 
     try {
 
-      /* eslint camelcase: 0 */
+      // Get properties of current user account
       const currentUser = await Authentication.getCurrentUser();
 
-      // Calculating amount of ticks
-      const ticks = rawTicks || this.currentTicks;
+      // Get amount of ticks tracked
+      const ticks = (typeof ticksOverride === 'number') ? ticksOverride : this.ticker.ticks;
 
       // Saving timestamp of this period end (NOW moment)
-      let { startAt } = this._currentInterval;
+      let { startAt } = this.currentInterval;
       let endAt = new Date();
 
       // Calculate start date using few conditions
       if (
 
-        // If current tick start date is not set (race condition or some other shitty reason)
+        // If current tick start date is not set (race condition or some other scrapy reason)
         (!startAt || typeof startAt !== 'object' || typeof startAt.getTime !== 'function')
 
         // If delta between interval start & stop too large
-        || (endAt.getTime() - startAt.getTime() > ((ticks + this._intervalSafeBorder) * 1000))
+        || (endAt.getTime() - startAt.getTime() > ((ticks + 2) * 1000))
 
         // Pause detected during this interval
-        || this._currentInterval.everPaused
+        || this.currentInterval.everPaused
 
-      )
+      ) {
+
+        // In case if we can't be sure that currentInterval.startAt value is correct
+        // we calculate it by subtraction ticks from Date.now()
         startAt = new Date(endAt.getTime() - (ticks * 1000));
+
+      }
 
       // Check interval duration
       if (ticks === 0 || (endAt - startAt) < 1000) {
@@ -674,42 +496,41 @@ class TaskTracker extends EventEmitter {
       // Convert start and stop dates into ISO formatted strings
       startAt = startAt.toISOString();
       endAt = endAt.toISOString();
-
-      // Logging this period
-      log.debug(`Capturing interval: ${startAt} ~ ${endAt} (duration: ${ticks} ticks)`);
+      log.debug(`Capturing interval: ${startAt} ~ ${endAt} (duration = ${ticks})`);
 
       // Creating interval object
       const interval = {
 
-        task_id: this._currentTask.externalId,
+        task_id: this.currentTask.externalId,
         start_at: startAt,
         end_at: endAt,
         user_id: currentUser.id,
-        count_mouse: this._hidEvents.currentInterval.move + this._hidEvents.currentInterval.click,
-        count_keyboard: this._hidEvents.currentInterval.keys,
+        count_mouse: 100,
+        count_keyboard: 100,
 
       };
 
       // Saving time interval
-      await TimeController.saveTrackedTime(this._currentTask.id, ticks);
+      await TimeController.saveTrackedTime(this.currentTask.id, ticks);
       log.debug(`Track time is updated (+${ticks} ticks)`);
 
-      // Creating screenshot
+      // Creating screenshot, if screenshot capture enabled for this user account
       let intervalScreenshot = null;
+      if (currentUser.screenshotsEnabled) {
 
-      // Future: properly handle screenshotsEnable option
-      intervalScreenshot = await Screenshot.makeScreenshot();
-      log.debug('Screenshot was made');
+        intervalScreenshot = await Screenshot.makeScreenshot();
+        log.debug('Screenshot captured');
+
+      }
 
       // Pushing interval
       try {
 
-        // Pushing interval
-        const pushedInterval = await IntervalsController.pushTimeIntervalAndScreenshot(interval, intervalScreenshot);
+        const pushedInterval = await IntervalsController.pushTimeInterval(interval, intervalScreenshot);
 
-        // Hotfix for shitty error handling on backend
+        // Hotfix for the scrappy error handling on backend
         if (typeof pushedInterval.id === 'undefined')
-          throw new UIError('ETRCK00', `Interval validation error, between ${startAt} and ${endAt}`);
+          throw new UIError(500, `Interval validation error, between ${startAt} and ${endAt}`);
 
         log.debug(`Interval was synced (assigned ID is ${pushedInterval.id})`);
 
@@ -762,8 +583,4 @@ class TaskTracker extends EventEmitter {
 
 }
 
-/**
- * Exports single instance of TaskTracker
- * @type {TaskTracker}
- */
 module.exports = new TaskTracker();
