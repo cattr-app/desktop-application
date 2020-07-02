@@ -46,7 +46,7 @@ configuration.sentry = {
   dsnFrontend: 'https://2bc3716988cd42979e511f629a8e97a3@sentry.amazingcat.net/4',
 
   // Setting the current release
-  release: 'cattr-desktop@2.3.1',
+  release: 'cattr-desktop@2.4.0',
 
 };
 
