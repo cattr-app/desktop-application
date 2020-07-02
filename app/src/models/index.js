@@ -7,15 +7,10 @@ const Log = require('../utils/log');
 
 const log = new Log('Database');
 
-
 module.exports.db = {};
 module.exports.db.models = {};
 
-// Database init promise
-module.exports.init = new Promise((resolve, reject) => {
-
-  const database = {};
-  const sequelize = new Sequelize(config.localDB.opts);
+const initMigrations = sequelize => new Promise((resolve, reject) => {
 
   // Setup migration engine
   const umzug = new Umzug({
@@ -49,7 +44,8 @@ module.exports.init = new Promise((resolve, reject) => {
       // Import all of them as Sequelize models
       .forEach(file => {
 
-        const model = sequelize.import(path.resolve(__dirname, './', file));
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        const model = require(path.resolve(__dirname, './', file))(sequelize, Sequelize.DataTypes);
         module.exports.db.models[model.name] = model;
 
       });
@@ -68,11 +64,22 @@ module.exports.init = new Promise((resolve, reject) => {
     module.exports.db.sequelize = sequelize;
     module.exports.db.Sequelize = Sequelize;
 
-    log.debug('Database successfully initliazed');
+    log.debug('Migrations applied successfully');
 
     // Resolve promise
-    return resolve(database);
+    return resolve();
 
   });
 
 });
+
+// Database init promise
+module.exports.init = async () => {
+
+  const sequelize = new Sequelize(config.localDB.opts);
+  await sequelize.authenticate();
+  await initMigrations(sequelize);
+  log.debug('Database successfully initialized');
+  return true;
+
+};

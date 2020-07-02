@@ -37,7 +37,7 @@ if (!config.isDeveloperModeEnabled) {
 app.once('ready', async () => {
 
   // Load database
-  await require('./models').init;
+  await require('./models').init();
 
   const router = require('./routes');
   const osIntegration = require('./base/os-integration');
