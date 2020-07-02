@@ -342,7 +342,7 @@ class TaskTracker extends EventEmitter {
         throw new UIError(500, `Tracker start request rejected due to inability to find a task with id: ${taskId}`);
 
       // If tracker is active, initialise task switching
-      if (this.status && this.currentTask) {
+      if (this.active && this.currentTask) {
 
         // Dispatch switching event with target task info
         action = 'switched';
