@@ -10,25 +10,34 @@ module.exports = router => {
   // Checks and sets the API hostname
   router.serve('auth/check-hostname', async request => {
 
-    // Setting hostname
     try {
 
-      // Trying to set hostname
+      // Trying the exact URL provided first
       await auth.setHostname(request.packet.body.hostname);
+      if (await auth.isCattrInstance())
+        return request.send(200, {});
+
+      // If exact URL is not worked, retry with removed  path, search, and hash parameters
+      let url = request.packet.body.hostname;
+      if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0)
+        url = `https://${url.trim()}/`;
+
+      const reconstructedUrl = new URL(url);
+      reconstructedUrl.hash = '';
+      reconstructedUrl.pathname = '';
+      reconstructedUrl.search = '';
+
+      await auth.setHostname(reconstructedUrl.href);
+      if (await auth.isCattrInstance())
+        return request.send(200, {});
+
+      return request.send(404, {});
 
     } catch (error) {
 
       return request.send(400, {});
 
     }
-
-    // Checking is it actually an Cattr instance
-    const state = await auth.isCattrInstance();
-
-    // Send 200 OK / 404 Not Found accordingly
-    if (state)
-      return request.send(200, {});
-    return request.send(404, {});
 
   });
 

@@ -14,7 +14,8 @@ module.exports = router => {
 
     try {
 
-      return request.send(200, { preferences: await userPreferences.exportWithStructure() });
+      const preferences = await userPreferences.exportWithStructure();
+      return request.send(200, { preferences });
 
     } catch (error) {
 

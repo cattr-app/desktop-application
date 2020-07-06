@@ -2,6 +2,7 @@ const fs = require('fs');
 const { resolve } = require('path');
 const { app } = require('electron');
 const argv = require('minimist')(process.argv.slice(2));
+const packageManifest = require('../../../package.json');
 
 // Development mode rules
 const isDeveloperModeEnabled = (
@@ -16,6 +17,12 @@ const isDeveloperModeEnabled = (
  * @type {String}
  */
 const packageId = isDeveloperModeEnabled ? 'cattr-develop' : 'cattr';
+
+/**
+ * Version of this Cattr package
+ * @type {String}
+ */
+const packageVersion = packageManifest.version;
 
 // Basic configuration
 const configuration = {
@@ -46,7 +53,7 @@ configuration.sentry = {
   dsnFrontend: 'https://2bc3716988cd42979e511f629a8e97a3@sentry.amazingcat.net/4',
 
   // Setting the current release
-  release: 'cattr-desktop@2.4.0',
+  release: `cattr@${packageVersion}`,
 
 };
 

@@ -100,3 +100,7 @@ target
 
 # Built frontend
 build
+
+# Sentry configuration
+.sentry.main
+.sentry.renderer
