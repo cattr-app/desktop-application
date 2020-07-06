@@ -70,12 +70,12 @@ export default {
       savingInProgress: false,
       yesno: [
         { label: 'Yes', value: true },
-        { label: 'No', value: false }
+        { label: 'No', value: false },
       ],
 
       formData: {},
       formFields: [],
-      values: {}
+      values: {},
     };
 
   },
@@ -84,42 +84,36 @@ export default {
 
     this.$ipc.request('user-preferences/export-structure', {}).then(({ body }) => {
 
-      for (const formField in body.preferences) {
+      body.preferences.forEach(formField => {
 
-        if (body.preferences.hasOwnProperty(formField)) {
+        const fd = body.preferences[formField];
+        const renderableField = {
+          key: formField,
+          label: fd.name,
+          value: (typeof fd.value !== 'undefined' && fd.value !== null) ? fd.value : fd.default,
+          description: fd.description,
+          frontend: {
+            type: (['toggle', 'options'].includes(fd.frontend.element)) ? 'select' : fd.frontend.element,
+          },
+        };
 
-          /* const field = Object.assign({}, this.formFields[formField]);
-            this.$set(this.formData, formField, field.value || field.default); */
-          const fd = body.preferences[formField];
-          const renderableField = {
-            key: formField,
-            label: fd.name,
-            value: (typeof fd.value !== 'undefined' && fd.value !== null) ? fd.value : fd.default,
-            description: fd.description,
-            frontend: {
-              type: fd.frontend.element === 'toggle' || fd.frontend.element === 'options' ? 'select' : fd.frontend.element
-            }
-          };
+        if (['options', 'select', 'toggle'].includes(fd.frontend.element)) {
 
-          if (fd.frontend.element === 'options' || fd.frontend.element === 'select' || fd.frontend.element === 'toggle') {
+          const opts = Object
+            .entries(fd.frontend.options)
+            .map(([key, value]) => ({ label: key, value }));
 
-            const opts = Object.entries(fd.frontend.options).map(([ key, value ]) => ({
-              label: key,
-              value
-            }));
-            renderableField.frontend.options = opts;
+          renderableField.frontend.options = opts;
 
-          } else
-            renderableField.frontend.options = fd.frontend.options;
+        } else
+          renderableField.frontend.options = fd.frontend.options;
 
 
-          const field = { ...renderableField };
-          this.formFields.push(renderableField);
-          this.$set(this.formData, formField, field.value);
+        const field = { ...renderableField };
+        this.formFields.push(renderableField);
+        this.$set(this.formData, formField, field.value);
 
-        }
-
-      }
+      });
 
     });
 
@@ -144,7 +138,7 @@ export default {
                     `;
         this.$alert(htmlError, 'Whoops!', {
           dangerouslyUseHTMLString: true,
-          confirmButtonText: `${this.$t('OK')} 😢`
+          confirmButtonText: `${this.$t('OK')} 😢`,
         });
 
       }
@@ -155,7 +149,7 @@ export default {
 
       this.savingInProgress = true;
       const res = await this.$ipc.request('user-preferences/set-many', {
-        preferences: { ...this.formData }
+        preferences: { ...this.formData },
       });
 
       this.savingInProgress = false;
@@ -166,19 +160,19 @@ export default {
           this.$i18n.locale = this.formData.language;
 
         this.$alert(this.$t('Settings saved successfully!'), 'Woohoo!', {
-          confirmButtonText: 'Yay!'
+          confirmButtonText: 'Yay!',
         });
 
       } else {
 
         this.$alert(res.body.message, this.$t('Whoops!'), {
-          confirmButtonText: this.$t('OK')
+          confirmButtonText: this.$t('OK'),
         });
 
       }
 
-    }
-  }
+    },
+  },
 };
 </script>
 

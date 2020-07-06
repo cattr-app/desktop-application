@@ -147,7 +147,7 @@
 			],
 			"array-bracket-spacing": [
 				"error",
-				"always"
+				"never"
 			],
 			"curly": [
 				"error",

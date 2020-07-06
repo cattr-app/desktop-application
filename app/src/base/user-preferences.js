@@ -7,6 +7,16 @@ const configuration = require('./config');
 const log = new Logger('UserPreferences');
 
 /**
+ * Map between type's name and object
+ * @type {Map.<String, Function>}
+ */
+const TypeNameMap = new Map([
+  ['boolean', Boolean],
+  ['string', String],
+  ['number', Number],
+]);
+
+/**
  * Preferences map
  * @type {Object}
  */
@@ -16,7 +26,7 @@ const preferences = {
   showScreenshotNotification: {
 
     // Preference entry type
-    type: Boolean,
+    type: 'boolean',
 
     // Human-readable name for this parameter
     name: 'Show screenshot notification',
@@ -42,7 +52,7 @@ const preferences = {
 
   // Preferences entry for screenshot notification
   screenshotNotificationTime: {
-    type: Number,
+    type: 'number',
     name: 'Screenshot notification duration (in seconds)',
     description: 'For how long we should show you the captured screenshot?',
     default: 5,
@@ -54,7 +64,7 @@ const preferences = {
 
   // Preferences entry for the inactive tasks display
   showInactiveTasks: {
-    type: Boolean,
+    type: 'boolean',
     name: 'Show inactive tasks',
     description: 'Should we show you inactive tasks too?',
     default: false,
@@ -65,7 +75,7 @@ const preferences = {
   },
 
   language: {
-    type: String,
+    type: 'string',
     name: 'Language',
     description: 'Interface language. Application restart is required to apply changes',
     default: 'en',
@@ -76,7 +86,7 @@ const preferences = {
   },
 
   hideInsteadClose: {
-    type: Boolean,
+    type: 'boolean',
     name: 'Window close action',
     description: 'Should we close or hide application on window close?',
     default: true,
@@ -210,9 +220,9 @@ class UserPreferences extends EventEmitter {
       return this;
 
     // Upserting new value to the preferences buffer
-    this.preferencesFileBuffer[key] = (preferences[key].type === Boolean && typeof value === 'string')
+    this.preferencesFileBuffer[key] = (preferences[key].type === 'boolean' && typeof value === 'string')
       ? (value === 'true')
-      : preferences[key].type(value);
+      : TypeNameMap.get(preferences[key].type)(value);
 
     return this;
 
@@ -230,7 +240,9 @@ class UserPreferences extends EventEmitter {
       throw new TypeError(`Preference entries must be passed as object, but ${typeof entries} given`);
 
     // Apply entries
-    Object.entries(entries).forEach(([ key, value ]) => this.set(key, value));
+    Object
+      .entries(entries)
+      .forEach(([key, value]) => this.set(key, value));
 
     return this;
 
