@@ -84,34 +84,33 @@ export default {
 
     this.$ipc.request('user-preferences/export-structure', {}).then(({ body }) => {
 
-      body.preferences.forEach(formField => {
+      Object.entries(body.preferences).forEach(([prefKey, prefVal]) => {
 
-        const fd = body.preferences[formField];
         const renderableField = {
-          key: formField,
-          label: fd.name,
-          value: (typeof fd.value !== 'undefined' && fd.value !== null) ? fd.value : fd.default,
-          description: fd.description,
+          key: prefKey,
+          label: prefVal.name,
+          value: (typeof prefVal.value !== 'undefined' && prefVal.value !== null) ? prefVal.value : prefVal.default,
+          description: prefVal.description,
           frontend: {
-            type: (['toggle', 'options'].includes(fd.frontend.element)) ? 'select' : fd.frontend.element,
+            type: (['toggle', 'options'].includes(prefVal.frontend.element)) ? 'select' : prefVal.frontend.element,
           },
         };
 
-        if (['options', 'select', 'toggle'].includes(fd.frontend.element)) {
+        if (['options', 'select', 'toggle'].includes(prefVal.frontend.element)) {
 
           const opts = Object
-            .entries(fd.frontend.options)
+            .entries(prefVal.frontend.options)
             .map(([key, value]) => ({ label: key, value }));
 
           renderableField.frontend.options = opts;
 
         } else
-          renderableField.frontend.options = fd.frontend.options;
+          renderableField.frontend.options = prefVal.frontend.options;
 
 
         const field = { ...renderableField };
         this.formFields.push(renderableField);
-        this.$set(this.formData, formField, field.value);
+        this.$set(this.formData, prefKey, field.value);
 
       });
 
