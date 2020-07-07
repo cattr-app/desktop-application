@@ -16,7 +16,8 @@
 		"build-production": "npx cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"build-release": "npx cross-env NODE_ENV=production MAKE_RELEASE=yes node_modules/webpack/bin/webpack.js --progress --hide-modules --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"package-linux": "npx electron-builder -l",
-		"package-windows": "npx electron-builder -w",
+		"package-windows-portable": "npx electron-builder -w portable",
+		"package-windows-nsis": "npx electron-builder -w nsis",
 		"package-mac": "npx electron-builder -m",
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
 	},
@@ -50,7 +51,6 @@
 			"category": "Office"
 		},
 		"win": {
-			"target": "portable",
 			"publisherName": "amazingcat LLC",
 			"icon": "icon.ico"
 		}
