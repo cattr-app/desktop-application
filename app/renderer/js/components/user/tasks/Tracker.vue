@@ -27,10 +27,13 @@
       >
         <el-button
           type="primary"
-          :loading="syncInProgress || trackingLoad"
+          :disabled="syncInProgress || trackingLoad"
           @click="syncTasks"
         >
-          <i class="el-icon-refresh" />
+          <i
+          class="el-icon-refresh"
+          v-bind:class="{ animated: syncInProgress}"
+          />
         </el-button>
         <el-button
           :disabled="!trackingTask || trackingLoad"
