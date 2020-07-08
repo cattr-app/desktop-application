@@ -10,6 +10,7 @@ const Authentication = require('./authentication');
 const TimeController = require('../controller/time');
 const TaskController = require('../controller/tasks');
 const IntervalsController = require('../controller/time-intervals');
+const eventCounter = require('../utils/event-counter');
 
 const log = new Log('TaskTracker');
 
@@ -376,6 +377,9 @@ class TaskTracker extends EventEmitter {
     // Enable inactivity detection
     this.startInactivityDetection();
 
+    // Enable event counter
+    eventCounter.start();
+
     // Reset & start time counter
     this.ticker.reset();
     this.ticker.start();
@@ -425,6 +429,9 @@ class TaskTracker extends EventEmitter {
     // Reset current interval states
     this.currentInterval.startedAt = null;
     this.currentInterval.everPaused = false;
+
+    // Stop event counter
+    eventCounter.stop();
 
     // Ensure that activity proof timeout is suspended
     if (this.activityProofTimeoutTimerId) {
@@ -498,6 +505,13 @@ class TaskTracker extends EventEmitter {
       endAt = endAt.toISOString();
       log.debug(`Capturing interval: ${startAt} ~ ${endAt} (duration = ${ticks})`);
 
+
+      // Getting activity metrics, then resetting the counter
+      const systemActivity = eventCounter.systemPercentage;
+      const keyboardActivity = eventCounter.keyboardPercentage;
+      const mouseActivity = eventCounter.mousePercentage;
+      eventCounter.reset();
+
       // Creating interval object
       const interval = {
 
@@ -507,6 +521,9 @@ class TaskTracker extends EventEmitter {
         user_id: currentUser.id,
         count_mouse: 100,
         count_keyboard: 100,
+        activity_fill: systemActivity,
+        keyboard_fill: keyboardActivity,
+        mouse_fill: mouseActivity,
 
       };
 
