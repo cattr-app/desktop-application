@@ -12,7 +12,7 @@
     />
 
     <p class="task-description">
-      {{ task.description.length > 0 ? task.description : `${$t('Nothing there')} ¯\\_(ツ)_/¯` }}
+      <vue-markdown>{{ task.description.length > 0 ? task.description : `${$t('Nothing there')} ¯\\_(ツ)_/¯` }}</vue-markdown>
     </p>
 
     <div class="task-controls">
@@ -43,10 +43,13 @@
 
 <script>
 import { shell } from 'electron';
+import VueMarkdown from 'vue-markdown';
 
 export default {
   name: 'Info',
-
+  components: {
+    VueMarkdown
+  },
   data() {
 
     return {

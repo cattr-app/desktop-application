@@ -18,6 +18,9 @@ There are two major differences between development and production modes:
 
 **TL;DR:** Use only dev mode during development and do not launch two instances in production mode simultaneously.
 
+** For VS Code users: **
+You can use VS Code debugger with the config within this project
+
 ## Build
 1. Ensure that all necessary dependencies are installed
 2. Ensure that `package.json` and `src/base/config.js` contains right configuration
