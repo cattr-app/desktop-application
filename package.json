@@ -183,7 +183,8 @@
 		"sequelize": "^6.3.0",
 		"sqlite3": "^5.0.0",
 		"umzug": "^2.3.0",
-		"uuid": "^8.2.0"
+		"uuid": "^8.2.0",
+		"vue-markdown": "^2.2.4"
 	},
 	"devDependencies": {
 		"@sentry/browser": "^5.19.0",
