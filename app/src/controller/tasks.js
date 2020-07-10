@@ -155,7 +155,7 @@ module.exports.getTasksList = async (highlight = false, onlyActive = true) => {
     limit: HIGHLIGHT_LAST_X_TASKS,
 
     // Sorting
-    order: [ [ 'day', 'DESC' ] ],
+    order: [ [ 'updatedAt', 'DESC' ] ],
 
   });
 
