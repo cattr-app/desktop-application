@@ -1,4 +1,5 @@
 const EventEmitter = require('events');
+const { app } = require('electron');
 const api = require('./api');
 const Log = require('../utils/log');
 const keychain = require('../utils/keychain');
@@ -229,6 +230,15 @@ module.exports.getCurrentUser = async () => {
 
     } catch (err) {
 
+      // Perform logout operation if user is disabled or removed
+      if (err.isApiError && err.type === 'authorization.user_disabled') {
+
+        log.warning('Current user is disabled or removed from server, logging out...');
+        await module.exports.logout();
+        app.quit();
+
+      }
+
       log.warning('Failed to fetch user from API, seems like that we\'re offline');
 
     }
@@ -293,6 +303,10 @@ module.exports.isAuthenticationRequired = async () => {
     // Filter expected errors
     if (error instanceof UIError && error.code === 802)
       return true;
+
+    if (error instanceof UIError && error.code === 803)
+      return true;
+
     if (error.isApiError && error.statusCode === 403)
       return true;
 

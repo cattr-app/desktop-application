@@ -23,19 +23,23 @@ module.exports.backupInterval = async (interval, screenshot) => {
       startAt: interval.start_at,
       endAt: interval.end_at,
       userId: interval.user_id,
-      eventsMouse: interval.count_mouse,
-      eventsKeyboard: interval.count_keyboard,
-      screenshot,
+      systemActivity: interval.activity_fill,
+      keyboardActivity: interval.keyboard_fill,
+      mouseActivity: interval.mouse_fill,
     }
     : {
       taskId: interval.taskId,
       startAt: interval.start.toISOString(),
       endAt: interval.end.toISOString(),
       userId: interval.userId,
-      eventsMouse: interval.mouse,
-      eventsKeyboard: interval.keyboard,
-      screenshot,
+      systemActivity: interval.systemActivity,
+      keyboardActivity: interval.keyboardActivity,
+      mouseActivity: interval.mouseActivity,
     };
+
+  // Attach screenshot if it is exists
+  if (screenshot)
+    convertedInterval.screenshot = screenshot;
 
   try {
 
@@ -65,8 +69,9 @@ module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
     userId: interval.user_id,
     start: new Date(interval.start_at),
     end: new Date(interval.end_at),
-    mouse: interval.count_mouse,
-    keyboard: interval.count_keyboard,
+    systemActivity: interval.activity_fill,
+    keyboardActivity: interval.keyboard_fill,
+    mouseActivity: interval.mouse_fill,
 
   };
 
@@ -164,8 +169,9 @@ module.exports.backedUpIntervalsPush = async () => {
         start_at: interval.startAt,
         end_at: interval.endAt,
         user_id: interval.userId,
-        count_mouse: interval.eventsMouse,
-        count_keyboard: interval.eventsKeyboards,
+        activity_fill: interval.systemActivity,
+        keyboard_fill: interval.keyboardActivity,
+        mouse_fill: interval.mouseActivity,
       };
 
       intervalPushPromises.push(module.exports.pushTimeInterval(formattedInterval, interval.screenshot));

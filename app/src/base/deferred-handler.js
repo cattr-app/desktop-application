@@ -52,13 +52,20 @@ const deferredIntervalsPush = async () => {
         start_at: rawInterval.startAt,
         end_at: rawInterval.endAt,
         user_id: rawInterval.userId,
-        count_mouse: rawInterval.eventsMouse,
-        count_keyboard: rawInterval.eventsKeyboard,
+        activity_fill: rawInterval.systemActivity,
+        mouse_fill: rawInterval.mouseActivity,
+        keyboard_fill: rawInterval.keyboardActivity,
 
       };
 
       // Push deferred interval
-      const res = await IntervalsController.pushTimeInterval(preparedInterval, rawInterval.screenshot);
+      let res = null;
+
+      if (rawInterval.screenshot)
+        res = await IntervalsController.pushTimeInterval(preparedInterval);
+      else
+        res = await IntervalsController.pushTimeInterval(preparedInterval, rawInterval.screenshot);
+
       log.debug(`Deferred interval (${res.id}) has been pushed`);
 
       // Remove raw interval from database
@@ -87,6 +94,7 @@ const deferredIntervalsPush = async () => {
 
     // Log other errors
     log.warning(`Error occured during deferred intervals push: ${error}`);
+    throw error;
 
   }
 
