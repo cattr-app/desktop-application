@@ -4,6 +4,23 @@
       <control-bar />
       <!--<navigation class="nav-menu"></navigation>-->
     </el-header>
+
+    <transition name="fade">
+      <div
+        v-if="isOffline"
+        role="alert"
+        class="el-alert el-alert--error is-light"
+      >
+        <i class="el-alert__icon el-icon-cloudy is-big" />
+        <div class="el-alert__content">
+          <span class="el-alert__title is-bold">Connection lost</span>
+          <p class="el-alert__description">
+            Waiting for reconnection
+          </p>
+        </div>
+      </div>
+    </transition>
+
     <div
       ref="view"
       class="view"
@@ -22,10 +39,10 @@
 </template>
 
 <script>
-import Navigation from './Navigation';
-import ControlBar from './ControlBar';
-import Tracker from './tasks/Tracker';
-import InactivityDialog from '../inactivity/Modal';
+import Navigation from './Navigation.vue';
+import ControlBar from './ControlBar.vue';
+import Tracker from './tasks/Tracker.vue';
+import InactivityDialog from '../inactivity/Modal.vue';
 
 export default {
   name: 'User',
@@ -38,7 +55,7 @@ export default {
   data() {
 
     return {
-
+      isOffline: false,
     };
 
   },
@@ -66,7 +83,22 @@ export default {
     },
   },
 
-  mounted() {
+  async mounted() {
+
+    // Request actual offline status
+    (async () => {
+
+      const offlineStatus = await this.$ipc.request('offline/request-status', {});
+      this.isOffline = offlineStatus.body.state;
+
+    })();
+
+    // Receiving offline status updates
+    this.$ipc.serve('offline/status', req => {
+
+      this.isOffline = req.packet.body.state;
+
+    });
 
     this.$ipc.serve('tracking/event-started', req => {
 
@@ -160,6 +192,49 @@ export default {
   .page-enter, .page-leave-to {
     opacity: 0;
     transform: translateX(-30%);
+  }
+
+  .el-alert {
+    border-radius: 0;
+  }
+
+  .el-alert__icon {
+    -webkit-animation: flickerAnimation 1.5s infinite;
+    -moz-animation: flickerAnimation 1.5s infinite;
+    -o-animation: flickerAnimation 1.5s infinite;
+    animation: flickerAnimation 1.5s infinite;
+  }
+
+  @keyframes flickerAnimation {
+    0%   { opacity:1; }
+    50%  { opacity:0; }
+    100% { opacity:1; }
+  }
+
+  @-o-keyframes flickerAnimation{
+    0%   { opacity:1; }
+    50%  { opacity:0; }
+    100% { opacity:1; }
+  }
+
+  @-moz-keyframes flickerAnimation{
+    0%   { opacity:1; }
+    50%  { opacity:0; }
+    100% { opacity:1; }
+  }
+
+  @-webkit-keyframes flickerAnimation{
+    0%   { opacity:1; }
+    50%  { opacity:0; }
+    100% { opacity:1; }
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity 1.5s;
+  }
+
+  .fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+    opacity: 0;
   }
 
 </style>
