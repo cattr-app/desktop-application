@@ -33,7 +33,7 @@ export default {
     Navigation,
     ControlBar,
     Tracker,
-    InactivityDialog
+    InactivityDialog,
   },
   data() {
 
@@ -63,7 +63,7 @@ export default {
         clearInterval(this.activity.interval);
 
 
-    }
+    },
   },
 
   mounted() {
@@ -107,8 +107,8 @@ export default {
 
       }, 100);
 
-    }
-  }
+    },
+  },
 };
 </script>
 
