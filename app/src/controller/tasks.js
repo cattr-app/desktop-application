@@ -6,6 +6,7 @@ const projectController = require('./projects');
 const auth = require('../base/authentication');
 const Log = require('../utils/log');
 const OfflineMode = require('../base/offline-mode');
+const { UIError } = require('../utils/errors');
 
 const log = new Log('Controller:Tasks');
 const taskEmitter = new EventEmitter();
@@ -26,13 +27,13 @@ const HIGHLIGHT_LAST_X_TASKS = 10;
 const formatTasks = tasks => tasks.map(task => ({
 
   externalId: task.id,
-  projectId: task.projectId,
-  name: task.name,
+  projectId: task.project_id,
+  name: task.task_name,
   description: task.description,
   externalUrl: task.url,
-  priority: task.priorityId,
-  status: task.isActive,
-  updatedAt: task.updatedAt,
+  priority: task.priority_id,
+  status: task.active,
+  updatedAt: task.updated_at,
 
 }));
 
@@ -97,7 +98,7 @@ const rebuildProjectsRelations = async () => {
     .filter(t => typeof t !== 'undefined');
 
   // Use bulkCreate as something like bulkUpdate
-  await models.Task.bulkCreate(tasks, { updateOnDuplicate: [ 'projectId' ] });
+  await models.Task.bulkCreate(tasks, { updateOnDuplicate: ['projectId'] });
 
   // Commit all changes
   log.debug('Task-to-Projects mappings successfully updated');
@@ -155,7 +156,7 @@ module.exports.getTasksList = async (highlight = false, onlyActive = true) => {
     limit: HIGHLIGHT_LAST_X_TASKS,
 
     // Sorting
-    order: [ [ 'day', 'DESC' ] ],
+    order: [['updatedAt', 'DESC']],
 
   });
 
@@ -348,12 +349,37 @@ module.exports.createTask = async task => {
     priority_id: 1,
   };
 
-  console.log(taskToCreate);
-  console.log(typeof taskToCreate);
-  const taskCreateResponse = await api.tasks.create(taskToCreate);
+  try {
 
-  console.log(taskCreateResponse);
+    // Request the task creation, then format this task into unified model
+    const { res: createdTask } = await api.tasks.create(taskToCreate);
 
+    if (!project)
+      throw new UIError(500, 'Selected project is not found', 'ETSK450');
+
+    // Save shiny new task into database
+    const savedTask = new models.Task({
+      externalId: createdTask.id,
+      externalUrl: createdTask.url,
+      externalStatus: createdTask.active,
+      name: createdTask.task_name,
+      description: createdTask.description,
+      priority: createdTask.priority_id,
+      status: createdTask.active,
+      projectId: project.id,
+    });
+
+    await savedTask.save();
+    return savedTask;
+
+  } catch (err) {
+
+    if (err.isNetworkError || err.isApiError)
+      throw new UIError(555, 'Cannot create task due to the network or server error', 'ETSK555');
+
+    throw err;
+
+  }
 
 };
 

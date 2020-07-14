@@ -7,7 +7,7 @@ const { screen } = remote;
  * Returns available "display" MediaDevices
  * @return {Promise<Array<MediaDevice>|Error>} Return array of MediaDevice, or error
  */
-const getMediaDevices = () => desktopCapturer.getSources({ types: [ 'screen' ] });
+const getMediaDevices = () => desktopCapturer.getSources({ types: ['screen'] });
 
 /**
  * Captures screen

@@ -54,9 +54,16 @@
 </template>
 
 <script>
+import Message from '../../Message.vue';
+
 export default {
   name: 'CreateTask',
-  props: {},
+  props: {
+    requestInProgress: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
 
     const projectsMap = this.$store.getters.projects
@@ -70,11 +77,11 @@ export default {
       task: {
         name: '',
         projectId: [],
-        description: ''
+        description: '',
       },
       rules: {
-        name: [ { required: true, message: 'Task name is necessary' } ],
-      }
+        name: [{ required: true, message: 'Task name is necessary' }],
+      },
 
     };
 
@@ -86,7 +93,7 @@ export default {
      */
     createTask() {
 
-      this.$refs.task.validate(valid => {
+      this.$refs.task.validate(async () => {
 
         // Checking if the project is selected
         if (this.task.projectId.length === 0) {
@@ -99,13 +106,27 @@ export default {
         // Reset project selector error
         this.taskSelectorError = '';
 
-        console.log(this.task);
-        console.log(valid);
-        console.log(this.$ipc);
+        const createdTask = await this.$ipc.request('tasks/create', this.task);
+        if (createdTask.code !== 200) {
+
+          return this.$msgbox({
+            title: this.$t('Houston, we have a problem'),
+            message: this.$createElement(Message, {
+              props: {
+                title: `Error ${createdTask.body.id}`,
+                message: createdTask.body.message,
+              },
+            }),
+            confirmButtonText: this.$t('Ok'),
+          });
+
+        }
+
+        const tasks = await this.$ipc.request('tasks/sync', {});
+        this.$store.dispatch('syncTasks', tasks.body);
+        this.$router.push({ name: 'user.tasks' });
 
       });
-
-      this.$ipc.emit('tasks/create', this.task);
 
     },
 
@@ -117,7 +138,7 @@ export default {
 
       this.task.projectId = val;
 
-    }
+    },
 
   },
 };

@@ -46,9 +46,8 @@ module.exports = router => {
 
       // Starting sync routine
       log.debug('Task creation initiated from frontend');
-      await Tasks.createTask(task);
-
-      return request.send(200, {});
+      const createdTask = await Tasks.createTask(task);
+      return request.send(200, { task: createdTask });
 
     } catch (error) {
 

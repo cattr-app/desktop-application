@@ -18,11 +18,14 @@ module.exports = (sequelize, DataTypes) => {
     // Timestamp of the moment when this interval was finished
     endAt: DataTypes.DATE,
 
-    // Counted mouse events
-    eventsMouse: DataTypes.INTEGER,
+    // Percent of system activity
+    systemActivity: DataTypes.INTEGER,
 
-    // Counted keyboard events
-    eventsKeyboard: DataTypes.INTEGER,
+    // Percent of keyboard activity
+    keyboardActivity: DataTypes.INTEGER,
+
+    // Percent of mouse activity
+    mouseActivity: DataTypes.INTEGER,
 
     // Associated screenshot in JPEG
     screenshot: DataTypes.BLOB,

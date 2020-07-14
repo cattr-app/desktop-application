@@ -508,8 +508,8 @@ class TaskTracker extends EventEmitter {
 
       // Getting activity metrics, then resetting the counter
       const systemActivity = eventCounter.systemPercentage;
-      const keyboardActivity = eventCounter.keyboardPercentage;
-      const mouseActivity = eventCounter.mousePercentage;
+      const keyboardActivity = eventCounter.keyboardPercentage || null;
+      const mouseActivity = eventCounter.mousePercentage || null;
       eventCounter.reset();
 
       // Creating interval object
@@ -519,8 +519,6 @@ class TaskTracker extends EventEmitter {
         start_at: startAt,
         end_at: endAt,
         user_id: currentUser.id,
-        count_mouse: 100,
-        count_keyboard: 100,
         activity_fill: systemActivity,
         keyboard_fill: keyboardActivity,
         mouse_fill: mouseActivity,

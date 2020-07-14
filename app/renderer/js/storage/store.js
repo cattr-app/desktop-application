@@ -170,8 +170,8 @@ export default {
 
     syncTasks(context, { tasks, highlights }) {
 
-      // Commit highlighted tasks list
-      context.commit('highlights', highlights);
+      // Commit highlighted tasks (with little stupid .reverse() bypass) list if ...
+      context.commit('highlights', highlights.reverse());
 
       // Ensure that TrackedTime property exists on all tasks
       tasks = tasks.map(task => {

@@ -12,12 +12,12 @@ export default {
   name: 'Message',
   props: {
     title: {
-      required: true
+      required: true,
     },
     message: {
-      required: false
-    }
-  }
+      required: false,
+    },
+  },
 };
 </script>
 

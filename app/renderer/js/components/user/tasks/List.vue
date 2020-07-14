@@ -82,7 +82,7 @@ export default {
     tasks() {
 
       const { tasks } = this.$store.getters;
-
+      
       // Moving highlighted elements to the start of tasks array
       this.highlights.forEach(taskId => {
 
