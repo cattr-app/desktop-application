@@ -183,7 +183,6 @@ class IOHook extends EventEmitter {
    */
   load() {
 
-    debugger;
     NodeHookAddon.startHook(this._handler.bind(this), this.debug || false);
 
   }
