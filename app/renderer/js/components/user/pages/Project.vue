@@ -1,10 +1,6 @@
 <template>
   <el-container class="project-container">
     <div class="header">
-      <i
-      class="el-icon-d-arrow-left clickable"
-      @click="goTo('/user/tasks')"
-      />
       <h1 class="header__section-label">
         {{ project.name }}
       </h1>
@@ -86,12 +82,6 @@ export default {
     openInBrowser() {
 
       shell.openExternal(this.task.externalUrl);
-
-    },
-
-    goTo(where) {
-
-      this.$router.push({ path: where });
 
     },
 
