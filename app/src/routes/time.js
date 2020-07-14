@@ -80,14 +80,14 @@ module.exports = router => {
 
     // Search and get theese tasks and projects they belong
     let localTodayProjects = await db.models.Project.findAll({
-      include: [ {
+      include: [{
         model: db.models.Task,
         where: {
           externalId: {
             [Op.in]: todayTasksIDs,
           },
         },
-      } ],
+      }],
     });
 
     // Purify projects

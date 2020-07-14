@@ -34,7 +34,7 @@ Vue.use(Element);
     Sentry.init({
       dsn: sentryConfig.dsnFrontend,
       release: sentryConfig.release,
-      integrations: [ new Integrations.Vue({ Vue, attachProps: true }) ],
+      integrations: [new Integrations.Vue({ Vue, attachProps: true })],
     });
 
     Vue.prototype.$ipc.serve(
@@ -52,7 +52,7 @@ Vue.use(Element);
     const { lng, resources } = body.configuration;
     const messages = {};
 
-    Object.entries(resources).forEach(([ key, value ]) => {
+    Object.entries(resources).forEach(([key, value]) => {
 
       messages[key] = value.translation;
 

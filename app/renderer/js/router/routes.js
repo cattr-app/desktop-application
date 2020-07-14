@@ -1,9 +1,10 @@
 import Login from '../components/auth/Login.vue';
 import User from '../components/user/User.vue';
-import TaskList from '../components/user/tasks/List.vue';
+import UserTasks from '../components/user/pages/UserTasks.vue';
 import UserSettings from '../components/user/pages/Settings.vue';
 import Info from '../components/user/tasks/Info.vue';
 import TaskCreate from '../components/user/tasks/Create.vue';
+import Project from '../components/user/pages/Project.vue';
 
 export default [
   {
@@ -25,12 +26,17 @@ export default [
       {
         name: 'user.tasks',
         path: 'tasks',
-        component: TaskList,
+        component: UserTasks,
       },
       {
         name: 'user.task',
         path: 'task/:id',
         component: Info,
+      },
+      {
+        name: 'user.project',
+        path: 'project/:id',
+        component: Project,
       },
       {
         name: 'user.createTask',

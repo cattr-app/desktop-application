@@ -52,7 +52,7 @@ class Translation extends EventEmitter {
       if (typeof this._resources[this.DEFAULT_FALLBACK_LANG] === 'undefined') {
 
         // Fallback language is not available, select first available lang
-        [ this._currentLanguage ] = Object.keys(this._resources);
+        [this._currentLanguage] = Object.keys(this._resources);
 
         // Leave a message
         log.error('TRS01', `Falling back to first available language, because selected & fallback are not available: ${this._currentLanguage}`);

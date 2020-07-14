@@ -97,7 +97,7 @@ const rebuildProjectsRelations = async () => {
     .filter(t => typeof t !== 'undefined');
 
   // Use bulkCreate as something like bulkUpdate
-  await models.Task.bulkCreate(tasks, { updateOnDuplicate: [ 'projectId' ] });
+  await models.Task.bulkCreate(tasks, { updateOnDuplicate: ['projectId'] });
 
   // Commit all changes
   log.debug('Task-to-Projects mappings successfully updated');
@@ -155,7 +155,7 @@ module.exports.getTasksList = async (highlight = false, onlyActive = true) => {
     limit: HIGHLIGHT_LAST_X_TASKS,
 
     // Sorting
-    order: [ [ 'day', 'DESC' ] ],
+    order: [['day', 'DESC']],
 
   });
 

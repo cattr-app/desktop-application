@@ -131,7 +131,7 @@ class Logger {
     // Looks like that object is given as parameter, so it's likely Error instance
     if (typeof arguments_[0] === 'string' && typeof arguments_[1] === 'object') {
 
-      const [ message, error ] = arguments_;
+      const [message, error] = arguments_;
 
       // Handle API errors
       if (error.isApiError) {
@@ -184,7 +184,7 @@ class Logger {
     if (typeof arguments_[0] === 'string' && typeof arguments_[1] === 'string') {
 
       // Getting error code and message variables from passed arguments
-      const [ code, message, disableCapture ] = arguments_;
+      const [code, message, disableCapture] = arguments_;
 
       // Obtaining stack trace to logger call
       const errorInstance = new Error(message);
