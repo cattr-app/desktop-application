@@ -12,7 +12,12 @@
     />
 
     <p class="task-description">
-      <vue-markdown>{{ task.description.length > 0 ? task.description : `${$t('Nothing there')} ¯\\_(ツ)_/¯` }}</vue-markdown>
+      <vue-markdown
+        v-if="descriptionPresent"
+        class="md"
+      >
+        {{ task.description }}
+      </vue-markdown>
     </p>
 
     <div class="task-controls">
@@ -69,6 +74,12 @@ export default {
 
       const date = new Date(this.task.TrackedTime * 1000);
       return date.toISOString().substr(11, 8);
+
+    },
+
+    descriptionPresent() {
+
+      return this.task.description && this.task.description.length > 0;
 
     },
   },
@@ -135,6 +146,17 @@ export default {
       border: $--border-base;
       background-color: $--border-color-lighter;
       border-radius: .25em;
+
+      .md {
+
+        pre {
+
+          white-space: pre-wrap;
+
+        }
+
+      }
+
     }
 
     .task-controls {
