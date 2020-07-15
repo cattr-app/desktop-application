@@ -14,7 +14,10 @@
       >
         {{ task.name }}
       </p>
-      <p class="project-name">
+      <p
+        class="project-name clickable"
+        @click="openProject"
+      >
         {{ task.Project.name }}
       </p>
     </el-col>
@@ -100,6 +103,12 @@ export default {
     openTask() {
 
       this.$router.push({ name: 'user.task', params: { id: this.task.id } });
+
+    },
+
+    openProject() {
+
+      this.$router.push({ name: 'user.project', params: { id: this.task.projectId } });
 
     },
 

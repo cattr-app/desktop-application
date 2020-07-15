@@ -46,6 +46,13 @@ export default {
   components: {
     Task
   },
+  props: {
+
+    tasks: {
+      type: Array
+    }
+
+  },
 
   data() {
 
@@ -54,6 +61,16 @@ export default {
   },
 
   computed: {
+
+    /**
+     * Returns identifiers of highlighted tasks
+     * @returns {Array<String>} Array with internal identifiers of highlighted tasks
+     */
+    highlights() {
+
+      return this.$store.getters.highlights;
+
+    },
 
     /**
      * Returns search pattern
@@ -79,10 +96,10 @@ export default {
      * Returns sorted tasks list
      * @returns {Array<Task>} Array with tasks to display
      */
-    tasks() {
+    sortedTasks() {
 
-      const { tasks } = this.$store.getters;
-      
+      const tasks = this.tasks.slice();
+
       // Moving highlighted elements to the start of tasks array
       this.highlights.forEach(taskId => {
 
@@ -101,18 +118,13 @@ export default {
      */
     filteredTasks() {
 
-
       // Return tasks without filtering if condition is not defined
       if (!this.searchPattern)
         return this.tasks;
 
-      return this.filterList(this.searchPattern, this.tasks);
+      return this.filterList(this.searchPattern, this.sortedTasks);
 
     }
-
-  },
-
-  mounted() {
 
   },
 
