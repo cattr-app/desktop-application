@@ -15,7 +15,8 @@
         {{ task.name }}
       </p>
       <p
-        class="project-name clickable"
+        class="project-name"
+        :class="{ clickable: !isProjectPage }"
         @click="openProject"
       >
         {{ task.Project.name }}
@@ -48,8 +49,8 @@ export default {
   props: {
     task: {
       required: true,
-      type: Object
-    }
+      type: Object,
+    },
   },
 
   data() {
@@ -58,7 +59,7 @@ export default {
 
       /**
        * Is this task performs some routine (starting or stopping) right now?
-       * @type {Boolean}
+       * @type {Boolean}router
        */
       loading: false,
 
@@ -67,7 +68,7 @@ export default {
        * @type {Boolean}
        */
       clickProtected: false,
-      breakLoading: false
+      breakLoading: false,
 
     };
 
@@ -91,7 +92,13 @@ export default {
 
       return formatSeconds(this.task.TrackedTime);
 
-    }
+    },
+
+    isProjectPage() {
+
+      return this.$router.history.current.name === 'user.project';
+
+    },
 
   },
 
@@ -107,6 +114,9 @@ export default {
     },
 
     openProject() {
+
+      if (this.isProjectPage)
+        return;
 
       this.$router.push({ name: 'user.project', params: { id: this.task.projectId } });
 
@@ -168,9 +178,9 @@ export default {
         })
         .catch(data => this.$alert(data.message, data.error, { confirmButtonText: 'OK' }));
 
-    }
+    },
 
-  }
+  },
 
 };
 

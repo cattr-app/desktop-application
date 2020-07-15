@@ -6,7 +6,7 @@
       </h1>
     </div>
     <list
-      v-bind:tasks="tasks"
+      :tasks="tasks"
     />
   </el-container>
 </template>
@@ -18,14 +18,14 @@ import List from '../tasks/List.vue';
 export default {
   name: 'Project',
   components: {
-    List
+    List,
   },
   data() {
 
     return {
-      projectId: this.$route.params.id
+      projectId: this.$route.params.id,
     };
-    
+
 
   },
 
@@ -74,7 +74,7 @@ export default {
 
       return this.filterList(this.searchPattern, this.tasks);
 
-    }
+    },
 
   },
 
@@ -107,8 +107,8 @@ export default {
 
       this.$router.push({ name: 'user.tasks' });
 
-    }
-  }
+    },
+  },
 };
 </script>
 

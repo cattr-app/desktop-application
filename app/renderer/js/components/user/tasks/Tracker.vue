@@ -31,8 +31,8 @@
           @click="syncTasks"
         >
           <i
-          class="el-icon-refresh"
-          v-bind:class="{ animated: syncInProgress}"
+            class="el-icon-refresh"
+            :class="{ animated: syncInProgress}"
           />
         </el-button>
         <el-button
@@ -61,7 +61,7 @@ export default {
       errorModal: false,
       syncInProgress: false,
       reportSnack: false,
-      trackButtonLocked: false
+      trackButtonLocked: false,
     };
 
   },
@@ -99,7 +99,7 @@ export default {
 
       return new Date(totalTime * 1000).toISOString().substr(11, 8);
 
-    }
+    },
 
   },
 
@@ -183,8 +183,8 @@ export default {
 
       return this.$store.getters.tasks.find(t => t.id === taskId);
 
-    }
-  }
+    },
+  },
 };
 </script>
 

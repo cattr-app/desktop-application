@@ -17,7 +17,7 @@ export default {
   name: 'App',
 
   components: {
-    Loader
+    Loader,
   },
 
   computed: {
@@ -25,7 +25,7 @@ export default {
 
       return this.$store.getters.authenticated;
 
-    }
+    },
   },
 
   async mounted() {
@@ -51,10 +51,10 @@ export default {
           message: this.$createElement(Message, {
             props: {
               title: 'Whoops!',
-              message: JSON.stringify(error)
-            }
+              message: JSON.stringify(error),
+            },
           }),
-          confirmButtonText: this.$t('Ok')
+          confirmButtonText: this.$t('Ok'),
         });
 
       }
@@ -98,8 +98,8 @@ export default {
 
       this.$ipc.emit('window/controls-minimize', {});
 
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -32,7 +32,7 @@
       type="secondary"
       icon="el-icon-close"
       circle
-      @click="goTo('/user/tasks')"
+      @click="goBack()"
     />
   </el-container>
 </template>
@@ -47,7 +47,7 @@ export default {
 
     return {
       searchPattern: null,
-      reportGenerationInProgress: false
+      reportGenerationInProgress: false,
     };
 
   },
@@ -60,7 +60,7 @@ export default {
 
       this.setSearchPattern();
 
-    }
+    },
   },
 
   methods: {
@@ -73,6 +73,12 @@ export default {
     goTo(where) {
 
       this.$router.push({ path: where });
+
+    },
+
+    goBack() {
+
+      this.$router.go(-1);
 
     },
 
@@ -98,8 +104,8 @@ export default {
               confirmButtonText: this.$t('Okay'),
               messageType: 'error',
               customClass: 'rg-msg',
-              confirmButtonClass: 'rg-msg'
-            }
+              confirmButtonClass: 'rg-msg',
+            },
           );
           return;
 
@@ -113,8 +119,8 @@ export default {
               confirmButtonText: this.$t('Okay'),
               messageType: 'warning',
               customClass: 'rg-msg',
-              confirmButtonClass: 'rg-msg__okie'
-            }
+              confirmButtonClass: 'rg-msg__okie',
+            },
           );
           return;
 
@@ -127,8 +133,8 @@ export default {
               confirmButtonText: this.$t('Okay'),
               messageType: 'error',
               customClass: 'rg-msg',
-              confirmButtonClass: 'rg-msg__okie'
-            }
+              confirmButtonClass: 'rg-msg__okie',
+            },
           );
           return;
 
@@ -163,13 +169,13 @@ export default {
           confirmButtonText: '🌚 Okie~',
           messageType: 'success',
           customClass: 'rg-msg',
-          confirmButtonClass: 'rg-msg__okie'
-        }
+          confirmButtonClass: 'rg-msg__okie',
+        },
       );
 
-    }
+    },
 
-  }
+  },
 };
 </script>
 

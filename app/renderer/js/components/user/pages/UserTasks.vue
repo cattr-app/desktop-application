@@ -1,5 +1,5 @@
 <template>
-  <list v-bind:tasks="tasks" />
+  <list :tasks="tasks" />
 </template>
 
 <script>
@@ -10,16 +10,12 @@ export default {
   name: 'UserTasks',
 
   components: {
-    List
+    List,
   },
 
   data() {
 
     return {};
-
-  },
-
-  mounted() {
 
   },
 
@@ -29,8 +25,12 @@ export default {
 
       return this.$store.getters.tasks;
 
-    }
-      
-  }
-}
+    },
+
+  },
+
+  mounted() {
+
+  },
+};
 </script>

@@ -17,12 +17,6 @@
 
     <div class="task-controls">
       <el-button
-        type="primary"
-        @click="back"
-      >
-        {{ $t('Back to tasks') }}
-      </el-button>
-      <el-button
         v-if="task.externalUrl !== null"
         type="secondary"
         @click="openInBrowser"
@@ -48,12 +42,12 @@ import VueMarkdown from 'vue-markdown';
 export default {
   name: 'Info',
   components: {
-    VueMarkdown
+    VueMarkdown,
   },
   data() {
 
     return {
-      taskId: this.$route.params.id
+      taskId: this.$route.params.id,
     };
 
   },
@@ -76,7 +70,7 @@ export default {
       const date = new Date(this.task.TrackedTime * 1000);
       return date.toISOString().substr(11, 8);
 
-    }
+    },
   },
 
   methods: {
@@ -106,10 +100,11 @@ export default {
 
     back() {
 
-      this.$router.push({ name: 'user.tasks' });
+      // this.$router.push({ name: 'user.tasks' });
+      this.$router.go(-1);
 
-    }
-  }
+    },
+  },
 };
 </script>
 
