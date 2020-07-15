@@ -6,7 +6,7 @@
   >
     <el-col
       class="task-info"
-      :span="18"
+      :span="20"
     >
       <p
         class="task-name clickable"
@@ -22,9 +22,22 @@
       </p>
     </el-col>
     <el-col
-      class="task-controls"
-      :span="6"
+      class="task-controls pin"
+      :span="2"
     >
+      <el-button
+        :class="{pinned: isPinned}"
+        icon="icon-thumb-tack"
+        :type="'text'"
+        @click="pin"
+      >
+      </el-button>
+    </el-col>
+    <el-col
+      class="task-controls"
+      :span="4"
+    >
+    <!-- TODO: take care about right end of the row -->
       <el-button
         class="task-toggler"
         :disabled="trackingLoad || loading"
@@ -67,7 +80,8 @@ export default {
        * @type {Boolean}
        */
       clickProtected: false,
-      breakLoading: false
+      breakLoading: false,
+      isPinned: false
 
     };
 
@@ -86,6 +100,10 @@ export default {
       return (this.task.id === this.$store.getters.task) && this.$store.getters.trackStatus;
 
     },
+
+    /* isPinned() {
+      return this.isPinned;
+    }, */
 
     trackedTime() {
 
@@ -110,6 +128,11 @@ export default {
 
       this.$router.push({ name: 'user.project', params: { id: this.task.projectId } });
 
+    },
+
+    pin () {
+
+      this.isPinned = this.isPinned ? false : true
     },
 
     /**
@@ -192,9 +215,12 @@ export default {
     align-items: center;
     justify-content: flex-end;
 
-    .task-toggler {
-      width: 100%;
-    }
+  }
+
+  .task-controls.pin {
+    justify-content: center;
+    width: auto;
+    display: block;
   }
 
   .task-info {
@@ -212,7 +238,7 @@ export default {
     }
 
     .task-name {
-      margin-bottom: 0.5em;
+      margin-bottom: 0.2em;
     }
 
     .project-name {
@@ -230,4 +256,38 @@ export default {
     color: $--color-primary-light-1;
   }
 }
+
+[class^="icon-"], [class*=" icon-thumb-tack"] {
+  
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  color: $--color-text-regular;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+
+}
+
+.pinned {
+
+  .icon-thumb-tack {
+    color: $--color-primary
+  }
+
+}
+
+.icon-thumb-tack:before {
+  content: "\e900";
+}
+
+.el-button {
+  padding: 10px 6px;
+  font-size: 0.86rem;
+}
+
 </style>

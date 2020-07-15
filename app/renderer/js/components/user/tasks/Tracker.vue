@@ -26,6 +26,7 @@
         :span="10"
       >
         <el-button
+          class="sync"
           type="primary"
           :disabled="syncInProgress || trackingLoad"
           @click="syncTasks"
@@ -245,4 +246,9 @@ export default {
       }
     }
   }
+
+  .el-button.sync {
+    padding: 12px 20px;
+  }
+  
 </style>
