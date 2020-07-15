@@ -52,6 +52,11 @@ export default {
     Tracker,
     InactivityDialog,
   },
+
+  props: {
+    isTrackerLoading: Boolean,
+  },
+
   data() {
 
     return {

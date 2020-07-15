@@ -23,6 +23,18 @@
     <el-button
       v-if="$route.path === '/user/tasks'"
       type="secondary"
+      circle
+      :disabled="syncInProgress || isTrackerLoading"
+      @click="syncTasks"
+    >
+      <i
+        class="el-icon-refresh"
+        :class="{ animated: syncInProgress}"
+      />
+    </el-button>
+    <el-button
+      v-if="$route.path === '/user/tasks'"
+      type="secondary"
       icon="el-icon-setting"
       circle
       @click="goTo('/user/settings')"
@@ -42,12 +54,15 @@ import { clipboard } from 'electron';
 
 export default {
   name: 'SearchBar',
-
+  props: {
+    isTrackerLoading: Boolean,
+  },
   data() {
 
     return {
       searchPattern: null,
       reportGenerationInProgress: false,
+      syncInProgress: false,
     };
 
   },
@@ -79,6 +94,16 @@ export default {
     goBack() {
 
       this.$router.go(-1);
+
+    },
+
+    async syncTasks() {
+
+      this.syncInProgress = true;
+      await this.$ipc.request('projects/sync', {});
+      const tasks = await this.$ipc.request('tasks/sync', {});
+      this.$store.dispatch('syncTasks', tasks.body);
+      this.syncInProgress = false;
 
     },
 

@@ -26,17 +26,7 @@
         :span="10"
       >
         <el-button
-          type="primary"
-          :disabled="syncInProgress || trackingLoad"
-          @click="syncTasks"
-        >
-          <i
-            class="el-icon-refresh"
-            :class="{ animated: syncInProgress}"
-          />
-        </el-button>
-        <el-button
-          :disabled="!trackingTask || trackingLoad"
+          :disabled="!trackingTask || isTrackerLoading"
           class="tracker-toggler"
           :type="trackingInProgress ? 'success' : 'danger'"
           :plain="!trackingInProgress"
@@ -55,11 +45,13 @@ import { clipboard } from 'electron';
 export default {
   name: 'Tracker',
   components: {},
+  props: {
+    isTrackerLoading: Boolean,
+  },
   data() {
 
     return {
       errorModal: false,
-      syncInProgress: false,
       reportSnack: false,
       trackButtonLocked: false,
     };
@@ -169,15 +161,6 @@ export default {
 
     },
 
-    async syncTasks() {
-
-      this.syncInProgress = true;
-      await this.$ipc.request('projects/sync', {});
-      const tasks = await this.$ipc.request('tasks/sync', {});
-      this.$store.dispatch('syncTasks', tasks.body);
-      this.syncInProgress = false;
-
-    },
 
     getTask(taskId) {
 
