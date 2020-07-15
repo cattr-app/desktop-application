@@ -87,6 +87,23 @@ export default {
   methods: {
     openInBrowser() {
 
+      if (!this.task.externalUrl || this.task.externalUrl.length === 0)
+        return;
+
+      // Check that externalUrl schema is allowed (http / https)
+      try {
+
+        const parsedUrl = new URL(this.task.externalUrl);
+        if (!['http:', 'https:'].includes(parsedUrl.protocol))
+          return;
+
+      } catch (err) {
+
+        return;
+
+      }
+
+
       shell.openExternal(this.task.externalUrl);
 
     },
