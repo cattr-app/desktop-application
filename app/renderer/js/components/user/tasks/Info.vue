@@ -3,7 +3,10 @@
     <h1 class="task-name">
       {{ task.name }}
     </h1>
-    <p class="project-name">
+    <p
+      class="project-name clickable"
+      @click="openProjectPage()"
+    >
       {{ task.Project.name }}
     </p>
     <el-divider
@@ -88,6 +91,13 @@ export default {
   },
 
   methods: {
+
+    openProjectPage() {
+
+      this.$router.push({ name: 'user.project', params: { id: this.task.projectId } });
+
+    },
+
     openInBrowser() {
 
       if (!this.task.externalUrl || this.task.externalUrl.length === 0)
