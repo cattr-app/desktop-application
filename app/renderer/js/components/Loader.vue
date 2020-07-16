@@ -1,24 +1,30 @@
 <template>
-    <div ref="spinner" v-if="showLoader" class="loader">
-        <v-progress-circular
-            size="82"
-            indeterminate
-            color="primary"
-            class="spinner"
-        ></v-progress-circular>
-    </div>
+  <div
+    v-if="showLoader"
+    ref="spinner"
+    class="loader"
+  >
+    <v-progress-circular
+      size="82"
+      indeterminate
+      color="primary"
+      class="spinner"
+    />
+  </div>
 </template>
 
 <script>
-    export default {
-        name: 'Loader',
+export default {
+  name: 'Loader',
 
-        computed: {
-            showLoader() {
-                return this.$store.getters.loader;
-            }
-        }
-    };
+  computed: {
+    showLoader() {
+
+      return this.$store.getters.loader;
+
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
