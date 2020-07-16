@@ -4,16 +4,18 @@
       v-model="searchPattern"
       class="search"
       :placeholder="$t('Search...')"
+      @focus="setSearchFieldState(true)"
+      @blur="setSearchFieldState(false)"
     />
     <el-button
-      v-if="$route.path === '/user/tasks'"
+      v-if="!searchFieldActive && $route.path === '/user/tasks'"
       type="secondary"
       icon="el-icon-circle-plus-outline"
       circle
       @click="goTo('create')"
     />
     <el-button
-      v-if="$route.path === '/user/tasks'"
+      v-if="!searchFieldActive && $route.path === '/user/tasks'"
       :loading="reportGenerationInProgress"
       type="secondary"
       icon="el-icon-s-order"
@@ -21,7 +23,7 @@
       @click="getReport"
     />
     <el-button
-      v-if="$route.path === '/user/tasks'"
+      v-if="!searchFieldActive && $route.path === '/user/tasks'"
       type="secondary"
       circle
       :disabled="syncInProgress || isTrackerLoading"
@@ -33,14 +35,14 @@
       />
     </el-button>
     <el-button
-      v-if="$route.path === '/user/tasks'"
+      v-if="!searchFieldActive && $route.path === '/user/tasks'"
       type="secondary"
       icon="el-icon-setting"
       circle
       @click="goTo('/user/settings')"
     />
     <el-button
-      v-else
+      v-if="!searchFieldActive && $route.path !== '/user/tasks'"
       type="secondary"
       icon="el-icon-close"
       circle
@@ -63,6 +65,7 @@ export default {
       searchPattern: null,
       reportGenerationInProgress: false,
       syncInProgress: false,
+      searchFieldActive: false,
     };
 
   },
@@ -79,6 +82,13 @@ export default {
   },
 
   methods: {
+
+    setSearchFieldState(state) {
+
+      this.searchFieldActive = state;
+
+    },
+
     setSearchPattern() {
 
       this.$store.dispatch('setSearchPattern', this.searchPattern);
