@@ -50,7 +50,7 @@ export default {
           title: this.$t('Error occurred during screenshot capture'),
           message: this.$createElement(Message, {
             props: {
-              title: 'Whoops!',
+              title: this.$t('Whoops!'),
               message: JSON.stringify(error),
             },
           }),

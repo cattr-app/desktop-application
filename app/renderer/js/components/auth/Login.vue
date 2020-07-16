@@ -103,7 +103,7 @@ export default {
       formData: {
         hostname: null,
         login: null,
-        password: null
+        password: null,
       },
       step: 1,
       valid: true,
@@ -123,24 +123,24 @@ export default {
           {
             required: true,
             message: this.$t('Please enter hostname'),
-            trigger: 'blur'
-          }
+            trigger: 'blur',
+          },
         ],
         login: [
           {
             required: true,
             message: this.$t('Please enter your login'),
-            trigger: 'blur'
-          }
+            trigger: 'blur',
+          },
         ],
         password: [
           {
             required: true,
             message: this.$t('Please enter your password'),
-            trigger: 'blur'
-          }
-        ]
-      }
+            trigger: 'blur',
+          },
+        ],
+      },
     };
 
   },
@@ -159,7 +159,7 @@ export default {
 
       }
 
-    }
+    },
   },
 
   methods: {
@@ -169,7 +169,7 @@ export default {
       this.$store.dispatch('showLoader');
       const auth = await this.$ipc.request(ipcRoute, {
         username: this.formData.login,
-        password: this.formData.password
+        password: this.formData.password,
       });
 
       if (auth.code === 200) {
@@ -185,7 +185,7 @@ export default {
         this.ucError = this.$t('There is no user with given credentials');
         this.ucValid = false;
         this.$alert(this.ucError, 'Whoops!', {
-          confirmButtonText: `${this.$t('Sad')} :C`
+          confirmButtonText: `${this.$t('Sad')} :C`,
         });
 
       }
@@ -270,7 +270,7 @@ export default {
 
       }
       this.$alert(error, 'Whoops!', {
-        confirmButtonText: this.$t('Ok')
+        confirmButtonText: this.$t('Ok'),
       });
       this.loading = false;
       return false;
@@ -284,8 +284,8 @@ export default {
       else
         this.onSubmit();
 
-    }
-  }
+    },
+  },
 };
 </script>
 

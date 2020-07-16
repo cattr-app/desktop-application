@@ -11,13 +11,16 @@
       class="section-divider"
     />
 
-    <p class="task-description">
-      <vue-markdown
-        v-if="descriptionPresent"
-        class="md"
-      >
+    <p
+      v-if="descriptionPresent"
+      class="task-description"
+    >
+      <vue-markdown class="md">
         {{ task.description }}
       </vue-markdown>
+    </p>
+    <p v-else>
+      {{ $t('Description is empty') }}
     </p>
 
     <div class="task-controls">
