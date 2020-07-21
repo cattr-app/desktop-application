@@ -97,7 +97,7 @@ export default {
 
   mounted() {
 
-    this.$ipc.serve('inactivity-modal/resume-work-after-inactivity', async res => {
+    this.$ipc.serve('inactivity-modal/resume-work-after-inactivity', async () => {
 
       await this.track();
 
