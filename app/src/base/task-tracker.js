@@ -553,6 +553,9 @@ class TaskTracker extends EventEmitter {
         this.emit('interval-pushed', {
           screenshot: intervalScreenshot,
           interval: {
+            task: {
+              id: this.currentTask.id,
+            },
             remote: pushedInterval,
             duration: ticks,
           },
