@@ -1,0 +1,7 @@
+[defaults]
+url=https://mysentry.acme.corp
+org=acmecorp
+project=cattr-desktop-main
+
+[auth]
+dsn=https://meowmeowmeowmeow@mysentry.acme.corp/1234

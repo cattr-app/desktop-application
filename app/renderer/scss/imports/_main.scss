@@ -1,0 +1,12 @@
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    max-height: 100vh;
+    height: 100vh;
+
+    * {
+        font-family: BlinkMacSystemFont, "Rubik", sans-serif;
+    }
+}
