@@ -18,7 +18,8 @@
 		"package-linux": "npx electron-builder -l",
 		"package-windows-portable": "npx electron-builder -w portable",
 		"package-windows-nsis": "npx electron-builder -w nsis",
-		"package-mac": "npx electron-builder -m",
+		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -m",
+		"package-mac-unsigned": "npx electron-builder -m",
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
 	},
 	"build": {

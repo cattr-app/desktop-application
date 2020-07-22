@@ -1,8 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const electronNotarize = require('electron-notarize');
 const log = require('debug')('build:notarization');
-
 require('dotenv').config();
 
 /**
@@ -15,6 +13,16 @@ module.exports = async params => {
 
   if (process.platform !== 'darwin')
     return;
+
+  if (process.env.CATTR_NOTARIZE !== 'yes') {
+
+    log('notarization skipped');
+    return;
+
+  }
+
+  // eslint-disable-next-line global-require
+  const electronNotarize = require('electron-notarize');
 
   log('notarization triggered');
 
