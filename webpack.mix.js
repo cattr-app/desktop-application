@@ -4,7 +4,7 @@ const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 
 mix.setPublicPath('./build');
 mix.disableSuccessNotifications();
-mix.webpackConfig({ target: 'electron-renderer' });
+mix.webpackConfig({ target: 'electron-renderer', devtool: 'source-map' });
 
 /* Build JS */
 if (mix.inProduction)

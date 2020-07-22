@@ -139,7 +139,10 @@ module.exports = {
       focusable: false,
       alwaysOnTop: true,
       skipTaskbar: true,
-      webPreferences: { nodeIntegration: true },
+      webPreferences: {
+        nodeIntegration: true,
+        enableRemoteModule: true,
+      },
       transparent: true,
 
     };
