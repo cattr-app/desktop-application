@@ -44,13 +44,13 @@ export default {
 
   name: 'List',
   components: {
-    Task
+    Task,
   },
   props: {
 
     tasks: {
-      type: Array
-    }
+      type: Array,
+    },
 
   },
 
@@ -120,11 +120,11 @@ export default {
 
       // Return tasks without filtering if condition is not defined
       if (!this.searchPattern)
-        return this.tasks;
+        return this.sortedTasks;
 
       return this.filterList(this.searchPattern, this.sortedTasks);
 
-    }
+    },
 
   },
 
@@ -213,7 +213,7 @@ export default {
 
       });
 
-    }
+    },
   },
 
 };
