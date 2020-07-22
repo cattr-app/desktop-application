@@ -44,7 +44,7 @@ const configuration = {
 configuration.sentry = {
 
   // Is Sentry enabled?
-  enabled: true,
+  enabled: !isDeveloperModeEnabled,
 
   // Main application DSN
   dsn: 'https://b3c99721c14c4e2399de2d46dc89caba@sentry.amazingcat.net/2',
