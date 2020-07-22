@@ -188,11 +188,10 @@ class EventCounter {
    */
   stop() {
 
-    if (!this.intervalId)
-      throw new Error('Event counter is not active');
+    if (this.intervalId)
+      clearInterval(this.intervalId);
 
     // Resetting counters, flags, and identifiers
-    clearInterval(this.intervalId);
     this.intervalId = null;
     this.keyboardActiveDuringThisSecond = false;
     this.mouseActiveDuringThisSecond = false;
