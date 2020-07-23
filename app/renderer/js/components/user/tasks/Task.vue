@@ -6,7 +6,7 @@
   >
     <el-col
       class="task-info"
-      :span="20"
+      :span="18"
     >
       <p
         class="task-name clickable"
@@ -27,9 +27,9 @@
     >
       <el-button
         :class="{pinned: isPinned}"
-        icon="icon-thumb-tack"
+        icon="el-icon-star-off"
         :type="'text'"
-        @click="pin"
+        @click="pinner"
       >
       </el-button>
     </el-col>
@@ -81,7 +81,7 @@ export default {
        */
       clickProtected: false,
       breakLoading: false,
-      isPinned: false
+      isPinned: this.task.pinOrder == null ? false : true
 
     };
 
@@ -100,10 +100,6 @@ export default {
       return (this.task.id === this.$store.getters.task) && this.$store.getters.trackStatus;
 
     },
-
-    /* isPinned() {
-      return this.isPinned;
-    }, */
 
     trackedTime() {
 
@@ -130,9 +126,22 @@ export default {
 
     },
 
-    pin () {
+    async pinner () {
 
-      this.isPinned = this.isPinned ? false : true
+      this.isPinned = this.isPinned ? false : true;
+      
+      if (this.isPinned) {
+        
+        this.$store.dispatch('pinTask', { id: this.task.id } );
+
+      } else {
+
+        this.$store.dispatch('unpinTask', this.task.id );
+
+      }
+
+      await this.$ipc.emit('tasks/pinner', { id: this.task.id, pinOrder: this.task.pinOrder });
+    
     },
 
     /**
@@ -205,6 +214,7 @@ export default {
 .task {
   border-bottom: $--border-base;
   padding: 1em;
+  justify-content: space-between;
 
   &:last-of-type {
     border: 0;
@@ -214,6 +224,13 @@ export default {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+
+    .el-button {
+      width: 100%;
+      display: block;
+      padding: 10px 0px;
+      /* font-size: 0.82rem; */
+    }
 
   }
 
@@ -227,7 +244,7 @@ export default {
     max-width: 75%;
     display: flex;
     flex-direction: column;
-    padding: 0 1em 0 0;
+    /* padding: 0 1em 0 0; */
 
     p {
       margin: 0;
@@ -257,37 +274,20 @@ export default {
   }
 }
 
-[class^="icon-"], [class*=" icon-thumb-tack"] {
-  
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'icomoon' !important;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-  color: $--color-text-regular;
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-
-}
-
 .pinned {
 
-  .icon-thumb-tack {
-    color: $--color-primary
+  color: $--color-primary-light-1 !important;
+  
+  .el-icon-star-off:before {
+    content: "\e797";
   }
 
 }
 
-.icon-thumb-tack:before {
-  content: "\e900";
-}
+.el-button--text {
 
-.el-button {
-  padding: 10px 6px;
-  font-size: 0.86rem;
+  color: $--color-text-regular;
+
 }
 
 </style>

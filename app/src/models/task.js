@@ -49,6 +49,9 @@ module.exports = (sequelize, DataTypes) => {
     // Identifier of local project
     projectId: DataTypes.UUID,
 
+    // Pin indicator
+    pinOrder: DataTypes.INTEGER,
+
   }, { timestamps: true, paranoid: true });
 
   // Build relations

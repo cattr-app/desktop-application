@@ -134,4 +134,18 @@ module.exports = router => {
 
   });
 
+  router.serve('tasks/pinner', async request => {
+
+    const { id, pinOrder } = request.packet.body;
+    await Tasks.taskPinner(id, pinOrder);
+
+  });
+
+  router.serve('tasks/pinOrder/update', async request => {
+
+    const { id, pinOrder } = request.packet.body;
+    await Tasks.updatePinOrder(id, pinOrder);
+
+  });
+
 };

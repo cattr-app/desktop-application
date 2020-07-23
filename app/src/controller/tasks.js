@@ -331,6 +331,39 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
 
 };
 
+module.exports.taskPinner = async (taskId, pinOrder = 0) => {
+
+  try {
+
+    const task = await models.Task.findByPk(taskId);
+    task.pinOrder = task.pinOrder !== null ? null : pinOrder;
+    await task.save();
+
+  } catch (err) {
+
+    throw new UIError(500, 'Cannot pin task', 'ETSK500');
+
+  }
+
+};
+
+module.exports.updatePinOrder = async (taskId, pinOrder) => {
+
+
+  try {
+
+    const task = await models.Task.findByPk(taskId);
+    task.pinOrder = pinOrder;
+    await task.save();
+
+  } catch (error) {
+
+    throw new UIError(510, 'Cannot change task pin order', 'ETSK510');
+
+  }
+
+};
+
 module.exports.createTask = async task => {
 
   const { name, projectId, description } = task;

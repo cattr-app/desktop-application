@@ -85,24 +85,6 @@ export default {
 
     },
 
-    track() {
-
-      if (this.active) {
-
-        this.$store.dispatch('stopTrack', { $ipc: this.$ipc });
-        this.$emit('trackEnd', this.task);
-
-      } else {
-
-        this.$store.dispatch('startTrack', { taskId: this.task.id, $ipc: this.$ipc });
-        // this.$store.dispatch('moveTaskToBegin', this.task.id);
-
-        this.$emit('trackStart', this.task);
-
-      }
-
-    },
-
     back() {
 
       this.$router.push({ name: 'user.tasks' });
