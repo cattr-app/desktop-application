@@ -143,6 +143,10 @@ export default {
       flex-flow: row;
       justify-content: space-between;
 
+      &.pin {
+        display: none !important;
+      }
+
       .task-toggler {
         width: 10em;
       }

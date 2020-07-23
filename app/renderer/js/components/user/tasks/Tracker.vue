@@ -26,17 +26,6 @@
         :span="10"
       >
         <el-button
-          class="sync"
-          type="primary"
-          :disabled="syncInProgress || trackingLoad"
-          @click="syncTasks"
-        >
-          <i
-          class="el-icon-refresh"
-          v-bind:class="{ animated: syncInProgress}"
-          />
-        </el-button>
-        <el-button
           :disabled="!trackingTask || trackingLoad"
           class="tracker-toggler"
           :type="trackingInProgress ? 'success' : 'danger'"
