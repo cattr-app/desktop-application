@@ -3,7 +3,10 @@
     <h1 class="task-name">
       {{ task.name }}
     </h1>
-    <p class="project-name">
+    <p
+      class="project-name clickable"
+      @click="openProjectPage()"
+    >
       {{ task.Project.name }}
     </p>
     <el-divider
@@ -11,17 +14,19 @@
       class="section-divider"
     />
 
-    <p class="task-description">
-      <vue-markdown>{{ task.description.length > 0 ? task.description : `${$t('Nothing there')} ¯\\_(ツ)_/¯` }}</vue-markdown>
+    <p
+      v-if="descriptionPresent"
+      class="task-description"
+    >
+      <vue-markdown class="md">
+        {{ task.description }}
+      </vue-markdown>
+    </p>
+    <p v-else>
+      {{ $t('Description is empty') }}
     </p>
 
     <div class="task-controls">
-      <el-button
-        type="primary"
-        @click="back"
-      >
-        {{ $t('Back to tasks') }}
-      </el-button>
       <el-button
         v-if="task.externalUrl !== null"
         type="secondary"
@@ -48,12 +53,12 @@ import VueMarkdown from 'vue-markdown';
 export default {
   name: 'Info',
   components: {
-    VueMarkdown
+    VueMarkdown,
   },
   data() {
 
     return {
-      taskId: this.$route.params.id
+      taskId: this.$route.params.id,
     };
 
   },
@@ -76,11 +81,41 @@ export default {
       const date = new Date(this.task.TrackedTime * 1000);
       return date.toISOString().substr(11, 8);
 
-    }
+    },
+
+    descriptionPresent() {
+
+      return this.task.description && this.task.description.length > 0;
+
+    },
   },
 
   methods: {
+
+    openProjectPage() {
+
+      this.$router.push({ name: 'user.project', params: { id: this.task.projectId } });
+
+    },
+
     openInBrowser() {
+
+      if (!this.task.externalUrl || this.task.externalUrl.length === 0)
+        return;
+
+      // Check that externalUrl schema is allowed (http / https)
+      try {
+
+        const parsedUrl = new URL(this.task.externalUrl);
+        if (!['http:', 'https:'].includes(parsedUrl.protocol))
+          return;
+
+      } catch (err) {
+
+        return;
+
+      }
+
 
       shell.openExternal(this.task.externalUrl);
 
@@ -106,10 +141,11 @@ export default {
 
     back() {
 
-      this.$router.push({ name: 'user.tasks' });
+      // this.$router.push({ name: 'user.tasks' });
+      this.$router.go(-1);
 
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -140,6 +176,17 @@ export default {
       border: $--border-base;
       background-color: $--border-color-lighter;
       border-radius: .25em;
+
+      .md {
+
+        pre {
+
+          white-space: pre-wrap;
+
+        }
+
+      }
+
     }
 
     .task-controls {

@@ -61,8 +61,8 @@ export default {
   props: {
     task: {
       required: true,
-      type: Object
-    }
+      type: Object,
+    },
   },
 
   data() {
@@ -71,7 +71,7 @@ export default {
 
       /**
        * Is this task performs some routine (starting or stopping) right now?
-       * @type {Boolean}
+       * @type {Boolean}router
        */
       loading: false,
 
@@ -105,7 +105,13 @@ export default {
 
       return formatSeconds(this.task.TrackedTime);
 
-    }
+    },
+
+    isProjectPage() {
+
+      return this.$router.history.current.name === 'user.project';
+
+    },
 
   },
 
@@ -200,9 +206,9 @@ export default {
         })
         .catch(data => this.$alert(data.message, data.error, { confirmButtonText: 'OK' }));
 
-    }
+    },
 
-  }
+  },
 
 };
 

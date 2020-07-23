@@ -69,6 +69,16 @@ export default {
   computed: {
 
     /**
+     * Returns identifiers of highlighted tasks
+     * @returns {Array<String>} Array with internal identifiers of highlighted tasks
+     */
+    highlights() {
+
+      return this.$store.getters.highlights;
+
+    },
+
+    /**
      * Returns search pattern
      * @returns {String} Search pattern
      */
@@ -168,7 +178,7 @@ export default {
 
       });
 
-    }
+    },
   },
 
 };

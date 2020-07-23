@@ -56,13 +56,15 @@ import { clipboard } from 'electron';
 export default {
   name: 'Tracker',
   components: {},
+  props: {
+    isTrackerLoading: Boolean,
+  },
   data() {
 
     return {
       errorModal: false,
-      syncInProgress: false,
       reportSnack: false,
-      trackButtonLocked: false
+      trackButtonLocked: false,
     };
 
   },
@@ -100,13 +102,13 @@ export default {
 
       return new Date(totalTime * 1000).toISOString().substr(11, 8);
 
-    }
+    },
 
   },
 
   mounted() {
 
-    this.$ipc.serve('inactivity-modal/resume-work-after-inactivity', async res => {
+    this.$ipc.serve('inactivity-modal/resume-work-after-inactivity', async () => {
 
       await this.track();
 
@@ -170,22 +172,13 @@ export default {
 
     },
 
-    async syncTasks() {
-
-      this.syncInProgress = true;
-      await this.$ipc.request('projects/sync', {});
-      const tasks = await this.$ipc.request('tasks/sync', {});
-      this.$store.dispatch('syncTasks', tasks.body);
-      this.syncInProgress = false;
-
-    },
 
     getTask(taskId) {
 
       return this.$store.getters.tasks.find(t => t.id === taskId);
 
-    }
-  }
+    },
+  },
 };
 </script>
 

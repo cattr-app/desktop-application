@@ -89,7 +89,7 @@ export default {
         { color: '#e6a23c', percentage: 40 },
         { color: '#5cb87a', percentage: 60 },
         { color: '#1989fa', percentage: 80 },
-        { color: '#6f7ad3', percentage: 100 }
+        { color: '#6f7ad3', percentage: 100 },
       ],
 
       /**
@@ -120,7 +120,7 @@ export default {
        * ID of timer assigned for activity proof time left decrementing
        * @type {Number|null}
        */
-      timeLeftCounter: null
+      timeLeftCounter: null,
 
     };
 
@@ -148,7 +148,7 @@ export default {
 
       return formatSeconds(this.timeLost);
 
-    }
+    },
   },
 
   watch: {
@@ -169,7 +169,7 @@ export default {
       // Reporting prove fail to main
       this.reportProofStatus(false);
 
-    }
+    },
 
   },
 
@@ -305,7 +305,7 @@ export default {
 
     },
 
-  }
+  },
 };
 </script>
 

@@ -4,16 +4,18 @@
       v-model="searchPattern"
       class="search"
       :placeholder="$t('Search...')"
+      @focus="setSearchFieldState(true)"
+      @blur="setSearchFieldState(false)"
     />
     <el-button
-      v-if="$route.path === '/user/tasks'"
+      v-if="!searchFieldActive && $route.path === '/user/tasks'"
       type="secondary"
       icon="el-icon-circle-plus-outline"
       circle
       @click="goTo('create')"
     />
     <el-button
-      v-if="$route.path === '/user/tasks'"
+      v-if="!searchFieldActive && $route.path === '/user/tasks'"
       :loading="reportGenerationInProgress"
       type="secondary"
       icon="el-icon-s-order"
@@ -21,18 +23,30 @@
       @click="getReport"
     />
     <el-button
-      v-if="$route.path === '/user/tasks'"
+      v-if="!searchFieldActive && $route.path === '/user/tasks'"
+      type="secondary"
+      circle
+      :disabled="syncInProgress || isTrackerLoading"
+      @click="syncTasks"
+    >
+      <i
+        class="el-icon-refresh"
+        :class="{ animated: syncInProgress}"
+      />
+    </el-button>
+    <el-button
+      v-if="!searchFieldActive && $route.path === '/user/tasks'"
       type="secondary"
       icon="el-icon-setting"
       circle
       @click="goTo('/user/settings')"
     />
     <el-button
-      v-else
+      v-if="!searchFieldActive && $route.path !== '/user/tasks'"
       type="secondary"
       icon="el-icon-close"
       circle
-      @click="goTo('/user/tasks')"
+      @click="goBack()"
     />
   </el-container>
 </template>
@@ -42,12 +56,16 @@ import { clipboard } from 'electron';
 
 export default {
   name: 'SearchBar',
-
+  props: {
+    isTrackerLoading: Boolean,
+  },
   data() {
 
     return {
       searchPattern: null,
-      reportGenerationInProgress: false
+      reportGenerationInProgress: false,
+      syncInProgress: false,
+      searchFieldActive: false,
     };
 
   },
@@ -60,10 +78,17 @@ export default {
 
       this.setSearchPattern();
 
-    }
+    },
   },
 
   methods: {
+
+    setSearchFieldState(state) {
+
+      this.searchFieldActive = state;
+
+    },
+
     setSearchPattern() {
 
       this.$store.dispatch('setSearchPattern', this.searchPattern);
@@ -73,6 +98,22 @@ export default {
     goTo(where) {
 
       this.$router.push({ path: where });
+
+    },
+
+    goBack() {
+
+      this.$router.go(-1);
+
+    },
+
+    async syncTasks() {
+
+      this.syncInProgress = true;
+      await this.$ipc.request('projects/sync', {});
+      const tasks = await this.$ipc.request('tasks/sync', {});
+      this.$store.dispatch('syncTasks', tasks.body);
+      this.syncInProgress = false;
 
     },
 
@@ -98,8 +139,8 @@ export default {
               confirmButtonText: this.$t('Okay'),
               messageType: 'error',
               customClass: 'rg-msg',
-              confirmButtonClass: 'rg-msg'
-            }
+              confirmButtonClass: 'rg-msg',
+            },
           );
           return;
 
@@ -113,8 +154,8 @@ export default {
               confirmButtonText: this.$t('Okay'),
               messageType: 'warning',
               customClass: 'rg-msg',
-              confirmButtonClass: 'rg-msg__okie'
-            }
+              confirmButtonClass: 'rg-msg__okie',
+            },
           );
           return;
 
@@ -127,8 +168,8 @@ export default {
               confirmButtonText: this.$t('Okay'),
               messageType: 'error',
               customClass: 'rg-msg',
-              confirmButtonClass: 'rg-msg__okie'
-            }
+              confirmButtonClass: 'rg-msg__okie',
+            },
           );
           return;
 
@@ -163,13 +204,13 @@ export default {
           confirmButtonText: '🌚 Okie~',
           messageType: 'success',
           customClass: 'rg-msg',
-          confirmButtonClass: 'rg-msg__okie'
-        }
+          confirmButtonClass: 'rg-msg__okie',
+        },
       );
 
-    }
+    },
 
-  }
+  },
 };
 </script>
 

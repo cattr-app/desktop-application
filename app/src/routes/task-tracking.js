@@ -98,9 +98,9 @@ module.exports = router => {
 
   });
 
-  router.serve('tracking/resume-work-after-inactivity', async body => {
+  router.serve('tracking/resume-work-after-inactivity', async () => {
 
-    router.emit('inactivity-modal/resume-work-after-inactivity', body);
+    router.emit('inactivity-modal/resume-work-after-inactivity', {});
 
   });
 

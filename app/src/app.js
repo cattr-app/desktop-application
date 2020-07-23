@@ -58,6 +58,7 @@ app.once('ready', async () => {
     webPreferences: {
       nodeIntegration: true,
       nativeWindowOpen: true,
+      enableRemoteModule: true,
     },
     icon: appIcons.DEFAULT,
 

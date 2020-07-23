@@ -12,7 +12,7 @@
       >
         <el-input
           v-model="task.name"
-          placeholder="Retrospective"
+          :placeholder="$t('Retrospective')"
         />
       </el-form-item>
       <el-form-item
@@ -23,7 +23,7 @@
           v-model="task.description"
           type="textarea"
           :rows="2"
-          placeholder="The 3:30 PM daily retrospective with Engineering team"
+          :placeholder="$t('The 3:30 PM daily retrospective with Engineering team')"
         />
       </el-form-item>
       <el-form-item
@@ -33,7 +33,7 @@
       >
         <el-cascader
           :v-model="task.projectId"
-          placeholder="Internal projects only"
+          :placeholder="$t('Internal projects only')"
           :options="projects"
           filterable
           @change="taskSelectorChange"
@@ -80,7 +80,7 @@ export default {
         description: '',
       },
       rules: {
-        name: [{ required: true, message: 'Task name is necessary' }],
+        name: [{ required: true, message: this.$t('Task name is necessary') }],
       },
 
     };
@@ -98,7 +98,7 @@ export default {
         // Checking if the project is selected
         if (this.task.projectId.length === 0) {
 
-          this.taskSelectorError = 'Project should be selected';
+          this.taskSelectorError = this.$t('Project should be selected');
           return false;
 
         }
