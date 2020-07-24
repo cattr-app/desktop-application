@@ -465,6 +465,8 @@ class TaskTracker extends EventEmitter {
       // Get properties of current user account
       const currentUser = await Authentication.getCurrentUser();
 
+      const currentTaskId = this.currentTask.id;
+
       // Get amount of ticks tracked
       const ticks = (typeof ticksOverride === 'number') ? ticksOverride : this.ticker.ticks;
 
@@ -554,7 +556,7 @@ class TaskTracker extends EventEmitter {
           screenshot: intervalScreenshot,
           interval: {
             task: {
-              id: this.currentTask.id,
+              id: currentTaskId,
             },
             remote: pushedInterval,
             duration: ticks,
