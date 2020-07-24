@@ -152,6 +152,7 @@ class TaskTracker extends EventEmitter {
 
       // Dispatch tick event into tracker context
       this.emit('tick', this.currentTaskTimeTrackedToday);
+      this.emit('tick-relative', this.ticker.ticks);
 
       // Dispatch interval capture transactional event, if it is the right time
       if (this.ticker.ticks === this.captureInterval)
