@@ -5,15 +5,19 @@ import * as Sentry from '@sentry/browser';
 import * as Integrations from '@sentry/integrations';
 import VueI18n from 'vue-i18n';
 import Element from 'element-ui';
-// eslint-disable-next-line no-unused-vars
-import devtools from '@vue/devtools';
+
+
 import store from './storage';
 import App from './components/App.vue';
 import router from './router';
 
 // Comment it out to use remote devtools
-if (process.env.NODE_ENV === 'development') {
-  /* devtools.connect() */
+if (process.env.NODE_ENV === 'development' && process.REMOTE_DEVTOOLS_ENABLE) {
+
+  // eslint-disable-next-line global require
+  const devtools = require('@vue/devtools');
+  devtools.connect();
+
 }
 
 Vue.use(VueI18n);

@@ -10,6 +10,7 @@
 		"start": "npx electron ./app/src/app.js",
 		"dev": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron .",
 		"dev-no-scr": "npx cross-env AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
+		"dev-vue": "npx cross-env AT_DEVMODE=meow REMOTE_DEVTOOLS_ENABLE=true node_modules/.bin/electron .",
 		"dev-win": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron.cmd .",
 		"build-watch": "npm run build-development -- --watch",
 		"build-development": "npx cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=./node_modules/laravel-mix/setup/webpack.config.js",
