@@ -112,13 +112,13 @@ export default {
 
     },
 
-    tick(state, payload) {
+    tick(state) {
 
       const task = state.tasks.find(t => t.id === state.task);
       if (!task.TrackedTime)
         task.TrackedTime = 0;
 
-      task.TrackedTime = payload;
+      task.TrackedTime += 1;
 
     },
 

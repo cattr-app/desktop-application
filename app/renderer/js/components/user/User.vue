@@ -111,7 +111,7 @@ export default {
 
     });
 
-    this.$ipc.serve('tracking/event-tick', req => {
+    this.$ipc.serve('tracking/event-tick-relative', req => {
 
       this.$store.dispatch('tick', req.packet.body.ticks);
 

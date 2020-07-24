@@ -106,6 +106,7 @@ module.exports = router => {
 
   // Pass ticks to the frontend
   TaskTracker.on('tick', overallTicks => router.emit('tracking/event-tick', { ticks: overallTicks }));
+  TaskTracker.on('tick-relative', relTicks => router.emit('tracking/event-tick-relative', { ticks: relTicks }));
   TaskTracker.on('activity-proof-request', stopTime => router.emit('tracking/activity-proof-request', { stopTime }));
   TaskTracker.on('activity-proof-result-accepted', result => {
 
