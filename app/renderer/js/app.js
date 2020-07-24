@@ -12,7 +12,7 @@ import App from './components/App.vue';
 import router from './router';
 
 // Comment it out to use remote devtools
-if (process.env.NODE_ENV === 'development' && process.REMOTE_DEVTOOLS_ENABLE) {
+if (process.env.NODE_ENV === 'development' && process.env.REMOTE_DEVTOOLS_ENABLE) {
 
   // eslint-disable-next-line global require
   const devtools = require('@vue/devtools');
