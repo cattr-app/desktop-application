@@ -179,8 +179,7 @@ module.exports = {
     });
 
     // Open DevTools
-    if (this.showDevTools)
-      notification.webContents.openDevTools('detached');
+    // notification.webContents.openDevTools('detached');
 
   },
 
