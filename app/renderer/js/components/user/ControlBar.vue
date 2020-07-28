@@ -117,6 +117,22 @@ export default {
 
     },
 
+    async returnEmptyError() {
+
+      this.reportGenerationInProgress = false;
+      this.$alert(
+        this.$t('Get back and do some work before!'),
+        this.$t('Your daily report is empty 📦'),
+        {
+          confirmButtonText: this.$t('Okay'),
+          messageType: 'warning',
+          customClass: 'rg-msg',
+          confirmButtonClass: 'rg-msg__okie',
+        },
+      );
+
+    },
+
     async getReport() {
 
       this.reportGenerationInProgress = true;
@@ -147,16 +163,7 @@ export default {
         // Empty report
         case 204:
           this.reportGenerationInProgress = false;
-          this.$alert(
-            this.$t('Get back and do some work before!'),
-            this.$t('Your daily report is empty 📦'),
-            {
-              confirmButtonText: this.$t('Okay'),
-              messageType: 'warning',
-              customClass: 'rg-msg',
-              confirmButtonClass: 'rg-msg__okie',
-            },
-          );
+          this.returnEmptyError();
           return;
 
         default:
@@ -197,16 +204,22 @@ export default {
 
       // Removing spinner and show proper alert
       this.reportGenerationInProgress = false;
-      this.$alert(
-        `🥁 ${this.$t('Report was successfully generated and copied to your clipboard')}`,
-        `🎉 ${this.$t('Success!')}`,
-        {
-          confirmButtonText: '🌚 Okie~',
-          messageType: 'success',
-          customClass: 'rg-msg',
-          confirmButtonClass: 'rg-msg__okie',
-        },
-      );
+
+      if (reportBuffer !== '') {
+
+        this.$alert(
+          `🥁 ${this.$t('Report was successfully generated and copied to your clipboard')}`,
+          `🎉 ${this.$t('Success!')}`,
+          {
+            confirmButtonText: '🌚 Okie~',
+            messageType: 'success',
+            customClass: 'rg-msg',
+            confirmButtonClass: 'rg-msg__okie',
+          },
+        );
+
+      } else
+        this.returnEmptyError();
 
     },
 
