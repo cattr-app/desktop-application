@@ -59,7 +59,7 @@ export default {
     sortTasksByHighlights(tasks, highlights) {
 
       // Create copy of this.tasks
-      const sorted = tasks.slice();
+      const sorted = [...tasks];
       
       // Moving highlighted elements to the start of tasks array
       highlights.forEach(taskId => {
