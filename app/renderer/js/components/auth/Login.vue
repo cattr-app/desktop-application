@@ -122,21 +122,21 @@ export default {
         hostname: [
           {
             required: true,
-            message: this.$t('Please enter hostname'),
+            message: this.$t('Please, enter hostname'),
             trigger: 'blur',
           },
         ],
         login: [
           {
             required: true,
-            message: this.$t('Please enter your login'),
+            message: this.$t('Please, enter your login'),
             trigger: 'blur',
           },
         ],
         password: [
           {
             required: true,
-            message: this.$t('Please enter your password'),
+            message: this.$t('Please, enter your password'),
             trigger: 'blur',
           },
         ],
