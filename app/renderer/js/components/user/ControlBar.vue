@@ -122,7 +122,7 @@ export default {
       this.reportGenerationInProgress = false;
       this.$alert(
         this.$t('Get back and do some work before!'),
-        this.$t('Your daily report is empty 📦'),
+        this.$t('Your daily report is empty'),
         {
           confirmButtonText: this.$t('Okay'),
           messageType: 'warning',
@@ -202,8 +202,8 @@ export default {
       if (reportBuffer !== '') {
 
         this.$confirm(
-          `🥁 ${this.$t('Do you want to copy the report formatted in Markdown or in plain text?')}`,
-          `🎉 ${this.$t('Success!')}`,
+          `${this.$t('Do you want to copy the report formatted in Markdown or in plain text?')}`,
+          `${this.$t('Success!')}`,
           {
             distinguishCancelAndClose: true,
             confirmButtonText: 'Markdown',
@@ -253,7 +253,6 @@ export default {
           });
 
         });
-
 
 
         // Removing spinner and show proper alert
