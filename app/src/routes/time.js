@@ -94,7 +94,7 @@ module.exports = router => {
 
     const taskTimeByIds = new Map(todayTasks.map(task => [task.id, task.time]));
     // Purify projects
-    localTodayProjects = await localTodayProjects.map(project => {
+    localTodayProjects = localTodayProjects.map(project => {
 
       // Purify project tasks
       const tasks = project.dataValues.Tasks.map(task => ({
