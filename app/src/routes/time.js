@@ -94,7 +94,13 @@ module.exports = router => {
     localTodayProjects = localTodayProjects.map(project => {
 
       // Purify project tasks
-      const tasks = project.dataValues.Tasks.map(task => ({ name: task.name, url: task.externalUrl }));
+      const tasks = project.dataValues.Tasks.map(task => ({
+        name: task.name,
+        url: task.externalUrl,
+        trackedHrs: 0, // TODO add the hours fetching here
+        // eslint-disable-next-line comma-dangle
+        trackedMins: 0 // TODO add the minutes fetching here
+      }));
 
       // Return purified project property
       return { name: project.dataValues.name, tasks };

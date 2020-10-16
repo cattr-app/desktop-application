@@ -193,7 +193,7 @@ export default {
         // Add all related tasks
         project.tasks.forEach(task => {
 
-          reportBuffer += `_${task.name.trim()}${task.url ? ` (${task.url})` : ''}_\n...\n\n`;
+          reportBuffer += `_${task.name.trim()}${task.url ? ` (${task.url})` : ''}_\n${task.trackedHrs}h ${task.trackedMins}m\n...\n\n`;
 
         });
 
@@ -239,7 +239,7 @@ export default {
             // Add all related tasks
             project.tasks.forEach(task => {
 
-              buffer += `${task.name.trim()}${task.url ? ` (${task.url})` : ''}\n...\n\n`;
+              buffer += `${task.name.trim()}${task.url ? ` (${task.url})` : ''}\n${task.trackedHrs}h ${task.trackedMins}m\n...\n\n`;
 
             });
 
