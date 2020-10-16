@@ -4,6 +4,7 @@ const { UIError } = require('../utils/errors');
 const auth = require('../base/authentication');
 const { db } = require('../models');
 const OfflineMode = require('../base/offline-mode');
+const { time } = require('../base/api');
 
 const log = new Logger('Router:Time');
 log.debug('Loaded');
@@ -42,6 +43,7 @@ module.exports = router => {
   });
 
   // Getting projects and tasks with their's time spent
+  // TODO please write the structure that's returned from here, cause it's kinda confusing
   router.serve('time/daily-report', async request => {
 
     // Handle offline mode case
@@ -90,16 +92,18 @@ module.exports = router => {
       }],
     });
 
+    const taskTimeByIds = new Map(todayTasks.map(task => [task.id, task.time]));
     // Purify projects
-    localTodayProjects = localTodayProjects.map(project => {
+    localTodayProjects = await localTodayProjects.map(project => {
 
       // Purify project tasks
       const tasks = project.dataValues.Tasks.map(task => ({
+        id: task.id,
+        externalId: task.externalId,
         name: task.name,
         url: task.externalUrl,
-        trackedHrs: 0, // TODO add the hours fetching here
         // eslint-disable-next-line comma-dangle
-        trackedMins: 0 // TODO add the minutes fetching here
+        trackedTime: taskTimeByIds.get(Number(task.externalId))
       }));
 
       // Return purified project property

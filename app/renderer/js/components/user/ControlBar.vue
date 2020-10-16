@@ -193,7 +193,10 @@ export default {
         // Add all related tasks
         project.tasks.forEach(task => {
 
-          reportBuffer += `_${task.name.trim()}${task.url ? ` (${task.url})` : ''}_\n${task.trackedHrs}h ${task.trackedMins}m\n...\n\n`;
+          const hrs = Math.floor(task.trackedTime / 3600);
+          const mins = Math.floor((task.trackedTime % 3600) / 60);
+
+          reportBuffer += `_${task.name.trim()}${task.url ? ` (${task.url})` : ''}_\n${hrs}h ${mins}m\n...\n\n`;
 
         });
 
@@ -239,7 +242,10 @@ export default {
             // Add all related tasks
             project.tasks.forEach(task => {
 
-              buffer += `${task.name.trim()}${task.url ? ` (${task.url})` : ''}\n${task.trackedHrs}h ${task.trackedMins}m\n...\n\n`;
+              const hrs = Math.floor(task.trackedTime / 3600);
+              const mins = Math.floor((task.trackedTime % 3600) / 60);
+
+              buffer += `${task.name.trim()}${task.url ? ` (${task.url})` : ''}\n${hrs}h ${mins}m\n...\n\n`;
 
             });
 
