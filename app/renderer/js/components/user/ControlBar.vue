@@ -8,7 +8,7 @@
       @blur="setSearchFieldState(false)"
     />
     <el-button
-      v-if="!searchFieldActive && $route.path === '/user/tasks'"
+      v-if="!searchFieldActive && $route.path === '/user/tasks' && !isOffline"
       type="secondary"
       icon="el-icon-circle-plus-outline"
       circle
@@ -66,6 +66,7 @@ export default {
       reportGenerationInProgress: false,
       syncInProgress: false,
       searchFieldActive: false,
+      isOffline: false,
     };
 
   },
@@ -81,6 +82,25 @@ export default {
     },
   },
 
+  async mounted() {
+
+    (async () => {
+
+      const offlineStatus = await this.$ipc.request('offline/request-status', {});
+
+      this.setOfflineMode(offlineStatus.body.state);
+
+    })();
+
+    // Receiving offline status updates
+    this.$ipc.serve('offline/status', req => {
+
+      this.isOffline = req.packet.body.state;
+
+    });
+
+  },
+
   methods: {
 
     setSearchFieldState(state) {
@@ -92,6 +112,12 @@ export default {
     setSearchPattern() {
 
       this.$store.dispatch('setSearchPattern', this.searchPattern);
+
+    },
+
+    setOfflineMode(state) {
+
+      this.isOffline = state;
 
     },
 
