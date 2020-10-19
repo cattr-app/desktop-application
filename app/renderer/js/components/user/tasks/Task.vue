@@ -30,14 +30,14 @@
         icon="el-icon-star-off"
         :type="'text'"
         @click="pinner"
-      >
-      </el-button>
+      />
     </el-col>
     <el-col
       class="task-controls"
       :span="4"
     >
-    <!-- TODO: take care about right end of the row -->
+      <!-- TODO: take care about right end of the row -->
+      <!-- wooooot? I'm not sure what's supposed to be done here :( -->
       <el-button
         class="task-toggler"
         :disabled="trackingLoad || loading"
@@ -132,22 +132,22 @@ export default {
 
     },
 
-    async pinner () {
+    async pinner() {
 
       this.isPinned = this.isPinned ? false : true;
-      
-      if (this.isPinned) {
-        
-        this.$store.dispatch('pinTask', { id: this.task.id } );
 
-      } else {
+      if (this.isPinned)
+
+        this.$store.dispatch('pinTask', { id: this.task.id });
+
+      else {
 
         this.$store.dispatch('unpinTask', this.task.id );
 
       }
 
       await this.$ipc.emit('tasks/pinner', { id: this.task.id, pinOrder: this.task.pinOrder });
-    
+
     },
 
     /**
@@ -221,6 +221,7 @@ export default {
   border-bottom: $--border-base;
   padding: 1em;
   justify-content: space-between;
+  background-color: #ffffff;
 
   &:last-of-type {
     border: 0;
@@ -283,7 +284,7 @@ export default {
 .pinned {
 
   color: $--color-primary-light-1 !important;
-  
+
   .el-icon-star-off:before {
     content: "\e797";
   }
