@@ -192,6 +192,7 @@ export default {
       padding: 0;
       display: flex;
       align-items: center;
+      background-color: inherit;
 
       .task-info {
         max-width: inherit;
