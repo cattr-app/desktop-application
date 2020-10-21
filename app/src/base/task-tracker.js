@@ -14,6 +14,8 @@ const eventCounter = require('../utils/event-counter');
 
 const log = new Log('TaskTracker');
 
+let prevEndAt = new Date();
+
 class TaskTracker extends EventEmitter {
 
   constructor() {
@@ -502,6 +504,17 @@ class TaskTracker extends EventEmitter {
         return false;
 
       }
+
+      if (startAt.getSeconds() - prevEndAt.getSeconds() <= 1) {
+
+        const startSec = startAt.getSeconds();
+        startAt.setSeconds((startSec) + 1);
+        const endSec = endAt.getSeconds();
+        endAt.setSeconds(endSec + 1);
+
+      }
+
+      prevEndAt = endAt;
 
       // Convert start and stop dates into ISO formatted strings
       startAt = startAt.toISOString();
