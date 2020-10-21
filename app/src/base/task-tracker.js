@@ -14,8 +14,6 @@ const eventCounter = require('../utils/event-counter');
 
 const log = new Log('TaskTracker');
 
-let prevEndAt = new Date();
-
 class TaskTracker extends EventEmitter {
 
   constructor() {
@@ -75,6 +73,13 @@ class TaskTracker extends EventEmitter {
      * @type {Number|null} Amount of seconds between interval capture
      */
     this.captureInterval = null;
+
+    /**
+      * Time holder for previous interval's end, in order to compare it with
+      * current interval's start date (fix for core's validation error)
+      * @type {Date} Interval's end date that's written here when it is sent
+      */
+    this.prevEndAt = new Date();
 
     /**
      * Properties of active (currently tracked) interval
