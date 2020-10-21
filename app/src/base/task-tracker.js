@@ -75,6 +75,13 @@ class TaskTracker extends EventEmitter {
     this.captureInterval = null;
 
     /**
+      * Time holder for previous interval's end, in order to compare it with
+      * current interval's start date (fix for core's validation error)
+      * @type {Date} Interval's end date that's written here when it is sent
+      */
+    this.prevEndAt = new Date();
+
+    /**
      * Properties of active (currently tracked) interval
      * @type {Object}
      */
@@ -502,6 +509,17 @@ class TaskTracker extends EventEmitter {
         return false;
 
       }
+
+      if (startAt.getSeconds() - prevEndAt.getSeconds() <= 1) {
+
+        const startSec = startAt.getSeconds();
+        startAt.setSeconds((startSec) + 1);
+        const endSec = endAt.getSeconds();
+        endAt.setSeconds(endSec + 1);
+
+      }
+
+      prevEndAt = endAt;
 
       // Convert start and stop dates into ISO formatted strings
       startAt = startAt.toISOString();
