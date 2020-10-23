@@ -479,8 +479,20 @@ class TaskTracker extends EventEmitter {
       const ticks = (typeof ticksOverride === 'number') ? ticksOverride : this.ticker.ticks;
 
       // Saving timestamp of this period end (NOW moment)
-      let { startAt } = this.currentInterval;
+      let startAt = this.currentInterval.startedAt;
       let endAt = new Date();
+
+      if (startAt.getTime() - this.prevEndAt.getTime() <= 1000) {
+
+        const startSec = this.currentInterval.startedAt.getSeconds();
+        startAt.setSeconds((startSec) + 1);
+        this.currentInterval.startedAt.setSeconds((startSec) + 1);
+        const endSec = endAt.getSeconds();
+        endAt.setSeconds(endSec + 1);
+
+      }
+
+      this.prevEndAt = endAt;
 
       // Calculate start date using few conditions
       if (
@@ -499,6 +511,7 @@ class TaskTracker extends EventEmitter {
         // In case if we can't be sure that currentInterval.startAt value is correct
         // we calculate it by subtraction ticks from Date.now()
         startAt = new Date(endAt.getTime() - (ticks * 1000));
+        this.prevEndAt = endAt;
 
       }
 
@@ -509,17 +522,6 @@ class TaskTracker extends EventEmitter {
         return false;
 
       }
-
-      if (startAt.getSeconds() - prevEndAt.getSeconds() <= 1) {
-
-        const startSec = startAt.getSeconds();
-        startAt.setSeconds((startSec) + 1);
-        const endSec = endAt.getSeconds();
-        endAt.setSeconds(endSec + 1);
-
-      }
-
-      prevEndAt = endAt;
 
       // Convert start and stop dates into ISO formatted strings
       startAt = startAt.toISOString();
