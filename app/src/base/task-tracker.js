@@ -486,7 +486,6 @@ class TaskTracker extends EventEmitter {
 
         const startSec = this.currentInterval.startedAt.getSeconds();
         startAt.setSeconds((startSec) + 1);
-        this.currentInterval.startedAt.setSeconds((startSec) + 1);
         const endSec = endAt.getSeconds();
         endAt.setSeconds(endSec + 1);
 
