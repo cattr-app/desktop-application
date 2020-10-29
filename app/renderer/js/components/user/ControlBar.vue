@@ -55,10 +55,12 @@
 import { clipboard } from 'electron';
 
 export default {
+
   name: 'SearchBar',
   props: {
     isTrackerLoading: Boolean,
   },
+
   data() {
 
     return {
@@ -79,6 +81,17 @@ export default {
       this.setSearchPattern();
 
     },
+  },
+
+  async mounted() {
+
+    document.addEventListener('keydown', event => {
+
+      if (event.keyCode === 27) 
+        document.activeElement.blur();
+
+    });
+
   },
 
   methods: {
