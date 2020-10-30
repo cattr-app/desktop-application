@@ -117,6 +117,22 @@ export default {
 
     },
 
+    async returnEmptyError() {
+
+      this.reportGenerationInProgress = false;
+      this.$alert(
+        this.$t('Get back and do some work before!'),
+        this.$t('Your daily report is empty'),
+        {
+          confirmButtonText: this.$t('Okay'),
+          messageType: 'warning',
+          customClass: 'rg-msg',
+          confirmButtonClass: 'rg-msg__okie',
+        },
+      );
+
+    },
+
     async getReport() {
 
       this.reportGenerationInProgress = true;
@@ -147,16 +163,7 @@ export default {
         // Empty report
         case 204:
           this.reportGenerationInProgress = false;
-          this.$alert(
-            this.$t('Get back and do some work before!'),
-            this.$t('Your daily report is empty 📦'),
-            {
-              confirmButtonText: this.$t('Okay'),
-              messageType: 'warning',
-              customClass: 'rg-msg',
-              confirmButtonClass: 'rg-msg__okie',
-            },
-          );
+          this.returnEmptyError();
           return;
 
         default:
@@ -186,27 +193,79 @@ export default {
         // Add all related tasks
         project.tasks.forEach(task => {
 
-          reportBuffer += `_${task.name.trim()}${task.url ? ` (${task.url})` : ''}_\n...\n\n`;
+          const hrs = Math.floor(task.trackedTime / 3600);
+          const mins = Math.floor((task.trackedTime % 3600) / 60);
+
+          reportBuffer += `_${task.name.trim()}${task.url ? ` (${task.url})` : ''}_\n${hrs}h ${mins}m\n...\n\n`;
 
         });
 
       });
 
-      // Copy text to clipboard
-      clipboard.writeText(reportBuffer);
+      if (reportBuffer !== '') {
 
-      // Removing spinner and show proper alert
-      this.reportGenerationInProgress = false;
-      this.$alert(
-        `🥁 ${this.$t('Report was successfully generated and copied to your clipboard')}`,
-        `🎉 ${this.$t('Success!')}`,
-        {
-          confirmButtonText: '🌚 Okie~',
-          messageType: 'success',
-          customClass: 'rg-msg',
-          confirmButtonClass: 'rg-msg__okie',
-        },
-      );
+        this.$confirm(
+          `${this.$t('Do you want to copy the report formatted in Markdown or in plain text?')}`,
+          `${this.$t('Success!')}`,
+          {
+            distinguishCancelAndClose: true,
+            confirmButtonText: 'Markdown',
+            cancelButtonText: 'Plain text',
+            messageType: 'success',
+            customClass: 'rg-msg',
+            confirmButtonClass: 'rg-msg__okie',
+            cancelButtonClass: 'rg-msg__okie',
+            center: true,
+          },
+
+        ).then(() => {
+
+          this.$message({
+            type: 'success',
+            message: 'Markdown report has been copied to clipboard',
+          });
+
+          // Copy text to clipboard
+          clipboard.writeText(reportBuffer);
+
+        }).catch(() => {
+
+          // Report buffer contains prepared report
+          let buffer = '';
+
+          // Preparing report in human-readable format
+          req.body.projects.forEach(project => {
+
+            // Add project name
+            buffer += `${project.name}\n\n`;
+
+            // Add all related tasks
+            project.tasks.forEach(task => {
+
+              const hrs = Math.floor(task.trackedTime / 3600);
+              const mins = Math.floor((task.trackedTime % 3600) / 60);
+
+              buffer += `${task.name.trim()}${task.url ? ` (${task.url})` : ''}\n${hrs}h ${mins}m\n...\n\n`;
+
+            });
+
+          });
+
+          clipboard.writeText(buffer);
+
+          this.$message({
+            type: 'success',
+            message: 'Plain text report has been copied to clipboard',
+          });
+
+        });
+
+
+        // Removing spinner and show proper alert
+        this.reportGenerationInProgress = false;
+
+      } else
+        this.returnEmptyError();
 
     },
 

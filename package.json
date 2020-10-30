@@ -207,7 +207,7 @@
 		"eslint-plugin-import": "^2.22.0",
 		"eslint-plugin-vue": "^6.2.2",
 		"fstream": "^1.0.12",
-		"laravel-mix": "^5.0.4",
+		"laravel-mix": "^5.0.7",
 		"minimist": "^1.2.5",
 		"node-abi": "^2.18.0",
 		"resolve-url-loader": "^3.1.1",
