@@ -75,6 +75,13 @@ class TaskTracker extends EventEmitter {
     this.captureInterval = null;
 
     /**
+      * Time holder for previous interval's end, in order to compare it with
+      * current interval's start date (fix for core's validation error)
+      * @type {Date} Interval's end date that's written here when it is sent
+      */
+    this.prevEndAt = new Date();
+
+    /**
      * Properties of active (currently tracked) interval
      * @type {Object}
      */
@@ -472,8 +479,19 @@ class TaskTracker extends EventEmitter {
       const ticks = (typeof ticksOverride === 'number') ? ticksOverride : this.ticker.ticks;
 
       // Saving timestamp of this period end (NOW moment)
-      let { startAt } = this.currentInterval;
+      let startAt = this.currentInterval.startedAt;
       let endAt = new Date();
+
+      if (startAt.getTime() - this.prevEndAt.getTime() <= 1000) {
+
+        const startSec = this.currentInterval.startedAt.getSeconds();
+        startAt.setSeconds((startSec) + 1);
+        const endSec = endAt.getSeconds();
+        endAt.setSeconds(endSec + 1);
+
+      }
+
+      this.prevEndAt = endAt;
 
       // Calculate start date using few conditions
       if (
@@ -492,6 +510,7 @@ class TaskTracker extends EventEmitter {
         // In case if we can't be sure that currentInterval.startAt value is correct
         // we calculate it by subtraction ticks from Date.now()
         startAt = new Date(endAt.getTime() - (ticks * 1000));
+        this.prevEndAt = endAt;
 
       }
 
