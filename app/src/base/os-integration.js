@@ -179,7 +179,7 @@ class OSIntegration extends EventEmitter {
 
     log.debug('Goodby.');
     Log._closeLogStream();
-    app.quit();
+    app.exit(0);
 
   }
 
