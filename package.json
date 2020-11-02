@@ -10,6 +10,7 @@
 		"start": "npx electron ./app/src/app.js",
 		"dev": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron .",
 		"dev-no-scr": "npx cross-env AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
+		"dev-vue": "npx cross-env AT_DEVMODE=meow REMOTE_DEVTOOLS_ENABLE=true node_modules/.bin/electron .",
 		"dev-win": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron.cmd .",
 		"build-watch": "npm run build-development -- --watch",
 		"build-development": "npx cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
@@ -185,12 +186,14 @@
 		"sqlite3": "^5.0.0",
 		"umzug": "^2.3.0",
 		"uuid": "^8.3.1",
-		"vue-markdown": "^2.2.4"
+		"vue-markdown": "^2.2.4",
+		"vuedraggable": "^2.24.0"
 	},
 	"devDependencies": {
 		"@sentry/browser": "^5.27.2",
 		"@sentry/integrations": "^5.27.2",
 		"@sentry/webpack-plugin": "^1.13.0",
+		"@vue/devtools": "^5.3.3",
 		"cross-env": "^7.0.2",
 		"debug": "^4.2.0",
 		"dotenv": "^8.2.0",

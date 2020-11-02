@@ -3,18 +3,27 @@
     ref="taskList"
     class="tasks"
   >
-    <template v-if="filteredTasks.length > 0">
-      <transition-group
+    <template v-if="tasks.length > 0">
+      <draggable
+        class="dragArea"
+        :class="{ dragArea: true }"
+        :options="{draggable: '.drag'}"
+        @end="onEnd"
+      >
+        <transition-group
         name="flip-list"
         tag="div"
-      >
-        <task
-          v-for="(task, index) in filteredTasks"
-          :key="task.id"
-          :task="task"
-          :style="{'z-index': index}"
-        />
-      </transition-group>
+        >
+          <task
+            v-for="(task, index) in tasks"
+            :pinOrder="task.pinOrder !== null ? task.pinOrder : false"
+            :class="{drag: task.pinOrder !== null}"
+            :key="task.id"
+            :task="task"
+            :style="{'z-index': index}"
+          />
+        </transition-group>
+      </draggable>
     </template>
     <template v-else>
       <p class="no-tasks">
@@ -31,6 +40,8 @@
 
 <script>
 import { shell } from 'electron';
+import Draggable from 'vuedraggable'
+
 import Task from './Task.vue';
 
 /**
@@ -45,18 +56,13 @@ export default {
   name: 'List',
   components: {
     Task,
+    Draggable
   },
   props: {
 
     tasks: {
-      type: Array,
-    },
-
-  },
-
-  data() {
-
-    return {};
+      type: Array
+    }
 
   },
 
@@ -82,53 +88,25 @@ export default {
 
     },
 
-    /**
-     * Returns identifiers of highlighted tasks
-     * @returns {Array<String>} Array with internal identifiers of highlighted tasks
-     */
-    highlights() {
-
-      return this.$store.getters.highlights;
-
-    },
-
-    /**
-     * Returns sorted tasks list
-     * @returns {Array<Task>} Array with tasks to display
-     */
-    sortedTasks() {
-
-      const tasks = this.tasks.slice();
-
-      // Moving highlighted elements to the start of tasks array
-      this.highlights.forEach(taskId => {
-
-        const targetIndex = tasks.findIndex(t => t.id === taskId);
-        tasks.unshift(tasks.splice(targetIndex, 1)[0]);
-
-      });
-
-      return tasks;
-
-    },
-
-    /**
-     * Returns tasks match search query
-     * @returns {Array<Task>} Array with tasks matching search query
-     */
-    filteredTasks() {
-
-      // Return tasks without filtering if condition is not defined
-      if (!this.searchPattern)
-        return this.sortedTasks;
-
-      return this.filterList(this.searchPattern, this.sortedTasks);
-
-    },
-
   },
 
   methods: {
+    /**
+     * Handles drag'n'drop event
+     * @returns {undefined}
+     */
+    async onEnd(evt) {
+      
+      await this.swapPinnedTasksOrder(this.tasks[evt.oldIndex], this.tasks[evt.newIndex]);
+
+    },
+
+    async swapPinnedTasksOrder(task1, task2) {
+
+      await this.$ipc.emit('tasks/pinOrder/update', { id: task1.id, pinOrder: task2.pinOrder });
+      await this.$ipc.emit('tasks/pinOrder/update', { id: task2.id, pinOrder: task1.pinOrder });
+
+    },
 
     /**
      * Opens task create view
@@ -156,19 +134,6 @@ export default {
       // Given URL looks safe, opening it
       shell.openExternal(url);
       return true;
-
-    },
-
-    /**
-     * Starts tracking time in this task
-     * @param {Task} task Target task
-     */
-    track(task) {
-
-      if (task.id === this.$store.getters.task && this.$store.getters.trackStatus === true)
-        this.$store.dispatch('stopTrack');
-      else
-        this.$store.dispatch('startTrack', task.id);
 
     },
 

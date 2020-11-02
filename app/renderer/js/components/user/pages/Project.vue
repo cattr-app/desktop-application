@@ -6,7 +6,7 @@
       </h1>
     </div>
     <list
-      :tasks="tasks"
+      v-bind:tasks="tasks"
     />
   </el-container>
 </template>
@@ -18,14 +18,14 @@ import List from '../tasks/List.vue';
 export default {
   name: 'Project',
   components: {
-    List,
+    List
   },
   data() {
 
     return {
-      projectId: this.$route.params.id,
+      projectId: this.$route.params.id
     };
-
+    
 
   },
 
@@ -74,7 +74,7 @@ export default {
 
       return this.filterList(this.searchPattern, this.tasks);
 
-    },
+    }
 
   },
 
@@ -85,30 +85,12 @@ export default {
 
     },
 
-    track() {
-
-      if (this.active) {
-
-        this.$store.dispatch('stopTrack', { $ipc: this.$ipc });
-        this.$emit('trackEnd', this.task);
-
-      } else {
-
-        this.$store.dispatch('startTrack', { taskId: this.task.id, $ipc: this.$ipc });
-        // this.$store.dispatch('moveTaskToBegin', this.task.id);
-
-        this.$emit('trackStart', this.task);
-
-      }
-
-    },
-
     back() {
 
       this.$router.push({ name: 'user.tasks' });
 
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -160,6 +142,10 @@ export default {
       display: flex;
       flex-flow: row;
       justify-content: space-between;
+
+      &.pin {
+        display: none !important;
+      }
 
       .task-toggler {
         width: 10em;

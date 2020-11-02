@@ -2,6 +2,8 @@
 
 import { Loading } from 'element-ui';
 import Vue from 'vue';
+// eslint-disable-next-line no-unused-vars
+import { stat } from 'fs';
 
 export default {
   state: {
@@ -37,6 +39,25 @@ export default {
   },
 
   mutations: {
+
+    pinTask(state, payload) {
+
+      const onlyPinned = state.tasks.filter(t => t.pinOrder !== null);
+      const pinOrders = onlyPinned.map(t => t.pinOrder);
+      const maxPinOrder = Math.max.apply(null, pinOrders);
+      const newPinOrder = onlyPinned.length === 0 ? 0 : maxPinOrder + 1;
+      const targetIndex = state.tasks.findIndex(t => t.id === payload.id);
+      state.tasks[targetIndex].pinOrder = newPinOrder;
+
+    },
+
+    unpinTask(state, payload) {
+
+      const targetIndex = state.tasks.findIndex(t => t.id === payload);
+      state.tasks[targetIndex].pinOrder = null;
+
+    },
+
     noActivityTimeLeft(state, payload) {
 
       state.noActivityTimeLeft = payload;
@@ -148,6 +169,18 @@ export default {
     setOfflineMode(context, payload) {
 
       context.commit('setOfflineMode', payload);
+
+    },
+
+    pinTask(context, payload) {
+
+      context.commit('pinTask', payload);
+
+    },
+
+    unpinTask(context, payload) {
+
+      context.commit('unpinTask', payload);
 
     },
 

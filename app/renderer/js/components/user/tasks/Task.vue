@@ -15,17 +15,29 @@
         {{ task.name }}
       </p>
       <p
-        class="project-name"
-        :class="{ clickable: !isProjectPage }"
+        class="project-name clickable"
         @click="openProject"
       >
         {{ task.Project.name }}
       </p>
     </el-col>
     <el-col
-      class="task-controls"
-      :span="6"
+      class="task-controls pin"
+      :span="2"
     >
+      <el-button
+        :class="{ pinned: isPinned }"
+        icon="el-icon-star-off"
+        :type="'text'"
+        @click="pinner"
+      />
+    </el-col>
+    <el-col
+      class="task-controls"
+      :span="4"
+    >
+      <!-- TODO: take care about right end of the row -->
+      <!-- wooooot? I'm not sure what's supposed to be done here :( -->
       <el-button
         class="task-toggler"
         :disabled="trackingLoad || loading"
@@ -43,7 +55,6 @@
 import { formatSeconds } from '../../../helpers/time-format.helper';
 
 export default {
-
   name: 'Task',
 
   props: {
@@ -56,7 +67,6 @@ export default {
   data() {
 
     return {
-
       /**
        * Is this task performs some routine (starting or stopping) right now?
        * @type {Boolean}router
@@ -69,22 +79,27 @@ export default {
        */
       clickProtected: false,
       breakLoading: false,
-
+      isPinned: this.task.pinOrder !== null,
     };
 
   },
 
   computed: {
-
     trackingLoad() {
 
-      return this.$store.getters.trackLoad && this.task.id === this.$store.getters.trackLoad;
+      return (
+        this.$store.getters.trackLoad
+        && this.task.id === this.$store.getters.trackLoad
+      );
 
     },
 
     active() {
 
-      return (this.task.id === this.$store.getters.task) && this.$store.getters.trackStatus;
+      return (
+        this.task.id === this.$store.getters.task
+        && this.$store.getters.trackStatus
+      );
 
     },
 
@@ -99,11 +114,9 @@ export default {
       return this.$router.history.current.name === 'user.project';
 
     },
-
   },
 
   methods: {
-
     /**
      * Opens this task details
      */
@@ -115,10 +128,26 @@ export default {
 
     openProject() {
 
-      if (this.isProjectPage)
-        return;
+      this.$router.push({
+        name: 'user.project',
+        params: { id: this.task.projectId },
+      });
 
-      this.$router.push({ name: 'user.project', params: { id: this.task.projectId } });
+    },
+
+    async pinner() {
+
+      this.isPinned = !this.isPinned;
+
+      if (this.isPinned)
+        this.$store.dispatch('pinTask', { id: this.task.id });
+      else
+        this.$store.dispatch('unpinTask', this.task.id);
+
+      await this.$ipc.emit('tasks/pinner', {
+        id: this.task.id,
+        pinOrder: this.task.pinOrder,
+      });
 
     },
 
@@ -179,66 +208,86 @@ export default {
         .catch(data => this.$alert(data.message, data.error, { confirmButtonText: 'OK' }));
 
     },
-
   },
-
 };
-
 </script>
 
 <style lang="scss">
-@import "../../../../scss/imports/variables";
-@import "../../../../scss/misc/tasks-style-misc";
+  @import "../../../../scss/imports/variables";
+  @import "../../../../scss/misc/tasks-style-misc";
 
-.task {
-  border-bottom: $--border-base;
-  padding: 1em;
+  .task {
+    border-bottom: $--border-base;
+    padding: 1em;
+    justify-content: space-between;
+    background-color: #ffffff;
 
-  &:last-of-type {
-    border: 0;
-  }
+    &:last-of-type {
+      border: 0;
+    }
 
-  .task-controls {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    .task-controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
 
-    .task-toggler {
-      width: 100%;
+      .el-button {
+        width: 100%;
+        display: block;
+        padding: 10px 0px;
+        /* font-size: 0.82rem; */
+      }
+    }
+
+    .task-controls.pin {
+      justify-content: center;
+      width: auto;
+      display: block;
+    }
+
+    .task-info {
+      max-width: 75%;
+      display: flex;
+      flex-direction: column;
+      /* padding: 0 1em 0 0; */
+
+      p {
+        margin: 0;
+        max-width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .task-name {
+        margin-bottom: 0.2em;
+      }
+
+      .project-name {
+        font-size: $--font-size-small;
+        color: $--color-text-regular;
+      }
     }
   }
 
-  .task-info {
-    max-width: 75%;
-    display: flex;
-    flex-direction: column;
-    padding: 0 1em 0 0;
+  .clickable {
+    cursor: pointer;
+    transition: $--all-transition;
 
-    p {
-      margin: 0;
-      max-width: 100%;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
-    .task-name {
-      margin-bottom: 0.5em;
-    }
-
-    .project-name {
-      font-size: $--font-size-small;
-      color: $--color-text-regular;
+    &:hover {
+      color: $--color-primary-light-1;
     }
   }
-}
 
-/* .clickable {
-  cursor: pointer;
-  transition: $--all-transition;
+  .pinned {
+    color: $--color-primary-light-1 !important;
 
-  &:hover {
-    color: $--color-primary-light-1;
+    .el-icon-star-off:before {
+      content: "\e797";
+    }
   }
-} */
+
+  .el-button--text {
+    color: $--color-text-regular;
+  }
 </style>

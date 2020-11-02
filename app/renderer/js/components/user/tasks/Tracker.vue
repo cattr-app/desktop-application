@@ -7,13 +7,13 @@
       >
         <div class="task-info">
           <template v-if="trackingTask">
-            <p 
+            <p
               class="task-name clickable"
               @click="openTask"
             >
               {{ trackingTask.name }}
             </p>
-            <p 
+            <p
               class="project-name clickable"
               @click="openProject"
             >
@@ -32,7 +32,7 @@
         :span="10"
       >
         <el-button
-          :disabled="!trackingTask || isTrackerLoading"
+          :disabled="!trackingTask || trackingLoad"
           class="tracker-toggler"
           :type="trackingInProgress ? 'success' : 'danger'"
           :plain="!trackingInProgress"
@@ -217,6 +217,7 @@ export default {
       padding: 0;
       display: flex;
       align-items: center;
+      background-color: inherit;
 
       .task-info {
         max-width: inherit;
@@ -253,6 +254,10 @@ export default {
       }
     }
 
+  }
+
+  .el-button.sync {
+    padding: 12px 20px;
   }
 
 </style>
