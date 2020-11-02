@@ -14,9 +14,19 @@ import router from './router';
 // Comment it out to use remote devtools
 if (process.env.NODE_ENV === 'development' && process.env.REMOTE_DEVTOOLS_ENABLE) {
 
-  // eslint-disable-next-line global require
-  const devtools = require('@vue/devtools');
-  devtools.connect();
+
+  try {
+
+    // eslint-disable-next-line global-require
+    const devtools = require('@vue/devtools');
+    devtools.connect();
+
+  } catch (err) {
+
+    // eslint-disable-next-line no-console
+    console.error('Error occured during Vue Devtools init', err);
+
+  }
 
 }
 
