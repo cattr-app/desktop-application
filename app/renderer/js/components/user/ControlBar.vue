@@ -8,7 +8,7 @@
       @blur="setSearchFieldState(false)"
     />
     <el-button
-      v-if="!searchFieldActive && $route.path === '/user/tasks'"
+      v-if="!searchFieldActive && $route.path === '/user/tasks' && !isOffline"
       type="secondary"
       icon="el-icon-circle-plus-outline"
       circle
@@ -72,6 +72,16 @@ export default {
 
   },
 
+  computed: {
+
+    isOffline() {
+
+      return this.$store.getters.isOffline;
+
+    },
+
+  },
+
   watch: {
     searchPattern() {
 
@@ -85,9 +95,10 @@ export default {
 
   async mounted() {
 
+    // Removing focus on ESC button press
     document.addEventListener('keydown', event => {
 
-      if (event.keyCode === 27) 
+      if (event.keyCode === 27)
         document.activeElement.blur();
 
     });

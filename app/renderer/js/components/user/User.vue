@@ -57,15 +57,14 @@ export default {
     isTrackerLoading: Boolean,
   },
 
-  data() {
-
-    return {
-      isOffline: false,
-    };
-
-  },
-
   computed: {
+
+    isOffline() {
+
+      return this.$store.getters.isOffline;
+
+    },
+
     task() {
 
       return this.$store.getters.task;
@@ -94,14 +93,14 @@ export default {
     (async () => {
 
       const offlineStatus = await this.$ipc.request('offline/request-status', {});
-      this.isOffline = offlineStatus.body.state;
+      this.$store.dispatch('setOfflineMode', offlineStatus.body.state);
 
     })();
 
     // Receiving offline status updates
     this.$ipc.serve('offline/status', req => {
 
-      this.isOffline = req.packet.body.state;
+      this.$store.dispatch('setOfflineMode', req.packet.body.state);
 
     });
 

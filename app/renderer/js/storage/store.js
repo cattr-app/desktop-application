@@ -17,6 +17,7 @@ export default {
     shouldScroll: false,
     trackLoad: false,
     noActivityTimeLeft: null,
+    isOfflineModeEnabled: false,
   },
 
   getters: {
@@ -30,10 +31,9 @@ export default {
     projects: s => s.projects,
     highlights: s => s.highlights,
     trackingInterval: s => s.trackingInterval,
-
     trackLoad: s => s.trackLoad,
-
     noActivityTimeLeft: s => s.noActivityTimeLeft,
+    isOffline: s => s.isOfflineModeEnabled,
   },
 
   mutations: {
@@ -52,6 +52,12 @@ export default {
     shouldScroll(state, payload) {
 
       state.shouldScroll = payload;
+
+    },
+
+    setOfflineMode(state, payload) {
+
+      state.isOfflineModeEnabled = payload;
 
     },
 
@@ -138,6 +144,13 @@ export default {
   },
 
   actions: {
+
+    setOfflineMode(context, payload) {
+
+      context.commit('setOfflineMode', payload);
+
+    },
+
     noActivityTimeLeft({ commit }, payload) {
 
       commit('noActivityTimeLeft', payload);

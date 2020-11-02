@@ -119,8 +119,7 @@ tray.setContextMenu(trayMenu);
 tray.on('click', e => {
 
   // flow that seems to be handling the clicks on the tray icon
-  
-  //if ctrl key pressed it's gonna start/stop the recent task
+  // if ctrl key pressed it's gonna start/stop the recent task
   if (e.ctrlKey && selectedTaskId !== null) {
 
     if (tracker.active)
@@ -128,9 +127,10 @@ tray.on('click', e => {
     else
       tracker.start(selectedTaskId);
 
-  //shows or hides the main window in case no previous task was selected
-  //actual for non-macos platforms
-    } else if (osIntegration.windowIsMinimized() && process.platform !== 'darwin')
+    // shows or hides the main window in case no previous task was selected
+    // actual for non-macos platforms
+
+  } else if (osIntegration.windowIsMinimized() && process.platform !== 'darwin')
     trayMenu.items[MENU_ITEMS.SHOW].click();
   else if (process.platform !== 'darwin')
     trayMenu.items[MENU_ITEMS.HIDE].click();

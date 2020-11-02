@@ -4,7 +4,6 @@ const { UIError } = require('../utils/errors');
 const auth = require('../base/authentication');
 const { db } = require('../models');
 const OfflineMode = require('../base/offline-mode');
-const { time } = require('../base/api');
 
 const log = new Logger('Router:Time');
 log.debug('Loaded');
@@ -20,11 +19,11 @@ module.exports = router => {
 
       // Starting sync routine
       log.debug('Time sync initiated by renderer');
-      const time = await Time.getUserTotalTimeForToday(currentUser.id);
+      const totalTimeToday = await Time.getUserTotalTimeForToday(currentUser.id);
 
       // Returning response
       log.debug('Time successfully synced');
-      return request.send(200, { time });
+      return request.send(200, { time: totalTimeToday });
 
     } catch (error) {
 
