@@ -1,0 +1,11 @@
+/**
+* Used for clickable projects and tasks
+*/
+.clickable {
+    cursor: pointer;
+    transition: $--all-transition;
+
+    &:hover {
+      color: $--color-primary-light-1;
+    }
+  }

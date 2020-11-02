@@ -188,6 +188,7 @@ export default {
 
 <style lang="scss">
 @import "../../../../scss/imports/variables";
+@import "../../../../scss/misc/tasks-style-misc";
 
 .task {
   border-bottom: $--border-base;
@@ -232,12 +233,12 @@ export default {
   }
 }
 
-.clickable {
+/* .clickable {
   cursor: pointer;
   transition: $--all-transition;
 
   &:hover {
     color: $--color-primary-light-1;
   }
-}
+} */
 </style>

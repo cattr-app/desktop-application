@@ -7,10 +7,16 @@
       >
         <div class="task-info">
           <template v-if="trackingTask">
-            <p class="task-name">
+            <p 
+              class="task-name clickable"
+              @click="openTask"
+            >
               {{ trackingTask.name }}
             </p>
-            <p class="project-name">
+            <p 
+              class="project-name clickable"
+              @click="openProject"
+            >
               {{ trackingTask.Project.name }}
             </p>
           </template>
@@ -107,6 +113,24 @@ export default {
 
   methods: {
 
+    /**
+     * Opens this task details
+     */
+    openTask() {
+
+      this.$router.push({ name: 'user.task', params: { id: this.trackingTask.id } });
+
+    },
+
+    openProject() {
+
+      if (this.isProjectPage)
+        return;
+
+      this.$router.push({ name: 'user.project', params: { id: this.trackingTask.Project.id } });
+
+    },
+
     async resumeTracking() {
 
       if (!this.$store.getters.task || this.$store.getters.trackStatus)
@@ -173,6 +197,7 @@ export default {
 
 <style lang="scss" scoped>
   @import "../../../../scss/imports/variables";
+  @import "../../../../scss/misc/tasks-style-misc";
 
   p {
     margin: 0;
@@ -227,5 +252,7 @@ export default {
 
       }
     }
+
   }
+
 </style>
