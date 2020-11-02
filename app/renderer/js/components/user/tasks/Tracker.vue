@@ -118,13 +118,18 @@ export default {
      */
     openTask() {
 
+      // Avoid duplicated navigation
+      if (this.$route.name === 'user.task' && this.$route.params.id === this.trackingTask.id)
+        return;
+
       this.$router.push({ name: 'user.task', params: { id: this.trackingTask.id } });
 
     },
 
     openProject() {
 
-      if (this.isProjectPage)
+      // Avoid duplicated navigation
+      if (this.$route.name === 'user.project' && this.$route.params.id === this.trackingTask.Project.id)
         return;
 
       this.$router.push({ name: 'user.project', params: { id: this.trackingTask.Project.id } });
