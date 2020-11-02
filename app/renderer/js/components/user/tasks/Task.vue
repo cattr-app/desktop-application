@@ -235,7 +235,7 @@ export default {
         width: 100%;
         display: block;
         padding: 10px 0px;
-        /* font-size: 0.82rem; */
+        font-size: 0.82rem;
       }
     }
 
