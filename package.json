@@ -175,7 +175,7 @@
 	],
 	"dependencies": {
 		"@amazingcat/electron-ipc-router": "1.2.2",
-		"@amazingcat/node-cattr": "2.4.0",
+		"@amazingcat/node-cattr": "3.2.2",
 		"@sentry/electron": "^2.0.2",
 		"chalk": "^4.1.0",
 		"electron-hotkey": "0.0.1-alpha.1",
