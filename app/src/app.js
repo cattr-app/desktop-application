@@ -1,10 +1,11 @@
 /* eslint global-require: 0 */
-const { app, BrowserWindow } = require('electron');
+const { app, shell, BrowserWindow } = require('electron');
 const fs = require('fs');
 const path = require('path');
-
 const config = require('./base/config');
 const appIcons = require('./utils/icons');
+
+const { WEBCONTENTS_ALLOWED_PROTOCOLS } = require('./constants/url');
 
 /**
  * Object, containing Electron browser window
@@ -102,6 +103,23 @@ app.once('ready', async () => {
 
   };
 
+  // Intercept external links navigation
+  window.webContents.on('will-navigate', (event, url) => {
+
+    // Preventing default behavior, so the link wouldn't be loaded
+    // inside the tracker's window
+    event.preventDefault();
+
+    // Check is target protocol allowed
+    const targetUrl = new URL(url);
+    if (!WEBCONTENTS_ALLOWED_PROTOCOLS.has(targetUrl.protocol))
+      return false;
+
+    // Open link in external browser
+    shell.openExternal(url);
+
+  });
+
   // Re-render new page each time when it comes ready
   window.on('ready-to-show', () => {
 
@@ -113,7 +131,6 @@ app.once('ready', async () => {
 
   // Weird workaround for Linux (see https://github.com/electron/electron/issues/4544)
   window.setMenuBarVisibility(false);
-
 
   // Load frontend entry point
   loadPage('app.html');

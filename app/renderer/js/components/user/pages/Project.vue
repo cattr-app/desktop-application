@@ -6,26 +6,25 @@
       </h1>
     </div>
     <list
-      v-bind:tasks="tasks"
+      :tasks="tasks"
     />
   </el-container>
 </template>
 
 <script>
-import { shell } from 'electron';
 import List from '../tasks/List.vue';
 
 export default {
   name: 'Project',
   components: {
-    List
+    List,
   },
   data() {
 
     return {
-      projectId: this.$route.params.id
+      projectId: this.$route.params.id,
     };
-    
+
 
   },
 
@@ -74,14 +73,14 @@ export default {
 
       return this.filterList(this.searchPattern, this.tasks);
 
-    }
+    },
 
   },
 
   methods: {
     openInBrowser() {
 
-      shell.openExternal(this.task.externalUrl);
+      window.location.href = this.task.externalUrl;
 
     },
 
@@ -89,8 +88,8 @@ export default {
 
       this.$router.push({ name: 'user.tasks' });
 
-    }
-  }
+    },
+  },
 };
 </script>
 

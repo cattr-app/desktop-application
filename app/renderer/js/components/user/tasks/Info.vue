@@ -47,7 +47,6 @@
 </template>
 
 <script>
-import { shell } from 'electron';
 import VueMarkdown from 'vue-markdown';
 
 export default {
@@ -117,7 +116,7 @@ export default {
       }
 
 
-      shell.openExternal(this.task.externalUrl);
+      window.location.href = this.task.externalUrl;
 
     },
 

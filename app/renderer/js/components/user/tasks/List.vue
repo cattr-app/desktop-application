@@ -11,14 +11,14 @@
         @end="onEnd"
       >
         <transition-group
-        name="flip-list"
-        tag="div"
+          name="flip-list"
+          tag="div"
         >
           <task
             v-for="(task, index) in tasks"
-            :pinOrder="task.pinOrder !== null ? task.pinOrder : false"
-            :class="{drag: task.pinOrder !== null}"
             :key="task.id"
+            :pin-order="task.pinOrder !== null ? task.pinOrder : false"
+            :class="{drag: task.pinOrder !== null}"
             :task="task"
             :style="{'z-index': index}"
           />
@@ -39,9 +39,7 @@
 </template>
 
 <script>
-import { shell } from 'electron';
-import Draggable from 'vuedraggable'
-
+import Draggable from 'vuedraggable';
 import Task from './Task.vue';
 
 /**
@@ -56,13 +54,14 @@ export default {
   name: 'List',
   components: {
     Task,
-    Draggable
+    Draggable,
   },
   props: {
 
     tasks: {
-      type: Array
-    }
+      type: Array,
+      default: () => [],
+    },
 
   },
 
@@ -96,7 +95,7 @@ export default {
      * @returns {undefined}
      */
     async onEnd(evt) {
-      
+
       await this.swapPinnedTasksOrder(this.tasks[evt.oldIndex], this.tasks[evt.newIndex]);
 
     },
@@ -132,7 +131,7 @@ export default {
         return false;
 
       // Given URL looks safe, opening it
-      shell.openExternal(url);
+      window.location.href = url;
       return true;
 
     },
