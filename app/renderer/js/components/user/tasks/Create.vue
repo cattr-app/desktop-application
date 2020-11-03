@@ -44,6 +44,7 @@
           icon="el-icon-check"
           plain
           :loading="requestInProgress"
+          :disabled="requestInProgress"
           @click="createTask()"
         >
           {{ $t('Create a new task') }}
@@ -58,12 +59,6 @@ import Message from '../../Message.vue';
 
 export default {
   name: 'CreateTask',
-  props: {
-    requestInProgress: {
-      type: Boolean,
-      default: false,
-    },
-  },
   data() {
 
     const projectsMap = this.$store.getters.projects
@@ -72,6 +67,7 @@ export default {
 
     return {
 
+      requestInProgress: false,
       projects: projectsMap,
       taskSelectorError: '',
       task: {
@@ -95,36 +91,52 @@ export default {
 
       this.$refs.task.validate(async () => {
 
-        // Checking if the project is selected
-        if (this.task.projectId.length === 0) {
+        this.requestInProgress = true;
+        try {
 
-          this.taskSelectorError = this.$t('Project should be selected');
-          return false;
+          // Checking if the project is selected
+          if (this.task.projectId.length === 0) {
 
-        }
+            this.taskSelectorError = this.$t('Project should be selected');
+            return false;
 
-        // Reset project selector error
-        this.taskSelectorError = '';
+          }
 
-        const createdTask = await this.$ipc.request('tasks/create', this.task);
-        if (createdTask.code !== 200) {
+          // Reset project selector error
+          this.taskSelectorError = '';
 
-          return this.$msgbox({
-            title: this.$t('Houston, we have a problem'),
-            message: this.$createElement(Message, {
-              props: {
-                title: `Error ${createdTask.body.id}`,
-                message: createdTask.body.message,
-              },
-            }),
-            confirmButtonText: this.$t('Ok'),
+          const createdTask = await this.$ipc.request('tasks/create', this.task);
+          if (createdTask.code !== 200) {
+
+            return this.$msgbox({
+              title: this.$t('Houston, we have a problem'),
+              message: this.$createElement(Message, {
+                props: {
+                  title: `Error ${createdTask.body.id}`,
+                  message: createdTask.body.message,
+                },
+              }),
+              confirmButtonText: this.$t('Ok'),
+            });
+
+          }
+
+          const tasks = await this.$ipc.request('tasks/sync', {});
+          this.$store.dispatch('syncTasks', tasks.body);
+          this.$router.push({ name: 'user.tasks' });
+          this.requestInProgress = false;
+
+        } catch (err) {
+
+          this.$message({
+            type: 'error',
+            message: `Error occured during task creation: ${err.code}`,
           });
+          this.requestInProgress = false;
 
         }
 
-        const tasks = await this.$ipc.request('tasks/sync', {});
-        this.$store.dispatch('syncTasks', tasks.body);
-        this.$router.push({ name: 'user.tasks' });
+        return true;
 
       });
 
