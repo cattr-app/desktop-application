@@ -164,7 +164,7 @@ module.exports.getUserTotalTimeForToday = async userId => {
   try {
 
     // Fetch total time from server
-    const overallTime = await Time.getTotalTime(totalTimeOptions);
+    const overallTime = await Time.getTotal(totalTimeOptions);
     return overallTime;
 
   } catch (error) {

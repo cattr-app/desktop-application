@@ -143,6 +143,10 @@ export default {
 
     },
 
+    /**
+     * Adds task to a pinned list
+     * @async
+     */
     async pinner() {
 
       this.isPinned = !this.isPinned;

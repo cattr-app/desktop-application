@@ -331,6 +331,11 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
 
 };
 
+/**
+ * Add task to a pinned list so they would be able appear on top of other ones
+ * @param {String} taskId task's ID
+ * @param {Number} pinOrder Where should it be placed in pinned list
+ */
 module.exports.taskPinner = async (taskId, pinOrder = 0) => {
 
   try {

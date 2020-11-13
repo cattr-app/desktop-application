@@ -15,6 +15,7 @@ export default {
     tasks: [],
     projects: [],
     highlights: [],
+    totalTime: 0,
     trackingInterval: null,
     shouldScroll: false,
     trackLoad: false,
@@ -32,6 +33,7 @@ export default {
     tasks: s => s.tasks,
     projects: s => s.projects,
     highlights: s => s.highlights,
+    totalTime: s => s.totalTime,
     trackingInterval: s => s.trackingInterval,
     trackLoad: s => s.trackLoad,
     noActivityTimeLeft: s => s.noActivityTimeLeft,
@@ -147,6 +149,8 @@ export default {
 
       task.TrackedTime += 1;
 
+      state.totalTime += 1;
+
     },
 
     tickDecrement(state, payload) {
@@ -154,6 +158,14 @@ export default {
       const task = state.tasks.find(t => t.id === payload.task);
       if (task.TrackedTime)
         task.TrackedTime -= payload.duration;
+      state.totalTime -= payload.duration;
+
+    },
+
+    totalTimeSync(state, payload) {
+
+      const totalTime = payload.time.time;
+      state.totalTime = totalTime;
 
     },
 
@@ -307,6 +319,16 @@ export default {
 
       commit('tickDecrement', payload);
 
+    },
+
+    /* totalTimeSync(context, { totalTime }) {
+
+      context.commit('totalTimeSync', totalTime);
+
+    },
+ */
+    totalTimeSync({ commit }, payload) {
+      commit('totalTimeSync', payload);
     },
 
     stopTrack(context, { $ipc }) {
