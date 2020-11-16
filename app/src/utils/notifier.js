@@ -157,8 +157,6 @@ module.exports = {
     // Render the notie template
     notification.loadURL('file://'.concat(path.resolve(config.apppath, 'build', 'screen-notie.html')));
 
-    notification.webContents.openDevTools('detached');
-
     // Pass webContents to the router instance
     notificationRouter.setWebContents(notification.webContents);
 
@@ -181,9 +179,6 @@ module.exports = {
       });
 
     });
-
-    // Open DevTools
-    //notification.webContents.openDevTools('detached');
 
   },
 
