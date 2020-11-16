@@ -196,19 +196,19 @@ module.exports.getLocalTotalTimeForToday = async () => {
     externalId: task.id,
   }));
 
-  tasksMap.forEach(async task => {
-    const id = task.externalId;
-    const taskTime = await Tasks.getTaskTodayTime(id);
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const task of tasksMap) {
+
+    const taskTime = await Tasks.getTaskTodayTime(task.externalId);
     totalTime += taskTime;
-  });
+
+  }
 
   const time = {
     start: todayMidnight,
     end: almostNextMidnight,
     time: totalTime
   };
-
-  console.log(time);
 
   return time;
 
