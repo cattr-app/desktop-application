@@ -2,11 +2,13 @@
 /* eslint no-warning-comments: 0 */
 
 const Time = require('../base/api').time;
+const Tasks = require('./tasks');
 const auth = require('../base/authentication');
 const database = require('../models').db.models;
 const Log = require('../utils/log');
 const OfflineMode = require('../base/offline-mode');
 const { UIError } = require('../utils/errors');
+const sequelize = require('sequelize');
 
 const log = new Log('Controller:Time');
 
@@ -181,6 +183,37 @@ module.exports.getUserTotalTimeForToday = async userId => {
 
 };
 
+module.exports.getLocalTotalTimeForToday = async () => {
+
+  let totalTime = 0;
+  const todayMidnight = todayLocalTimezone();
+  const almostNextMidnight = new Date();
+  almostNextMidnight.setHours(23, 59, 59, 0);
+
+  const tasks = await Tasks.getTasksList();
+
+  const tasksMap = tasks.map(task => ({
+    externalId: task.id,
+  }));
+
+  tasksMap.forEach(async task => {
+    const id = task.externalId;
+    const taskTime = await Tasks.getTaskTodayTime(id);
+    totalTime += taskTime;
+  });
+
+  const time = {
+    start: todayMidnight,
+    end: almostNextMidnight,
+    time: totalTime
+  };
+
+  console.log(time);
+
+  return time;
+
+};
+
 module.exports.getTasksTimeForToday = async () => Time.getPerTasks({
 
   user_id: (await auth.getCurrentUser()).id,
@@ -234,7 +267,7 @@ module.exports.saveTrackedTime = async (taskId, time, action = 'append') => {
 
   } catch (error) {
 
-    // Transparently pass all UIErrors
+    // TransparenttrackFromDatabasely pass all UIErrors
     if (error instanceof UIError)
       throw error;
 
