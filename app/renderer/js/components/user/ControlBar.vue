@@ -83,9 +83,10 @@ export default {
   },
 
   watch: {
+
     searchPattern() {
 
-      if (this.$route.name !== 'user.tasks' && this.$route.name !== 'user.project')
+      if (this.$route.name !== 'user.tasks' && this.$route.name !== 'user.project') 
         this.$router.push({ name: 'user.tasks' });
 
       this.setSearchPattern();

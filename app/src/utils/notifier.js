@@ -59,6 +59,8 @@ module.exports = {
       icon: nativeImage.createFromBuffer(screenshot),
       hasReply: false,
       closeButtonText: translation.translate('Close'),
+      urgency: 'normal',
+      timeoutType: 'default',
       actions: [
         {
           text: translation.translate('Delete'),
@@ -69,7 +71,9 @@ module.exports = {
 
     let timerId = 0;
 
-    notify.on('action', (action, index) => {
+    const actionHandler = process.platform === 'darwin' ? 'action' : 'click';
+
+    notify.on(actionHandler, (action, index) => {
 
       clearTimeout(timerId);
       notify.close();
@@ -123,7 +127,7 @@ module.exports = {
 
     // Calculate notie positioning
     const posX = display.workArea.x + display.workArea.width - width;
-    const posY = display.workArea.y;
+    const posY = display.workArea.y + display.workArea.height - height;
 
     // Configure notification window
     const windowOptions = {
@@ -179,7 +183,7 @@ module.exports = {
     });
 
     // Open DevTools
-    // notification.webContents.openDevTools('detached');
+    //notification.webContents.openDevTools('detached');
 
   },
 

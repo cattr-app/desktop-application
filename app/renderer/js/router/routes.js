@@ -1,6 +1,6 @@
 import Login from '../components/auth/Login.vue';
 import User from '../components/user/User.vue';
-import UserTasks from '../components/user/pages/UserTasks.vue';
+import TaskList from '../components/user/tasks/List.vue';
 import UserSettings from '../components/user/pages/Settings.vue';
 import Info from '../components/user/tasks/Info.vue';
 import TaskCreate from '../components/user/tasks/Create.vue';
@@ -26,7 +26,7 @@ export default [
       {
         name: 'user.tasks',
         path: 'tasks',
-        component: UserTasks,
+        component: TaskList,
       },
       {
         name: 'user.task',

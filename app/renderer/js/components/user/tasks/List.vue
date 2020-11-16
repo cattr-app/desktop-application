@@ -3,7 +3,7 @@
     ref="taskList"
     class="tasks"
   >
-    <template v-if="tasks.length > 0">
+    <template v-if="filteredTasks.length > 0">
       <draggable
         class="dragArea"
         :class="{ dragArea: true }"
@@ -15,7 +15,7 @@
           tag="div"
         >
           <task
-            v-for="(task, index) in tasks"
+            v-for="(task, index) in filteredTasks"
             :key="task.id"
             :pin-order="task.pinOrder !== null ? task.pinOrder : false"
             :class="{drag: task.pinOrder !== null}"
@@ -78,6 +78,16 @@ export default {
     },
 
     /**
+     * Returns unsorted tasks list
+     * @returns {Array<Task>} Array with tasks to display
+     */
+    tasks() {
+
+      return this.$store.getters.tasks;
+
+    },
+
+    /**
      * Returns search pattern
      * @returns {String} Search pattern
      */
@@ -87,9 +97,72 @@ export default {
 
     },
 
+    /**
+     * Returns tasks match search query
+     * @returns {Array<Task>} Array with tasks matching search query
+     */
+    filteredTasks() {
+
+      const filteredTasks = this.filterList(this.searchPattern, this.tasks);
+      const highlight = this.sortTasksByHighlights(filteredTasks, this.highlights);
+      const formatted = this.sortByPinOrder(highlight);
+
+      return formatted;
+
+    },
+
   },
 
   methods: {
+
+    /**
+     * Returns tasks sorted by highlight markers
+     * @returns {Array<Task>} Array with sorted tasks
+     */
+    sortTasksByHighlights(tasks, highlights) {
+
+      // Create copy of this.tasks
+      const sorted = [...tasks];
+
+      // Moving highlighted elements to the start of tasks array
+      highlights.forEach(taskId => {
+
+        // Get index of task to be raised if it's marked as highlighted
+        const targetIndex = sorted.findIndex(t => t.id === taskId);
+        sorted.unshift(sorted.splice(targetIndex, 1)[0]);
+
+      });
+
+      return sorted;
+
+    },
+
+    /**
+     * Returns tasks sorted by pins markers
+     * @returns {Array<Task>} Array with sorted tasks
+     */
+    sortByPinOrder(tasks) {
+
+      const sorted = tasks.slice();
+
+      // Get tasks being pinned
+      const pinned = sorted.filter(t => t.pinOrder !== null);
+
+      pinned.forEach(p => {
+
+        // if it's pinned, it goes to the top of the list
+        const targetIndex = sorted.findIndex(t => t.id === p.id);
+        sorted.splice(targetIndex, 1);
+
+      });
+
+      // Sort pinned tasks by the pin order
+      pinned.sort((t1, t2) => { return  t2.pinOrder - t1.pinOrder; });
+
+      return pinned.concat(sorted);
+
+    },
+
     /**
      * Handles drag'n'drop event
      * @returns {undefined}
@@ -144,6 +217,9 @@ export default {
      */
     filterList(q, list) {
 
+      if (!q)
+        return list;
+
       const words = q.split(' ').map(s => s.trim()).filter(s => s.length !== 0);
       const hasTrailingSpace = q.endsWith(' ');
       const regexString = words.map((word, i) => {
@@ -156,6 +232,15 @@ export default {
 
       const searchRegex = new RegExp(`${regexString}.+`, 'gi');
       return list.filter(item => {
+
+        // This is just a thing to leave the pinned tasks in the search results
+        if (item.pinOrder !== null) {
+
+          // We should reset lastIndex on positive matchs to avoid issues with RegExp reuse
+          searchRegex.lastIndex = 0;
+          return true;
+
+        }
 
         if (searchRegex.test(item.name)) {
 
