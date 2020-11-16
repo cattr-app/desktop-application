@@ -127,7 +127,7 @@ module.exports = {
 
     // Calculate notie positioning
     const posX = display.workArea.x + display.workArea.width - width;
-    const posY = display.workArea.y + display.workArea.height - height;
+    const posY = display.workArea.y;
 
     // Configure notification window
     const windowOptions = {
@@ -157,8 +157,6 @@ module.exports = {
     // Render the notie template
     notification.loadURL('file://'.concat(path.resolve(config.apppath, 'build', 'screen-notie.html')));
 
-    notification.webContents.openDevTools('detached');
-
     // Pass webContents to the router instance
     notificationRouter.setWebContents(notification.webContents);
 
@@ -181,9 +179,6 @@ module.exports = {
       });
 
     });
-
-    // Open DevTools
-    //notification.webContents.openDevTools('detached');
 
   },
 

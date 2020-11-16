@@ -9,6 +9,7 @@
 		"postinstall": "electron-builder install-app-deps",
 		"start": "npx electron ./app/src/app.js",
 		"dev": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron .",
+		"no-scr": "npx cross-env AT_MOCK_SCR=yes node_modules/.bin/electron .",
 		"dev-no-scr": "npx cross-env AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
 		"dev-vue": "npx cross-env AT_DEVMODE=meow REMOTE_DEVTOOLS_ENABLE=true node_modules/.bin/electron .",
 		"dev-win": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron.cmd .",
