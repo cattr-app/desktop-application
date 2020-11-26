@@ -103,11 +103,18 @@ export default {
      */
     filteredTasks() {
 
+      try {
+
       const filteredTasks = this.filterList(this.searchPattern, this.tasks);
       const highlight = this.sortTasksByHighlights(filteredTasks, this.highlights);
       const formatted = this.sortByPinOrder(highlight);
 
       return formatted;
+      
+      } catch (error) {
+        return this.getPinnedTasks(this.tasks);
+      }
+
 
     },
 
@@ -263,6 +270,20 @@ export default {
       });
 
     },
+
+    getPinnedTasks(list) {
+      return list.filter(item => {
+        if (item.pinOrder !== null) {
+
+          // We should reset lastIndex on positive matchs to avoid issues with RegExp reuse
+          searchRegex.lastIndex = 0;
+          return true;
+
+        }
+
+        return false;
+      })
+    }
   },
 
 };
