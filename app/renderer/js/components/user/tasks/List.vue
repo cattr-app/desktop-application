@@ -117,7 +117,6 @@ export default {
 
       }
 
-
     },
 
   },
@@ -274,8 +273,13 @@ export default {
     },
 
     getPinnedTasks(list) {
+
       return list.filter(item => {
+
         if (item.pinOrder !== null) {
+
+          // eslint-disable-next-line quotes
+          const searchRegex = new RegExp(`.+`, 'gi');
 
           // We should reset lastIndex on positive matchs to avoid issues with RegExp reuse
           searchRegex.lastIndex = 0;
@@ -284,8 +288,10 @@ export default {
         }
 
         return false;
-      })
-    }
+
+      });
+
+    },
   },
 
 };
