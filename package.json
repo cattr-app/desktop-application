@@ -25,7 +25,7 @@
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
 	},
 	"build": {
-		"appId": "app.cattr.desktop",
+		"appId": "app.cattr",
 		"productName": "Cattr",
 		"afterSign": "tools/macos-notarization.js",
 		"asar": "true",
