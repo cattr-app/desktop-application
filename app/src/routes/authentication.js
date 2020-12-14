@@ -20,7 +20,7 @@ module.exports = router => {
       // If exact URL is not worked, retry with removed  path, search, and hash parameters
       let url = request.packet.body.hostname;
       if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0)
-        url = `https://${url.trim()}/`;
+        url = `https://${url.trim()}/api`;
 
       const reconstructedUrl = new URL(url);
       reconstructedUrl.hash = '';

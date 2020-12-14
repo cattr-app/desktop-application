@@ -165,7 +165,7 @@ export default {
       });
 
       // Sort pinned tasks by the pin order
-      pinned.sort((t1, t2) => { return  t2.pinOrder - t1.pinOrder; });
+      pinned.sort((t1, t2) => t2.pinOrder - t1.pinOrder);
 
       return pinned.concat(sorted);
 
@@ -278,8 +278,7 @@ export default {
 
         if (item.pinOrder !== null) {
 
-          // eslint-disable-next-line quotes
-          const searchRegex = new RegExp(`.+`, 'gi');
+          const searchRegex = new RegExp('.+', 'gi');
 
           // We should reset lastIndex on positive matchs to avoid issues with RegExp reuse
           searchRegex.lastIndex = 0;
