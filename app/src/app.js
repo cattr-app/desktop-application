@@ -60,6 +60,7 @@ app.once('ready', async () => {
       nodeIntegration: true,
       nativeWindowOpen: true,
       enableRemoteModule: true,
+      contextIsolation: false,
     },
     icon: appIcons.DEFAULT,
 
