@@ -6,7 +6,7 @@
       </h1>
     </div>
     <list
-      :tasks="tasks"
+      :list="projectTasks"
     />
   </el-container>
 </template>
@@ -54,7 +54,7 @@ export default {
      * Returns tasks
      * @returns {Array<Task>} Array with tasks
      */
-    tasks() {
+    projectTasks() {
 
       return this.$store.getters.tasks.filter(t => t.projectId === this.projectId);
 
@@ -65,7 +65,6 @@ export default {
      * @returns {Array<Task>} Array with tasks matching search query
      */
     filteredTasks() {
-
 
       // Return tasks without filtering if condition is not defined
       if (!this.searchPattern)

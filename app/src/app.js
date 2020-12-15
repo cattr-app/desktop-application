@@ -114,7 +114,7 @@ app.once('ready', async () => {
     // Check is target protocol allowed
     const targetUrl = new URL(url);
     if (!WEBCONTENTS_ALLOWED_PROTOCOLS.has(targetUrl.protocol))
-      return false;
+      return;
 
     // Open link in external browser
     shell.openExternal(url);

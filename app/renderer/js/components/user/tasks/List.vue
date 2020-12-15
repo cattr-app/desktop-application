@@ -58,9 +58,9 @@ export default {
   },
   props: {
 
-    tasks: {
+    list: {
       type: Array,
-      default: () => [],
+      default: null,
     },
 
   },
@@ -83,7 +83,7 @@ export default {
      */
     tasks() {
 
-      return this.$store.getters.tasks;
+      return this.list || this.$store.getters.tasks;
 
     },
 
