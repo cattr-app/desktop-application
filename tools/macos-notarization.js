@@ -7,7 +7,7 @@ require('dotenv').config();
  * Application ID
  * @type {String}
  */
-const appId = 'app.cattr.desktop';
+const appId = 'app.cattr';
 
 module.exports = async params => {
 

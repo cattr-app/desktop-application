@@ -89,7 +89,6 @@ export default {
 
       return (
         this.$store.getters.trackLoad
-        && this.task.id === this.$store.getters.trackLoad
       );
 
     },
