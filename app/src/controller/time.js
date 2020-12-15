@@ -8,7 +8,6 @@ const database = require('../models').db.models;
 const Log = require('../utils/log');
 const OfflineMode = require('../base/offline-mode');
 const { UIError } = require('../utils/errors');
-const sequelize = require('sequelize');
 
 const log = new Log('Controller:Time');
 
@@ -207,7 +206,7 @@ module.exports.getLocalTotalTimeForToday = async () => {
   const time = {
     start: todayMidnight,
     end: almostNextMidnight,
-    time: totalTime
+    time: totalTime,
   };
 
   return time;

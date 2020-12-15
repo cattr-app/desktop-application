@@ -1,6 +1,5 @@
 const Logger = require('../utils/log');
 const Time = require('../controller/time');
-const Tasks = require('../controller/tasks');
 const { UIError } = require('../utils/errors');
 const auth = require('../base/authentication');
 const { db } = require('../models');

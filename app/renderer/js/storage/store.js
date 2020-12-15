@@ -328,7 +328,9 @@ export default {
     },
  */
     totalTimeSync({ commit }, payload) {
+
       commit('totalTimeSync', payload);
+
     },
 
     stopTrack(context, { $ipc }) {
