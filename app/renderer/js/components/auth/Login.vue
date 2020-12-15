@@ -178,6 +178,8 @@ export default {
         await this.$ipc.request('projects/sync', {});
         const tasks = await this.$ipc.request('tasks/sync', {});
         this.$store.dispatch('syncTasks', tasks.body);
+        const totalTime = await this.$ipc.request('time/total', {});
+        this.$store.dispatch('totalTimeSync', totalTime.body);
         this.$router.push({ name: 'user.tasks' });
 
       } else {

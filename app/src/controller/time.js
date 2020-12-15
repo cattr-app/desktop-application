@@ -2,6 +2,7 @@
 /* eslint no-warning-comments: 0 */
 
 const Time = require('../base/api').time;
+const Tasks = require('./tasks');
 const auth = require('../base/authentication');
 const database = require('../models').db.models;
 const Log = require('../utils/log');
@@ -164,7 +165,7 @@ module.exports.getUserTotalTimeForToday = async userId => {
   try {
 
     // Fetch total time from server
-    const overallTime = await Time.getTotalTime(totalTimeOptions);
+    const overallTime = await Time.getTotal(totalTimeOptions);
     return overallTime;
 
   } catch (error) {
@@ -178,6 +179,37 @@ module.exports.getUserTotalTimeForToday = async userId => {
     throw new UIError(500, 'Unhandled system error occured', 'ECTM502');
 
   }
+
+};
+
+module.exports.getLocalTotalTimeForToday = async () => {
+
+  let totalTime = 0;
+  const todayMidnight = todayLocalTimezone();
+  const almostNextMidnight = new Date();
+  almostNextMidnight.setHours(23, 59, 59, 0);
+
+  const tasks = await Tasks.getTasksList();
+
+  const tasksMap = tasks.map(task => ({
+    externalId: task.id,
+  }));
+
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const task of tasksMap) {
+
+    const taskTime = await Tasks.getTaskTodayTime(task.externalId);
+    totalTime += taskTime;
+
+  }
+
+  const time = {
+    start: todayMidnight,
+    end: almostNextMidnight,
+    time: totalTime,
+  };
+
+  return time;
 
 };
 
@@ -234,7 +266,7 @@ module.exports.saveTrackedTime = async (taskId, time, action = 'append') => {
 
   } catch (error) {
 
-    // Transparently pass all UIErrors
+    // TransparenttrackFromDatabasely pass all UIErrors
     if (error instanceof UIError)
       throw error;
 

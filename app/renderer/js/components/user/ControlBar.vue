@@ -137,6 +137,8 @@ export default {
       this.syncInProgress = true;
       await this.$ipc.request('projects/sync', {});
       const tasks = await this.$ipc.request('tasks/sync', {});
+      const totalTime = await this.$ipc.request('time/total', {});
+      this.$store.dispatch('totalTimeSync', totalTime.body);
       this.$store.dispatch('syncTasks', tasks.body);
       this.syncInProgress = false;
 
