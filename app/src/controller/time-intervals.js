@@ -5,6 +5,7 @@ const api = require('../base/api');
 const database = require('../models').db.models;
 const Log = require('../utils/log');
 const OfflineMode = require('../base/offline-mode');
+const TaskTracker = require('../base/task-tracker');
 
 const log = new Log('Controller:Time-Intervals');
 
@@ -95,7 +96,7 @@ module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
     log.debug(`Interval was synced (assigned ID is ${pushedInterval.id})`);
 
     // Trigger connection restore in OfflineMode
-    OfflineMode.restoreWithCheck();
+    await OfflineMode.restoreWithCheck(TaskTracker.isActive);
 
     // Everything is fine
     return pushedInterval;

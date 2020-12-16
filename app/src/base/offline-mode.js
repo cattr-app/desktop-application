@@ -1,5 +1,6 @@
 const EventEmitter = require('events');
 const auth = require('./authentication');
+const heartbeatMonitor = require('../utils/heartbeat-monitor');
 const Log = require('../utils/log');
 
 const log = new Log('OfflineMode');
@@ -60,6 +61,9 @@ class OfflineModeHandler extends EventEmitter {
     // Notify that offline mode is enabled
     this.emit('offline');
 
+    // Stop heartbeating to backend when tracker is paused
+    heartbeatMonitor.stop();
+
     // Set connectivity check timer
     this._pingTimer = setInterval(async () => {
 
@@ -104,10 +108,14 @@ class OfflineModeHandler extends EventEmitter {
   /**
    * Disarm offline mode if server is available
    */
-  async restoreWithCheck() {
+  async restoreWithCheck(startHeartbeat = true) {
 
     if (this._isEnabled && await auth.ping())
       this.restore();
+
+    // If the tracking is enabled and the connection is restored, we start the heartbeat again
+    if (startHeartbeat)
+      heartbeatMonitor.start();
 
   }
 
