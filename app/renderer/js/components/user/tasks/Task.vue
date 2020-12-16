@@ -121,6 +121,8 @@ export default {
      */
     openTask() {
 
+      this.$emit('load-task-position', null);
+
       // Avoid duplicated navigation
       if (this.$route.name === 'user.task' && this.$route.params.id === this.task.id)
         return;
@@ -130,6 +132,8 @@ export default {
     },
 
     openProject() {
+
+      this.$emit('load-task-position', null);
 
       // Avoid duplicated navigation
       if (this.$route.name === 'user.project' && this.$route.params.id === this.task.projectId)
