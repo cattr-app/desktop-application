@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import Tracker from './tasks/Tracker';
+import Tracker from './tasks/Tracker.vue';
 
 export default {
   name: 'Navigation',

@@ -21,6 +21,7 @@
             :class="{drag: task.pinOrder !== null}"
             :task="task"
             :style="{'z-index': index}"
+            @load-task-position="loadTaskPosition($event)"
           />
         </transition-group>
       </draggable>
@@ -121,7 +122,17 @@ export default {
 
   },
 
+  mounted() {
+
+  },
+
   methods: {
+
+    loadTaskPosition() {
+
+      this.$emit('load-task-position', null);
+
+    },
 
     /**
      * Returns tasks sorted by highlight markers

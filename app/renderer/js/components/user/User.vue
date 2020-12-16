@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-header class="app-controls">
-      <control-bar />
+      <control-bar @load-task-position="loadTaskPosition($event)" />
       <!--<navigation class="nav-menu"></navigation>-->
     </el-header>
 
@@ -29,17 +29,20 @@
         name="page"
         mode="out-in"
       >
-        <router-view :key="$route.fullPath" />
+        <router-view
+          :key="$route.fullPath"
+          @hook:mounted="restoreTaskPosition"
+          @load-task-position="loadTaskPosition($event)"
+        />
       </transition>
     </div>
-    <tracker />
+    <tracker @load-task-position="loadTaskPosition($event)" />
 
     <inactivity-dialog />
   </div>
 </template>
 
 <script>
-import Navigation from './Navigation.vue';
 import ControlBar from './ControlBar.vue';
 import Tracker from './tasks/Tracker.vue';
 import InactivityDialog from '../inactivity/Modal.vue';
@@ -47,7 +50,6 @@ import InactivityDialog from '../inactivity/Modal.vue';
 export default {
   name: 'User',
   components: {
-    Navigation,
     ControlBar,
     Tracker,
     InactivityDialog,
@@ -70,6 +72,7 @@ export default {
       return this.$store.getters.task;
 
     },
+
   },
 
   watch: {
@@ -135,6 +138,7 @@ export default {
   },
 
   methods: {
+
     scrollTop() {
 
       setTimeout(() => {
@@ -144,6 +148,36 @@ export default {
       }, 100);
 
     },
+
+    loadTaskPosition() {
+
+      const currentPositionY = this.$refs.view.scrollTop;
+
+      this.$store.dispatch('setCurrentPositionY', currentPositionY);
+
+      return true;
+
+    },
+
+    restoreTaskPosition() {
+
+      let position;
+      if (this.$route.name !== 'user.project')
+        position = this.$store.getters.currentPositionY;
+      else
+        position = 0;
+
+
+      this.$refs.view.scrollTo({
+        top: position,
+        left: 0,
+        behavior: 'instant',
+      });
+
+      return true;
+
+    },
+
   },
 };
 </script>

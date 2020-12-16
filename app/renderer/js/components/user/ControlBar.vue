@@ -122,13 +122,15 @@ export default {
 
     goTo(where) {
 
+      this.$emit('load-task-position', null);
+
       this.$router.push({ path: where });
 
     },
 
     goBack() {
 
-      this.$router.go(-1);
+      Promise.resolve(this.$router.go(-1));
 
     },
 

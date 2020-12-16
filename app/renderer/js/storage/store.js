@@ -21,6 +21,7 @@ export default {
     trackLoad: false,
     noActivityTimeLeft: null,
     isOfflineModeEnabled: false,
+    currentPositionY: 0,
   },
 
   getters: {
@@ -38,6 +39,7 @@ export default {
     trackLoad: s => s.trackLoad,
     noActivityTimeLeft: s => s.noActivityTimeLeft,
     isOffline: s => s.isOfflineModeEnabled,
+    currentPositionY: s => s.currentPositionY,
   },
 
   mutations: {
@@ -81,6 +83,12 @@ export default {
     setOfflineMode(state, payload) {
 
       state.isOfflineModeEnabled = payload;
+
+    },
+
+    setCurrentPositionY(state, payload) {
+
+      state.currentPositionY = payload;
 
     },
 
@@ -259,6 +267,12 @@ export default {
     showLoader(context) {
 
       context.commit('loader', Loading.service({ fullscreen: true }));
+
+    },
+
+    setCurrentPositionY(context, payload) {
+
+      context.commit('setCurrentPositionY', payload);
 
     },
 
