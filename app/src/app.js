@@ -121,11 +121,49 @@ app.once('ready', async () => {
 
   });
 
+  // Generate and inject CSP policy
+  window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+
+    // Build a CSP and apply the default policy
+    let cspValue = "default-src 'self';";
+
+    // Apply styling policy
+    cspValue += "style-src 'self' data: 'unsafe-inline';";
+
+    // Scripts: allow unsafe-eval in dev mode, otherwise Chrome DevTools wouldn't work
+    if (config.isDeveloperModeEnabled)
+      cspValue += "script-src 'self' 'unsafe-eval';";
+    else
+      cspValue += "script-src 'self';";
+
+    // If Sentry is enabled, inject also a connect-src CSP allowing requests to Sentry host
+    if (config.sentry.enabled) {
+
+      // Parse frontend's DSN to extract the host
+      const frontendDsnUrl = new URL(config.sentry.dsnFrontend);
+
+      // Inject connect-src policy allowing connections to self and Sentry hostname
+      cspValue += `connect-src 'self' ${frontendDsnUrl.origin};`;
+
+    }
+
+    // Returning injection by callback
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': cspValue,
+      },
+    });
+
+  });
+
   // Re-render new page each time when it comes ready
   window.on('ready-to-show', () => {
 
     // Pass webContents to IPC
     router.setWebContents(window.webContents);
+
+    // Show the main window
     window.show();
 
   });
