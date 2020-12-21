@@ -14,12 +14,14 @@ import router from './router';
 // Comment it out to use remote devtools
 if (process.env.NODE_ENV === 'development' && process.env.REMOTE_DEVTOOLS_ENABLE) {
 
-
   try {
 
     // eslint-disable-next-line global-require
-    const devtools = require('@vue/devtools');
-    devtools.connect();
+    // const devtools = require('@vue/devtools');
+    // devtools.connect();
+
+    // eslint-disable-next-line no-console
+    console.log('vue-devtools package is disabled due to the maintaining issues');
 
   } catch (err) {
 

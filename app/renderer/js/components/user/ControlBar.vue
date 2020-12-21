@@ -86,7 +86,7 @@ export default {
 
     searchPattern() {
 
-      if (this.$route.name !== 'user.tasks' && this.$route.name !== 'user.project') 
+      if (this.$route.name !== 'user.tasks' && this.$route.name !== 'user.project')
         this.$router.push({ name: 'user.tasks' });
 
       this.setSearchPattern();
@@ -234,8 +234,8 @@ export default {
       if (reportBuffer !== '') {
 
         this.$confirm(
-          `${this.$t('Do you want to copy the report formatted in Markdown or in plain text?')}`,
-          `${this.$t('Success!')}`,
+          this.$t('Do you want to copy the report formatted in Markdown or in plain text?'),
+          this.$t('Success!'),
           {
             distinguishCancelAndClose: true,
             confirmButtonText: 'Markdown',
@@ -257,7 +257,11 @@ export default {
           // Copy text to clipboard
           clipboard.writeText(reportBuffer);
 
-        }).catch(() => {
+        }).catch(action => {
+
+          // We should consider "cancel" button as "Plain text" option selection
+          if (action !== 'cancel')
+            return;
 
           // Report buffer contains prepared report
           let buffer = '';
