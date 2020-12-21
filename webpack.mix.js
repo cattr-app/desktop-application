@@ -37,7 +37,8 @@ if (mix.inProduction && process.env.MAKE_RELEASE) {
     plugins: [
       new SentryWebpackPlugin({
         include: 'build',
-        ignore: ['mix-manifest.json'],
+        urlPrefix: 'build/',
+        ignore: ['mix-manifest.json', 'app.css.map'],
         configFile: path.resolve(__dirname, '.sentry.renderer'),
         release: `${packageManifest.name}@${packageManifest.version}`,
         setCommits: { auto: true },

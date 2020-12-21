@@ -47,10 +47,10 @@ configuration.sentry = {
   enabled: !isDeveloperModeEnabled,
 
   // Main application DSN
-  dsn: 'https://b3c99721c14c4e2399de2d46dc89caba@sentry.amazingcat.net/2',
+  dsn: 'https://b0ab7e30102244948431ecf5b1eb9c9a@sentry.amazingcat.net/15',
 
   // Frontend application DSN
-  dsnFrontend: 'https://2bc3716988cd42979e511f629a8e97a3@sentry.amazingcat.net/4',
+  dsnFrontend: 'https://00bd1ee1db824310812252bb96e96945@sentry.amazingcat.net/14',
 
   // Setting the current release
   release: `cattr@${packageVersion}`,
