@@ -175,12 +175,8 @@ app.once('ready', async () => {
   loadPage('app.html');
 
   // Open DevTools if we're in development mode
-  if (config.isDeveloperModeEnabled) {
-
-    // Vue Devtools disabled until package maintainer will fix install script
-    // require('vue-devtools').install();
+  if (config.isDeveloperModeEnabled)
     window.webContents.openDevTools('detached');
 
-  }
 
 });
