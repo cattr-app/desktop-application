@@ -98,6 +98,7 @@ export default {
           if (this.task.projectId.length === 0) {
 
             this.taskSelectorError = this.$t('Project should be selected');
+            this.requestInProgress = false;
             return false;
 
           }
@@ -108,6 +109,7 @@ export default {
           const createdTask = await this.$ipc.request('tasks/create', this.task);
           if (createdTask.code !== 200) {
 
+            this.requestInProgress = false;
             return this.$msgbox({
               title: this.$t('Houston, we have a problem'),
               message: this.$createElement(Message, {

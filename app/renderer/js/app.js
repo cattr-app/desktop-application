@@ -56,6 +56,42 @@ Vue.use(Element);
       dsn: sentryConfig.dsnFrontend,
       release: sentryConfig.release,
       integrations: [new Integrations.Vue({ Vue, attachProps: true })],
+
+      // Patching error report right before sending to normalize frontend paths
+      beforeSend: data => {
+
+        // Filter only requests with known structure which we can modify
+        if (!data || !data.exception || !data.exception.values)
+          return data;
+
+        // Iterate over exceptions
+        // eslint-disable-next-line no-param-reassign
+        data.exception.values = data.exception.values.map(exception => {
+
+          // Filter only exceptions we can modify
+          if (!exception.stacktrace || !exception.stacktrace.frames)
+            return exception;
+
+          // Rewrite exception file path to "build/app.js" since we always
+          // building frontend into the single bundle
+          // eslint-disable-next-line no-param-reassign
+          exception.stacktrace.frames = exception.stacktrace.frames.map(frame => {
+
+            // Modify only exceptions with the "filename" property
+            if (frame.filename)
+              frame.filename = 'build/app.js'; // eslint-disable-line no-param-reassign
+
+            return frame;
+
+          });
+
+          return exception;
+
+        });
+
+        return data;
+
+      },
     });
 
     Vue.prototype.$ipc.serve(

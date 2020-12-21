@@ -380,13 +380,16 @@ module.exports.createTask = async task => {
   const taskToCreate = {
     project_id: projectExternalId,
     task_name: name,
-    description,
     active: 1,
     user_id: user.id,
     assigned_by: user.id,
     url: null,
     priority_id: 1,
   };
+
+  // Avoid strange validation error when description is null or empty
+  if (description && description.length > 0)
+    taskToCreate.description = description;
 
   try {
 

@@ -1,6 +1,6 @@
 {
 	"name": "cattr",
-	"version": "2.4.1",
+	"version": "2.4.2-experimental.a",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
 	"main": "app/src/app.js",
@@ -194,7 +194,6 @@
 		"@sentry/browser": "^5.29.1",
 		"@sentry/integrations": "^5.29.1",
 		"@sentry/webpack-plugin": "^1.14.0",
-		"@vue/devtools": "^5.3.3",
 		"cross-env": "^7.0.3",
 		"debug": "^4.3.1",
 		"dotenv": "^8.2.0",
