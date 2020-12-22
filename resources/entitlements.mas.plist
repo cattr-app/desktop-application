@@ -3,7 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>com.apple.security.application-groups</key>
-    <string>BN6N4ASB7H.app.cattr.desktop</string>
+    <string>BN6N4ASB7H.app.cattr</string>
     <key>com.apple.security.app-sandbox</key>
     <true/>
     <key>com.apple.security.inherit</key>

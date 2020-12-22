@@ -86,7 +86,7 @@ export default {
 
     searchPattern() {
 
-      if (this.$route.name !== 'user.tasks' && this.$route.name !== 'user.project') 
+      if (this.$route.name !== 'user.tasks' && this.$route.name !== 'user.project')
         this.$router.push({ name: 'user.tasks' });
 
       this.setSearchPattern();
@@ -122,13 +122,15 @@ export default {
 
     goTo(where) {
 
+      this.$emit('load-task-position', null);
+
       this.$router.push({ path: where });
 
     },
 
     goBack() {
 
-      this.$router.go(-1);
+      Promise.resolve(this.$router.go(-1));
 
     },
 
@@ -137,6 +139,8 @@ export default {
       this.syncInProgress = true;
       await this.$ipc.request('projects/sync', {});
       const tasks = await this.$ipc.request('tasks/sync', {});
+      const totalTime = await this.$ipc.request('time/total', {});
+      this.$store.dispatch('totalTimeSync', totalTime.body);
       this.$store.dispatch('syncTasks', tasks.body);
       this.syncInProgress = false;
 
@@ -230,8 +234,8 @@ export default {
       if (reportBuffer !== '') {
 
         this.$confirm(
-          `${this.$t('Do you want to copy the report formatted in Markdown or in plain text?')}`,
-          `${this.$t('Success!')}`,
+          this.$t('Do you want to copy the report formatted in Markdown or in plain text?'),
+          this.$t('Success!'),
           {
             distinguishCancelAndClose: true,
             confirmButtonText: 'Markdown',
@@ -253,7 +257,11 @@ export default {
           // Copy text to clipboard
           clipboard.writeText(reportBuffer);
 
-        }).catch(() => {
+        }).catch(action => {
+
+          // We should consider "cancel" button as "Plain text" option selection
+          if (action !== 'cancel')
+            return;
 
           // Report buffer contains prepared report
           let buffer = '';

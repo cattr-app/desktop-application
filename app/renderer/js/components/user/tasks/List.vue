@@ -21,6 +21,7 @@
             :class="{drag: task.pinOrder !== null}"
             :task="task"
             :style="{'z-index': index}"
+            @load-task-position="loadTaskPosition($event)"
           />
         </transition-group>
       </draggable>
@@ -58,9 +59,9 @@ export default {
   },
   props: {
 
-    tasks: {
+    list: {
       type: Array,
-      default: () => [],
+      default: null,
     },
 
   },
@@ -83,7 +84,7 @@ export default {
      */
     tasks() {
 
-      return this.$store.getters.tasks;
+      return this.list || this.$store.getters.tasks;
 
     },
 
@@ -103,17 +104,35 @@ export default {
      */
     filteredTasks() {
 
-      const filteredTasks = this.filterList(this.searchPattern, this.tasks);
-      const highlight = this.sortTasksByHighlights(filteredTasks, this.highlights);
-      const formatted = this.sortByPinOrder(highlight);
+      try {
 
-      return formatted;
+        const filteredTasks = this.filterList(this.searchPattern, this.tasks);
+        const highlight = this.sortTasksByHighlights(filteredTasks, this.highlights);
+        const formatted = this.sortByPinOrder(highlight);
+
+        return formatted;
+
+      } catch (error) {
+
+        return this.getPinnedTasks(this.tasks);
+
+      }
 
     },
 
   },
 
+  mounted() {
+
+  },
+
   methods: {
+
+    loadTaskPosition() {
+
+      this.$emit('load-task-position', null);
+
+    },
 
     /**
      * Returns tasks sorted by highlight markers
@@ -157,7 +176,7 @@ export default {
       });
 
       // Sort pinned tasks by the pin order
-      pinned.sort((t1, t2) => { return  t2.pinOrder - t1.pinOrder; });
+      pinned.sort((t1, t2) => t2.pinOrder - t1.pinOrder);
 
       return pinned.concat(sorted);
 
@@ -251,6 +270,26 @@ export default {
         }
 
         if (searchRegex.test(item.Project.name)) {
+
+          // We should reset lastIndex on positive matchs to avoid issues with RegExp reuse
+          searchRegex.lastIndex = 0;
+          return true;
+
+        }
+
+        return false;
+
+      });
+
+    },
+
+    getPinnedTasks(list) {
+
+      return list.filter(item => {
+
+        if (item.pinOrder !== null) {
+
+          const searchRegex = new RegExp('.+', 'gi');
 
           // We should reset lastIndex on positive matchs to avoid issues with RegExp reuse
           searchRegex.lastIndex = 0;

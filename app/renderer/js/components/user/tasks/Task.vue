@@ -89,7 +89,6 @@ export default {
 
       return (
         this.$store.getters.trackLoad
-        && this.task.id === this.$store.getters.trackLoad
       );
 
     },
@@ -122,6 +121,8 @@ export default {
      */
     openTask() {
 
+      this.$emit('load-task-position', null);
+
       // Avoid duplicated navigation
       if (this.$route.name === 'user.task' && this.$route.params.id === this.task.id)
         return;
@@ -131,6 +132,8 @@ export default {
     },
 
     openProject() {
+
+      this.$emit('load-task-position', null);
 
       // Avoid duplicated navigation
       if (this.$route.name === 'user.project' && this.$route.params.id === this.task.projectId)
@@ -143,6 +146,10 @@ export default {
 
     },
 
+    /**
+     * Adds task to a pinned list
+     * @async
+     */
     async pinner() {
 
       this.isPinned = !this.isPinned;

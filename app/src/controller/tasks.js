@@ -6,6 +6,7 @@ const projectController = require('./projects');
 const auth = require('../base/authentication');
 const Log = require('../utils/log');
 const OfflineMode = require('../base/offline-mode');
+const TaskTracker = require('../base/task-tracker');
 const { UIError } = require('../utils/errors');
 
 const log = new Log('Controller:Tasks');
@@ -218,7 +219,7 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
   try {
 
     actualTasks = await api.tasks.list(taskOptions);
-    OfflineMode.restoreWithCheck();
+    await OfflineMode.restoreWithCheck(TaskTracker.isActive);
 
   } catch (err) {
 
@@ -331,6 +332,11 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
 
 };
 
+/**
+ * Add task to a pinned list so they would be able appear on top of other ones
+ * @param {String} taskId task's ID
+ * @param {Number} pinOrder Where should it be placed in pinned list
+ */
 module.exports.taskPinner = async (taskId, pinOrder = 0) => {
 
   try {
@@ -374,13 +380,16 @@ module.exports.createTask = async task => {
   const taskToCreate = {
     project_id: projectExternalId,
     task_name: name,
-    description,
     active: 1,
     user_id: user.id,
     assigned_by: user.id,
     url: null,
     priority_id: 1,
   };
+
+  // Avoid strange validation error when description is null or empty
+  if (description && description.length > 0)
+    taskToCreate.description = description;
 
   try {
 

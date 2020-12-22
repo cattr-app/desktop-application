@@ -15,15 +15,20 @@ module.exports = router => {
 
     try {
 
-      const currentUser = await auth.getCurrentUser();
+      let totalTimeToday = null;
 
-      // Starting sync routine
-      log.debug('Time sync initiated by renderer');
-      const totalTimeToday = await Time.getUserTotalTimeForToday(currentUser.id);
+      if (!OfflineMode.enabled) {
 
+        // Starting sync routine
+        log.debug('Time sync initiated by renderer');
+        const currentUser = await auth.getCurrentUser();
+        totalTimeToday = await Time.getUserTotalTimeForToday(currentUser.id);
+
+      } else
+        totalTimeToday = await Time.getLocalTotalTimeForToday();
       // Returning response
       log.debug('Time successfully synced');
-      return request.send(200, { time: totalTimeToday });
+      return await request.send(200, { time: totalTimeToday });
 
     } catch (error) {
 

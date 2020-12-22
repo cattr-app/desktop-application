@@ -15,11 +15,13 @@ export default {
     tasks: [],
     projects: [],
     highlights: [],
+    totalTime: 0,
     trackingInterval: null,
     shouldScroll: false,
     trackLoad: false,
     noActivityTimeLeft: null,
     isOfflineModeEnabled: false,
+    currentPositionY: 0,
   },
 
   getters: {
@@ -32,10 +34,12 @@ export default {
     tasks: s => s.tasks,
     projects: s => s.projects,
     highlights: s => s.highlights,
+    totalTime: s => s.totalTime,
     trackingInterval: s => s.trackingInterval,
     trackLoad: s => s.trackLoad,
     noActivityTimeLeft: s => s.noActivityTimeLeft,
     isOffline: s => s.isOfflineModeEnabled,
+    currentPositionY: s => s.currentPositionY,
   },
 
   mutations: {
@@ -79,6 +83,12 @@ export default {
     setOfflineMode(state, payload) {
 
       state.isOfflineModeEnabled = payload;
+
+    },
+
+    setCurrentPositionY(state, payload) {
+
+      state.currentPositionY = payload;
 
     },
 
@@ -147,6 +157,8 @@ export default {
 
       task.TrackedTime += 1;
 
+      state.totalTime += 1;
+
     },
 
     tickDecrement(state, payload) {
@@ -154,6 +166,14 @@ export default {
       const task = state.tasks.find(t => t.id === payload.task);
       if (task.TrackedTime)
         task.TrackedTime -= payload.duration;
+      state.totalTime -= payload.duration;
+
+    },
+
+    totalTimeSync(state, payload) {
+
+      const totalTime = payload.time.time;
+      state.totalTime = totalTime;
 
     },
 
@@ -250,6 +270,12 @@ export default {
 
     },
 
+    setCurrentPositionY(context, payload) {
+
+      context.commit('setCurrentPositionY', payload);
+
+    },
+
     hideLoader(context) {
 
       if (context.getters.loader !== null)
@@ -306,6 +332,18 @@ export default {
     tickDecrement({ commit }, payload) {
 
       commit('tickDecrement', payload);
+
+    },
+
+    /* totalTimeSync(context, { totalTime }) {
+
+      context.commit('totalTimeSync', totalTime);
+
+    },
+ */
+    totalTimeSync({ commit }, payload) {
+
+      commit('totalTimeSync', payload);
 
     },
 

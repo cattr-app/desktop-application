@@ -98,6 +98,7 @@ export default {
           if (this.task.projectId.length === 0) {
 
             this.taskSelectorError = this.$t('Project should be selected');
+            this.requestInProgress = false;
             return false;
 
           }
@@ -108,6 +109,7 @@ export default {
           const createdTask = await this.$ipc.request('tasks/create', this.task);
           if (createdTask.code !== 200) {
 
+            this.requestInProgress = false;
             return this.$msgbox({
               title: this.$t('Houston, we have a problem'),
               message: this.$createElement(Message, {
@@ -122,6 +124,8 @@ export default {
           }
 
           const tasks = await this.$ipc.request('tasks/sync', {});
+          const totalTime = await this.$ipc.request('time/total', {});
+          this.$store.dispatch('totalTimeSync', totalTime.body);
           this.$store.dispatch('syncTasks', tasks.body);
           this.$router.push({ name: 'user.tasks' });
           this.requestInProgress = false;

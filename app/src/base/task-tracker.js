@@ -11,6 +11,8 @@ const TimeController = require('../controller/time');
 const TaskController = require('../controller/tasks');
 const IntervalsController = require('../controller/time-intervals');
 const eventCounter = require('../utils/event-counter');
+const heartbeatMonitor = require('../utils/heartbeat-monitor');
+const offlineMode = require('./offline-mode');
 
 const log = new Log('TaskTracker');
 
@@ -211,6 +213,16 @@ class TaskTracker extends EventEmitter {
   }
 
   /**
+   * Current tracking status (is task tracking active right now)
+   * @type {Boolean}
+   */
+  get isActive() {
+
+    return Boolean(this.active);
+
+  }
+
+  /**
    * Starts inactivity detection
    * @returns {Number} ID of corresponding inactivity detection timer
    */
@@ -388,6 +400,12 @@ class TaskTracker extends EventEmitter {
     // Enable event counter
     eventCounter.start();
 
+    // Enable heartbeat
+    if (!offlineMode.enabled)
+      heartbeatMonitor.start();
+    else
+      log.debug('Skipping heartbeat enabling, since we\'re offline');
+
     // Reset & start time counter
     this.ticker.reset();
     this.ticker.start();
@@ -440,6 +458,9 @@ class TaskTracker extends EventEmitter {
 
     // Stop event counter
     eventCounter.stop();
+
+    // Stop heartbeat
+    heartbeatMonitor.stop();
 
     // Ensure that activity proof timeout is suspended
     if (this.activityProofTimeoutTimerId) {

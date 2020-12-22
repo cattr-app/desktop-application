@@ -357,7 +357,6 @@ module.exports.userAuthentication = async (email, password, save = true) => {
 
 };
 
-
 /**
  * Sets remote API hostname
  * @param   {String}           hostname  Hostname
@@ -448,3 +447,10 @@ module.exports.logout = async () => {
   }
 
 };
+
+/**
+ * Returns a single-click redirection URL
+ * @async
+ * @returns {Promise.<Error|String>} Redirection URL or Error
+ */
+module.exports.getSingleClickRedirection = async () => api.authentication.getSingleClickRedirection();

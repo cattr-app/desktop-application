@@ -60,6 +60,7 @@ app.once('ready', async () => {
       nodeIntegration: true,
       nativeWindowOpen: true,
       enableRemoteModule: true,
+      contextIsolation: false,
     },
     icon: appIcons.DEFAULT,
 
@@ -113,10 +114,46 @@ app.once('ready', async () => {
     // Check is target protocol allowed
     const targetUrl = new URL(url);
     if (!WEBCONTENTS_ALLOWED_PROTOCOLS.has(targetUrl.protocol))
-      return false;
+      return;
 
     // Open link in external browser
     shell.openExternal(url);
+
+  });
+
+  // Generate and inject CSP policy
+  window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+
+    // Build a CSP and apply the default policy
+    let cspValue = "default-src 'self';";
+
+    // Apply styling policy
+    cspValue += "style-src 'self' data: 'unsafe-inline';";
+
+    // Scripts: allow unsafe-eval in dev mode, otherwise Chrome DevTools wouldn't work
+    if (config.isDeveloperModeEnabled)
+      cspValue += "script-src 'self' 'unsafe-eval';";
+    else
+      cspValue += "script-src 'self';";
+
+    // If Sentry is enabled, inject also a connect-src CSP allowing requests to Sentry host
+    if (config.sentry.enabled) {
+
+      // Parse frontend's DSN to extract the host
+      const frontendDsnUrl = new URL(config.sentry.dsnFrontend);
+
+      // Inject connect-src policy allowing connections to self and Sentry hostname
+      cspValue += `connect-src 'self' ${frontendDsnUrl.origin};`;
+
+    }
+
+    // Returning injection by callback
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': cspValue,
+      },
+    });
 
   });
 
@@ -125,6 +162,8 @@ app.once('ready', async () => {
 
     // Pass webContents to IPC
     router.setWebContents(window.webContents);
+
+    // Show the main window
     window.show();
 
   });
@@ -136,12 +175,8 @@ app.once('ready', async () => {
   loadPage('app.html');
 
   // Open DevTools if we're in development mode
-  if (config.isDeveloperModeEnabled) {
-
-    // Vue Devtools disabled until package maintainer will fix install script
-    // require('vue-devtools').install();
+  if (config.isDeveloperModeEnabled)
     window.webContents.openDevTools('detached');
 
-  }
 
 });
