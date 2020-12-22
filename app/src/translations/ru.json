@@ -15,7 +15,7 @@
     "Password": "Пароль",
     "Back": "Назад",
     "Sign In": "Войти",
-    "Logout": "Выйти из приложения",
+    "Logout": "Выйти",
     "Language": "Язык",
     "Screenshot notification duration (in seconds)": "Длительность уведомления о скриншоте (в секундах)",
     "Show inactive tasks": "Показывать неактивные задачи",
@@ -81,6 +81,9 @@
     "Task name is necessary": "Задача обязательно должна как-то называться",
     "Project should be selected": "Выберите проект",
     "Houston, we have a problem": "Хьюстон, у нас проблемы",
-    "Error occurred during screenshot capture": "Произошла ошибка при создании скриншота"
+    "Error occurred during screenshot capture": "Произошла ошибка при создании скриншота",
+    "Error": "Ошибка",
+    "Success! Opening your browser...": "Всё получилось! Открываем браузер...",
+    "Sign into web app": "Войти в веб-приложение"
   }
 }

@@ -56,6 +56,15 @@
       >
         {{ $t('Logout') }}
       </el-button>
+      <br>
+      <br>
+      <el-button
+        :loading="ssoLoading"
+        type="secondary"
+        @click="performSSO"
+      >
+        {{ $t('Sign into web app') }}
+      </el-button>
     </div>
   </el-container>
 </template>
@@ -68,6 +77,7 @@ export default {
     return {
       loggingOutInProgress: false,
       savingInProgress: false,
+      ssoLoading: false,
       yesno: [
         { label: 'Yes', value: true },
         { label: 'No', value: false },
@@ -118,6 +128,35 @@ export default {
 
   },
   methods: {
+
+    /**
+     * Handles "sign in webapp" button action
+     * @async
+     */
+    async performSSO() {
+
+      // Set visual loading status
+      this.ssoLoading = true;
+
+      // Fetch URL from remote
+      const req = await this.$ipc.request('auth/request-single-click-redirection', {});
+
+      // Display error if URL request is failed
+      if (req.code !== 200)
+
+        // Show error and unset the loading flag
+        this.$message({ type: 'error', message: `${this.$t('Error')}: ${req.body.message}` });
+
+      else
+
+        // Show success message
+        this.$message({ type: 'success', message: this.$t('Success! Opening your browser...') });
+
+      // Unset loading state
+      this.ssoLoading = false;
+
+    },
+
     async logout() {
 
       this.loggingOutInProgress = true;
