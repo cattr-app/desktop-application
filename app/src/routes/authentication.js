@@ -1,3 +1,4 @@
+const { shell } = require('electron');
 const Logger = require('../utils/log');
 const auth = require('../base/authentication');
 const { UIError } = require('../utils/errors');
@@ -108,6 +109,39 @@ module.exports = router => {
 
       // Wrap and log all other kinds of errors
       log.error('Operating error occured in logout route', error);
+      request.send(500, { message: 'Internal error occured', id: 'EISR000' });
+
+    }
+
+  });
+
+  // Request for a single-click redirection URL
+  router.serve('auth/request-single-click-redirection', async request => {
+
+    try {
+
+      // Get URL
+      const url = await auth.getSingleClickRedirection();
+
+      // Open this URL in system's browser
+      shell.openExternal(url);
+
+      // Return successfull status
+      request.send(200, {});
+      return;
+
+    } catch (error) {
+
+      // Return UIErrors
+      if (error instanceof UIError) {
+
+        request.send(error.code, { message: error.message, id: error.errorId });
+        return;
+
+      }
+
+      // Wrap and log all other kinds of errors
+      log.error('Operating error occured in the single click redirection route', error);
       request.send(500, { message: 'Internal error occured', id: 'EISR000' });
 
     }
