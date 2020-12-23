@@ -272,17 +272,7 @@ class OSIntegration extends EventEmitter {
    */
   static async getTrackingAvailability() {
 
-    if (process.platform === 'darwin') {
-
-      // (macOS) Check is the accessibility permissions granted?
-      if (!systemPreferences.isTrustedAccessibilityClient(true)) {
-
-        log.warning('We don\'t have an accessibility permissions');
-        return { available: false, reason: 'macos_no_accessibility_permissions' };
-
-      }
-
-    } else if (process.platform === 'linux') {
+    if (process.platform === 'linux') {
 
       // (linux) Check is Wayland is active?
       if (process.env.XDG_SESSION_TYPE && process.env.XDG_SESSION_TYPE === 'wayland') {
