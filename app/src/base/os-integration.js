@@ -277,7 +277,7 @@ class OSIntegration extends EventEmitter {
 
       // Check is screenshot capture access is granted
       if (systemPreferences.getMediaAccessStatus('screen') === 'granted')
-        return true;
+        return { available: true };
 
       // Trigger macOS to ask user for screen capture permission
       desktopCapturer.getSources({ types: ['screen'] });
