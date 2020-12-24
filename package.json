@@ -11,6 +11,7 @@
 		"dev": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron .",
 		"no-scr": "npx cross-env AT_MOCK_SCR=yes node_modules/.bin/electron .",
 		"dev-no-scr": "npx cross-env AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
+		"dev-no-scr-no-devtools": "npx cross-env DISABLE_DEVTOOLS=y AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
 		"dev-vue": "npx cross-env AT_DEVMODE=meow REMOTE_DEVTOOLS_ENABLE=true node_modules/.bin/electron .",
 		"dev-win": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron.cmd .",
 		"build-watch": "npm run build-development -- --watch",
