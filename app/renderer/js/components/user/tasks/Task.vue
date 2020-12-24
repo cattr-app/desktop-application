@@ -220,7 +220,11 @@ export default {
           }, 500);
 
         })
-        .catch(data => this.$alert(data.message, data.error, { confirmButtonText: 'OK' }));
+        .catch(data => {
+
+          this.$alert(this.$t(data.error), this.$t('Tracking is not available'), { confirmButtonText: 'OK' });
+
+        });
 
     },
   },

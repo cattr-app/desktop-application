@@ -1,4 +1,4 @@
-const { app, systemPreferences } = require('electron');
+const { app, systemPreferences, desktopCapturer } = require('electron');
 const EventEmitter = require('events');
 const Log = require('../utils/log');
 const Tracker = require('./task-tracker');
@@ -271,6 +271,21 @@ class OSIntegration extends EventEmitter {
    * @return {Promise<TrackingAvailabilityStatus>} Tracking availability status
    */
   static async getTrackingAvailability() {
+
+    // Verify the screen capture access on macOS
+    if (process.platform === 'darwin') {
+
+      // Check is screenshot capture access is granted
+      if (systemPreferences.getMediaAccessStatus('screen') === 'granted')
+        return true;
+
+      // Trigger macOS to ask user for screen capture permission
+      desktopCapturer.getSources({ types: ['screen'] });
+
+      // Restrict tracking
+      return { available: false, reason: 'macos_no_capture_permission' };
+
+    }
 
     return { available: true };
 

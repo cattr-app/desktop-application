@@ -84,6 +84,8 @@
     "Error occurred during screenshot capture": "Произошла ошибка при создании скриншота",
     "Error": "Ошибка",
     "Success! Opening your browser...": "Всё получилось! Открываем браузер...",
-    "Sign into web app": "Войти в веб-приложение"
+    "Sign into web app": "Войти в веб-приложение",
+    "To start tracking, allow Cattr to access screen capture in macOS settings": "Для начала работы, разрешите Cattr доступ к записи экрана в настройках macOS",
+    "Tracking is not available": "Трекинг недоступен"
   }
 }

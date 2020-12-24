@@ -88,16 +88,7 @@ export default {
 
     trackedTime() {
 
-      //let totalTime = 0;
-
       const { totalTime } = this.$store.getters;
-
-      /* this.$store.getters.tasks.forEach(task => {
-
-        totalTime += task.TrackedTime;
-
-      }); */
-
       return new Date(totalTime * 1000).toISOString().substr(11, 8);
 
     },
