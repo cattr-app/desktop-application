@@ -381,9 +381,7 @@ module.exports.createTask = async task => {
     project_id: projectExternalId,
     task_name: name,
     active: 1,
-    user_id: user.id,
-    assigned_by: user.id,
-    url: null,
+    users: [user.id, user.id],
     priority_id: 1,
   };
 
@@ -416,6 +414,7 @@ module.exports.createTask = async task => {
 
   } catch (err) {
 
+    console.log(err);
     if (err.isNetworkError || err.isApiError)
       throw new UIError(555, 'Cannot create task due to the network or server error', 'ETSK555');
 
