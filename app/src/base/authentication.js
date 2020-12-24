@@ -367,8 +367,7 @@ module.exports.setHostname = async hostname => {
   if (typeof hostname !== 'string')
     throw new UIError(400, 'Incorrect hostname given', 'EAUTH001');
 
-  await api.setBaseUrl(hostname);
-  return true;
+  return api.setBaseUrl(hostname);
 
 };
 

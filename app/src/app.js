@@ -175,7 +175,7 @@ app.once('ready', async () => {
   loadPage('app.html');
 
   // Open DevTools if we're in development mode
-  if (config.isDeveloperModeEnabled)
+  if (config.isDeveloperModeEnabled && !process.env.DISABLE_DEVTOOLS)
     window.webContents.openDevTools('detached');
 
 

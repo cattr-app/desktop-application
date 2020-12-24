@@ -1,6 +1,6 @@
 {
 	"name": "cattr",
-	"version": "2.4.2",
+	"version": "2.4.3",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
 	"main": "app/src/app.js",
@@ -11,6 +11,7 @@
 		"dev": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron .",
 		"no-scr": "npx cross-env AT_MOCK_SCR=yes node_modules/.bin/electron .",
 		"dev-no-scr": "npx cross-env AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
+		"dev-no-scr-no-devtools": "npx cross-env DISABLE_DEVTOOLS=y AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
 		"dev-vue": "npx cross-env AT_DEVMODE=meow REMOTE_DEVTOOLS_ENABLE=true node_modules/.bin/electron .",
 		"dev-win": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron.cmd .",
 		"build-watch": "npm run build-development -- --watch",
@@ -176,7 +177,7 @@
 	],
 	"dependencies": {
 		"@amazingcat/electron-ipc-router": "1.2.2",
-		"@amazingcat/node-cattr": "3.3.3",
+		"@amazingcat/node-cattr": "3.3.4",
 		"@sentry/electron": "^2.0.4",
 		"chalk": "^4.1.0",
 		"electron-hotkey": "0.0.1-alpha.1",

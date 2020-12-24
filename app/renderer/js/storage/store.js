@@ -290,20 +290,33 @@ export default {
         context.commit('trackLoad', true);
         const res = await $ipc.request('tracking/start', { taskId });
         context.commit('trackLoad', false);
-        if (res.code === '501') {
+
+        if (res.code === 501) {
 
           const err = new Error(res.body.reason);
           err.success = false;
-          err.error = Vue.$t('Tracking Disabled');
+
+          switch (res.body.reason) {
+
+            case 'macos_no_capture_permission':
+              err.error = 'To start tracking, allow Cattr to access screen capture in macOS settings';
+              break;
+
+            default:
+              err.error = 'Tracking is restricted';
+              break;
+
+          }
+
           throw err;
 
         }
 
-        if (res.code === '500') {
+        if (res.code === 500) {
 
           const err = new Error('Internal Server Error');
           err.success = false;
-          err.error = Vue.$t('Internal Server Error');
+          err.error = 'Internal Server Error';
           throw err;
 
         }
