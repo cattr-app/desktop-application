@@ -128,7 +128,7 @@ app.once('ready', async () => {
     let cspValue = "default-src 'self';";
 
     // Apply styling policy
-    cspValue += "style-src 'self' data: 'unsafe-inline';";
+    cspValue += "style-src 'self' data: 'unsafe-inline'; font-src 'self' data:; ";
 
     // Scripts: allow unsafe-eval in dev mode, otherwise Chrome DevTools wouldn't work
     if (config.isDeveloperModeEnabled)

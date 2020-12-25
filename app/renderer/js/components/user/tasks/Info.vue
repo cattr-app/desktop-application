@@ -18,9 +18,10 @@
       v-if="descriptionPresent"
       class="task-description"
     >
-      <vue-markdown class="md">
-        {{ task.description }}
-      </vue-markdown>
+      <vue-simple-markdown
+        class="md"
+        :source="task.description"
+      />
     </p>
     <p v-else>
       {{ $t('Description is empty') }}
@@ -47,12 +48,13 @@
 </template>
 
 <script>
-import VueMarkdown from 'vue-markdown';
+// import VueMarkdown from 'vue-markdown';
+import 'vue-simple-markdown/dist/vue-simple-markdown.css';
+
 
 export default {
   name: 'Info',
   components: {
-    VueMarkdown,
   },
   data() {
 
