@@ -5,46 +5,6 @@ class EventCounter {
   constructor() {
 
     /**
-     * IOHook instance
-     * @type {IOHook|null}
-     */
-    this.iohook = null;
-
-    // Use iohook only on Windows & Linux due to enormous amount of issues
-    // with event tracking on macOS
-    // Temporarly this will disable iohook on all platforms due to many internal issues
-    if (process.platform !== 'darwin' && process.platform !== 'linux' && process.platform !== 'win32') {
-
-      // eslint-disable-next-line global-require
-      this.iohook = require('../libs/iohook');
-
-      this.iohook.on('keydown', () => {
-
-        this.keyboardActiveDuringThisSecond = true;
-
-      });
-
-      this.iohook.on('mousemove', () => {
-
-        this.keyboardActiveDuringThisSecond = true;
-
-      });
-
-      this.iohook.on('mousewheel', () => {
-
-        this.mouseActiveDuringThisSecond = true;
-
-      });
-
-      this.iohook.on('mousedown', () => {
-
-        this.mouseActiveDuringThisSecond = true;
-
-      });
-
-    }
-
-    /**
      * Overall interval duration
      * @type {Number}
      */
@@ -166,20 +126,12 @@ class EventCounter {
 
     }, 1000);
 
-    // Load IOHook native module
-    if (this.iohook)
-      this.iohook.load();
+    this.detectorIntervalId = setInterval(() => {
 
-    else {
+      if (powerMonitor.getSystemIdleTime() === 0)
+        this.systemActiveDuringThisSecond = true;
 
-      this.detectorIntervalId = setInterval(() => {
-
-        if (powerMonitor.getSystemIdleTime() === 0)
-          this.systemActiveDuringThisSecond = true;
-
-      }, 1000);
-
-    }
+    }, 1000);
 
   }
 
@@ -210,10 +162,6 @@ class EventCounter {
       this.detectorIntervalId = null;
 
     }
-
-    // Unload IOHook
-    if (this.iohook)
-      this.iohook.unload();
 
   }
 

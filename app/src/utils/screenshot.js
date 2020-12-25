@@ -1,4 +1,4 @@
-const merge = require('merge-img');
+const merge = require('../libs/merge-img');
 const { router } = require('../routes');
 const Log = require('./log');
 const { UIError } = require('./errors');
