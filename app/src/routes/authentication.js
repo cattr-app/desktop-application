@@ -133,7 +133,68 @@ module.exports = router => {
 
   });
 
+  // Request for a Web-Desktop SSO check
+  router.serve('auth/check-sso-presence', async request => {
+
+    try {
+
+      // Get properties
+      const ssoParams = auth.getSSOFromProtocol();
+      if (ssoParams)
+        return request.send(200, ssoParams);
+
+      return request.send(404, {});
+
+    } catch (error) {
+
+      // Return UIErrors
+      if (error instanceof UIError)
+        return request.send(error.code, { message: error.message, id: error.errorId });
+
+
+      // Wrap and log all other kinds of errors
+      log.error('Operating error occured in the single click redirection route', error);
+      return request.send(500, { message: 'Internal error occured', id: 'EISR000' });
+
+    }
+
+  });
+
+  // Performs a Web-Desktop SSO login
+  router.serve('auth/perform-sso', async request => {
+
+    try {
+
+      // Get properties
+      const ssoParams = request.packet.body;
+
+      // Set base url
+      if (!(await auth.setHostname(ssoParams.baseUrl)))
+        return request.send(400, { message: 'Single-Sign On URL is not correct', id: 'ESSO001' });
+
+      // Try to authenticate
+      await auth.authenticateSSO(ssoParams);
+      return request.send(200, {});
+
+    } catch (error) {
+
+      // Return UIErrors
+      if (error instanceof UIError)
+        return request.send(error.code, { message: error.message, id: error.errorId });
+
+
+      // Wrap and log all other kinds of errors
+      log.error('Operating error occured in the single click redirection route', error);
+      return request.send(500, { message: 'Internal error occured', id: 'EISR000' });
+
+    }
+
+  });
+
   // Pass user configuration to Sentry on frontend
   auth.events.once('user-fetched', user => router.emit('auth/user-fetched', user));
+
+  // Pass detected SSO URLs from duplicating instances
+  auth.events.on('sso-detected', ssoParams => router.emit('auth/sso-detected', ssoParams));
 
 };

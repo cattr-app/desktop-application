@@ -19,6 +19,12 @@ const log = new Log('AuthenticationProvider');
  */
 
 /**
+ * @typedef {Object} WebToDesktopSSOParameters
+ * @property {String} baseUrl Base URL to the selected API instance
+ * @property {String} token   Intermediate authentication token
+ */
+
+/**
  * Variable, contains current user properties
  * @type {Object|null}
  */
@@ -30,7 +36,45 @@ let _currentUser = null;
  */
 module.exports.events = new EventEmitter();
 
+// Handle first user-fetched event to fulfill Sentry reports with user email
 module.exports.events.once('user-fetched', user => Sentry.configureScope(s => s.setUser({ email: user.email })));
+
+/**
+ * Returns SSO parameters from application protocol call if they are presented
+ * @param {Object} [args] Arguments (process.argv will be used, if args not defined)
+ * @returns {WebToDesktopSSOParameters|null}
+ */
+module.exports.getSSOFromProtocol = args => {
+
+  // Trying to extract SSO URL by protocol+action preamble
+  let ssoUrl = Array.from(args || process.argv).filter(arg => arg.indexOf('cattr://authenticate') === 0);
+  if (!ssoUrl || ssoUrl.length === 0)
+    return null;
+
+  // Always select the first occurence, even if more than one are presented
+  [ssoUrl] = ssoUrl;
+
+  try {
+
+    // Parse provided URL
+    ssoUrl = new URL(ssoUrl);
+
+    // "url" & "token" fields are expected as query params
+    const baseUrl = ssoUrl.searchParams.get('url');
+    const token = ssoUrl.searchParams.get('token');
+
+    if (!baseUrl || !token)
+      return null;
+
+    return { token, baseUrl };
+
+  } catch (err) {
+
+    return null;
+
+  }
+
+};
 
 /**
  * Checks is this is Cattr API instance
@@ -49,7 +93,6 @@ module.exports.isCattrInstance = async () => {
   }
 
 };
-
 
 /**
  * Makes authentication request
@@ -125,7 +168,6 @@ module.exports.authenticate = async (email, password) => {
   return authenticationResponse;
 
 };
-
 
 /**
  * Token getter
@@ -208,7 +250,6 @@ module.exports.getToken = async () => {
 
 };
 
-
 /**
  * Returns current user parameters
  * @return {Object|null} Returns user object if success, null otherwise
@@ -279,7 +320,6 @@ module.exports.getCurrentUser = async () => {
 
 };
 
-
 /**
  * Checking is authentication required
  * @return {Promise<Boolean>} Returns true / false accordingly to the auth status
@@ -319,7 +359,6 @@ module.exports.isAuthenticationRequired = async () => {
   }
 
 };
-
 
 /**
  * Performs user-friendly authentication
@@ -453,3 +492,86 @@ module.exports.logout = async () => {
  * @returns {Promise.<Error|String>} Redirection URL or Error
  */
 module.exports.getSingleClickRedirection = async () => api.authentication.getSingleClickRedirection();
+
+/**
+ * Makes authentication request
+ * @async
+ * @param  {WebToDesktopSSOParameters} params SSO parameters
+ * @return {Promise.<Object|UIError>}
+ */
+module.exports.authenticateSSO = async params => {
+
+  // Authenticating using library function
+  let authenticationResponse = {};
+  try {
+
+    authenticationResponse = await api.authentication.authenticateViaSSO(params.token);
+
+  } catch (error) {
+
+    // Checking is it a system error
+    if (!error.isApiError) {
+
+      // Log it
+      log.error('Request error occured during authentication', error);
+      throw new UIError(500, 'Request to server was failed', 'EAUTH500');
+
+    }
+
+    // Throw different errors according to the status codes in response
+    switch (error.statusCode) {
+
+      case 401:
+        throw new UIError(400, 'Incorrect credentials given', 'EAUTH000');
+      case 403:
+        throw new UIError(403, 'Invalid credentials given', 'EAUTH001');
+      default:
+        log.error(`EAUTH506-${error.statusCode}`, 'Unspecified status code received from server during authentication', true);
+        Log.captureApiError('Unknown status code received during authentication request', error);
+        throw new UIError(500, 'Request to server was failed', 'EAUTH500');
+
+    }
+
+  }
+
+  // Saving hostname
+  await keychain.saveCredentials({ hostname: api.baseUrl, email: null, password: null });
+
+  // Saving user from authentication response
+  _currentUser = authenticationResponse.user;
+  module.exports.events.emit('user-fetched', _currentUser);
+  await OfflineUser.setProperties(authenticationResponse.user);
+  await OfflineUser.commit();
+
+  // Saving token into system keychain
+  try {
+
+    await keychain.saveToken(
+      authenticationResponse.token.token,
+      authenticationResponse.token.tokenType,
+      authenticationResponse.token.tokenExpire,
+    );
+
+  } catch (error) {
+
+    log.error('Error occured during saving token into system keychain', error);
+    throw new UIError(500, 'Internal error occured', 'EAUTH500');
+
+  }
+
+  // Fire authenticated event
+  module.exports.events.emit('authenticated');
+
+  log.debug('Successfully authenticated via SSO');
+  return authenticationResponse;
+
+};
+
+// Handle SSO links from second instances
+app.on('second-instance', (event, args) => {
+
+  const ssoParams = module.exports.getSSOFromProtocol(args);
+  if (ssoParams)
+    module.exports.events.emit('sso-detected', ssoParams);
+
+});

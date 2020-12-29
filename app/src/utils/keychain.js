@@ -57,19 +57,14 @@ const getSavedCredentials = async () => {
   }
 
   // Check content of the saved credentials
-  if (
-
-    typeof fetchedCredentials.hostname !== 'string'
-    || typeof fetchedCredentials.email !== 'string'
-    || typeof fetchedCredentials.password !== 'string'
-
-  ) {
+  if (typeof fetchedCredentials.hostname !== 'string') {
 
     // Log error and return nothing
-    logger.error('Saved credentials does not contain required fields', 802);
+    logger.error('Saved credentials does not contain required "hostname" field', 802);
     return null;
 
   }
+
   logger.debug('Fetched saved credentials from system keychain');
   return fetchedCredentials;
 

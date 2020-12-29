@@ -28,6 +28,14 @@
 	"build": {
 		"appId": "app.cattr",
 		"productName": "Cattr",
+		"protocols": [
+			{
+				"name": "Cattr SSO protocol",
+				"schemes": [
+					"cattr"
+				]
+			}
+		],
 		"afterSign": "tools/macos-notarization.js",
 		"asar": "true",
 		"directories": {
@@ -45,7 +53,16 @@
 			"hardenedRuntime": true,
 			"gatekeeperAssess": false,
 			"extendInfo": {
-				"NSUserNotificationAlertStyle": "alert"
+				"NSUserNotificationAlertStyle": "alert",
+				"CFBundleURLTypes": [
+					{
+						"CFBundleTypeRole": "Viewer",
+						"CFBundleURLName": "app.cattr.sso",
+						"CFBundleURLSchemes": [
+							"cattr"
+						]
+					}
+				]
 			}
 		},
 		"linux": {
@@ -177,7 +194,7 @@
 	],
 	"dependencies": {
 		"@amazingcat/electron-ipc-router": "1.2.2",
-		"@amazingcat/node-cattr": "3.3.4",
+		"@amazingcat/node-cattr": "3.3.5",
 		"@sentry/electron": "^2.0.4",
 		"chalk": "^4.1.0",
 		"electron-hotkey": "0.0.1-alpha.1",

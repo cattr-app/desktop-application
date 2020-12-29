@@ -162,7 +162,69 @@ export default {
     },
   },
 
+  async mounted() {
+
+    // Subscribe for the detected SSO URLs
+    this.$ipc.serve('auth/sso-detected', request => {
+
+      // Execute only on Login component
+      if (this.$route.name === 'auth.login')
+        this.promptForSSO(request.packet.body);
+
+    });
+
+    // Request for SSO data
+    const ssoParamsRequest = await this.$ipc.request('auth/check-sso-presence', {});
+    if (ssoParamsRequest.code === 200)
+      this.promptForSSO(ssoParamsRequest.body);
+
+  },
+
   methods: {
+
+    async promptForSSO(ssoParams) {
+
+      const url = new URL(ssoParams.baseUrl);
+
+      this
+        .$confirm(this.$t('Are you sure you want to sign in to').concat(`: ${url.origin}?`), this.$t('Single Sign-On'), {
+          confirmButtonText: this.$t('Yes'),
+          cancelButtonText: this.$t('Cancel'),
+          type: 'info',
+        })
+
+        // SSO confirmed, trying to sign in
+        .then(async () => {
+
+          this.$store.dispatch('showLoader');
+          const authRequest = await this.$ipc.request('auth/perform-sso', ssoParams);
+
+          // Success
+          if (authRequest.code === 200) {
+
+            await this.$ipc.request('projects/sync', {});
+            const tasks = await this.$ipc.request('tasks/sync', {});
+            this.$store.dispatch('syncTasks', tasks.body);
+            const totalTime = await this.$ipc.request('time/total', {});
+            this.$store.dispatch('totalTimeSync', totalTime.body);
+            this.$router.push({ name: 'user.tasks' });
+            this.$store.dispatch('hideLoader');
+            return true;
+
+          }
+
+          // Show error on failure
+          this.$store.dispatch('hideLoader');
+          this.$message.error(this.$t(authRequest.body.message));
+          return false;
+
+        })
+
+        // Catch user "dialog discard" action
+        .catch(() => {});
+
+    },
+
     async onSubmit() {
 
       const ipcRoute = 'auth/authenticate';
@@ -203,41 +265,40 @@ export default {
 
     validateWindow(event) {
 
-      switch (this.step) {
+      if (this.step === 1) {
 
-        case 1:
-          this.$refs.hostname.validate(async valid => {
+        this.$refs.hostname.validate(async valid => {
 
-            this.loading = true;
-            if (valid) {
+          this.loading = true;
+          if (valid) {
 
-              const res = await this.checkHostname();
-              if (res) {
+            const res = await this.checkHostname();
+            if (res) {
 
-                this.formData.login = '';
-                this.formData.password = '';
-                this.nextStep();
-
-              }
+              this.formData.login = '';
+              this.formData.password = '';
+              this.nextStep();
 
             }
-            this.loading = false;
 
-          });
-          break;
-        case 2:
-          this.$refs.login.validate(valid => {
+          }
+          this.loading = false;
 
-            if (valid) {
+        });
 
-              this.nextStep();
-              event.preventDefault();
+      } else if (this.step === 2) {
 
-            } else
-              return false;
+        this.$refs.login.validate(valid => {
 
-          });
-          break;
+          if (valid) {
+
+            this.nextStep();
+            event.preventDefault();
+
+          } else
+            return false;
+
+        });
 
       }
 
@@ -282,7 +343,7 @@ export default {
     nextStep() {
 
       if (this.step < 2)
-        this.step++;
+        this.step += 1;
       else
         this.onSubmit();
 
