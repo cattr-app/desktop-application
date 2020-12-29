@@ -6,7 +6,7 @@ build:
   stage: build
   # only:
   #   - release
-  image: node/erbium-slim
+  image: node:erbium-slim
   script:
     - npm install
     - npm run build-production
