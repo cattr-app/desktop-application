@@ -1,34 +1,24 @@
 stages:
-  - build
-  - deploy
+  - release-linux
 
-build:
-  stage: build
+release:
+  stage: release-linux
+  tags:
+    - linux
+    - docker
   # only:
   #   - release
   image: node:erbium-slim
   script:
+
+    # Init container, install dependencies
     - apt update
-    - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates
+    - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
+
+    # Install and build desktop application
     - npm install
     - npm run build-production
     - npm run package-linux
-  artifacts:
-    paths:
-      - target/*.tar.gz
-      - target/*.deb
-      - target/*.AppImage
-  
-sign:
-  stage: deploy
-  # only:
-  #   - release
-  image: debian:buster-slim
-  script:
-
-    # Install dependencies
-    - apt update
-    - apt install -y openssh-client dpkg-dev dpkg-sig
 
     # Load private key into SSH agent
     - eval $(ssh-agent -s)
@@ -62,6 +52,3 @@ sign:
 
     # Copy signed files back to remote
     - scp -o StrictHostKeyChecking=no {Release.gpg,InRelease} "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/"
-
-    # That's all, folks!
-  
