@@ -67,10 +67,17 @@
 			}
 		},
 		"linux": {
-			"icon": "icon.png",
+			"icon": "./resources/icons",
 			"synopsis": "Desktop time tracking application",
 			"target": "AppImage",
-			"category": "Office"
+			"category": "Office",
+			"desktop": {
+				"Name": "Cattr",
+				"Terminal": "false",
+				"Type": "Application",
+				"Keywords": "time;tracker;cattr;tracking;",
+				"MimeType": "x-scheme-handler/cattr;"
+			}
 		},
 		"win": {
 			"publisherName": "amazingcat LLC",
