@@ -9,7 +9,7 @@ build:
   image: node:erbium-slim
   script:
     - apt update
-    - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev
+    - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates
     - npm install
     - npm run build-production
     - npm run package-linux
