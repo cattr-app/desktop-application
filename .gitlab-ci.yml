@@ -9,7 +9,7 @@ build:
   image: node:erbium-slim
   script:
     - apt update
-    - apt install -y build-essential
+    - apt install -y build-essential python3
     - npm install
     - npm run build-production
     - npm run package-linux
