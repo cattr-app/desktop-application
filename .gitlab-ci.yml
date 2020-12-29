@@ -42,7 +42,7 @@ release-linux:
     - scp -o StrictHostKeyChecking=no *.deb "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/amd64/"
 
     # Generate Packages and Release files
-    - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app "cd /srv/dl/packages/deb && apt-ftparchive --arch amd64 packages amd64 > Packages && apt-ftparchive release amd64 > Release"
+    - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app "cd /srv/dl/packages/deb && apt-ftparchive --arch amd64 packages amd64 > Packages && apt-ftparchive release . > Release"
 
     # Copy Release file to sign it locally
     - scp -o StrictHostKeyChecking=no "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/Release" .
