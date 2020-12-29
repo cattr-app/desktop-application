@@ -1,8 +1,8 @@
 stages:
-  - release-linux
+  - release
 
-release:
-  stage: release-linux
+release-linux:
+  stage: release
   tags:
     - linux
     - docker
@@ -25,16 +25,16 @@ release:
     - echo "$CI_SSH_KEY" | base64 -d | ssh-add -
 
     # Load GPG signing key into GPG agent
-    - echo -e "$GPG_KEY" | gpg --import
+    - echo -e "$DEB_SIGNING_KEY" | gpg --import
 
     # Get Cattr release version
+    - cd target
     - RELEASE_VERSION=`(cat latest-linux.yml | awk 'NR==1 {print $2}')`
   
     # Create a release folder directory on remote location
     - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
 
     # Copy AppImage and .tar.gz releases to remote location
-    - cd target
     - scp -o StrictHostKeyChecking=no *.tar.gz *.AppImage "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
 
     # Copy deb package to the repository folder
