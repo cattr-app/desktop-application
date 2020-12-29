@@ -69,7 +69,6 @@
 			"synopsis": "Desktop time tracking application",
 			"target": "AppImage",
 			"category": "Office",
-			"publish": [],
 			"desktop": {
 				"Name": "Cattr",
 				"Terminal": "false",
