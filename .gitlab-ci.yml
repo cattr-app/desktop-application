@@ -1,0 +1,55 @@
+stages:
+  - release
+
+release-linux:
+  stage: release
+  tags:
+    - linux
+    - docker
+  only:
+    - release
+  image: node:erbium-slim
+  script:
+
+    # Init container, install dependencies
+    - apt update
+    - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
+
+    # Install and build desktop application
+    - npm install
+    - npm run build-production
+    - npm run package-linux
+
+    # Load private key into SSH agent
+    - eval $(ssh-agent -s)
+    - echo "$CI_SSH_KEY" | base64 -d | ssh-add -
+
+    # Load GPG signing key into GPG agent
+    - gpg-agent --daemon
+    - echo -e "$DEB_SIGNING_KEY" | base64 -d |  gpg --import
+
+    # Get Cattr release version
+    - cd target
+    - RELEASE_VERSION=`(cat latest-linux.yml | awk 'NR==1 {print $2}')`
+  
+    # Create a release folder directory on remote location
+    - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
+
+    # Copy AppImage and .tar.gz releases to remote location
+    - scp -o StrictHostKeyChecking=no *.tar.gz *.AppImage "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
+
+    # Copy deb package to the repository folder
+    - scp -o StrictHostKeyChecking=no *.deb "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/amd64/"
+
+    # Generate Packages and Release files
+    - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app "cd /srv/dl/packages/deb && apt-ftparchive --arch amd64 packages amd64 > Packages && apt-ftparchive release amd64 > Release"
+
+    # Copy Release file to sign it locally
+    - scp -o StrictHostKeyChecking=no "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/Release" .
+
+    # Generate Release.gpg and InRelease signed versions
+    - gpg -abs -o Release.gpg Release
+    - gpg --clearsign -o InRelease Release
+
+    # Copy signed files back to remote
+    - scp -o StrictHostKeyChecking=no {Release.gpg,InRelease} "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/"
