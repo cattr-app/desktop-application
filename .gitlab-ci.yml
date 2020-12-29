@@ -8,6 +8,8 @@ build:
   #   - release
   image: node:erbium-slim
   script:
+    - apt update
+    - apt install -y build-essential
     - npm install
     - npm run build-production
     - npm run package-linux
