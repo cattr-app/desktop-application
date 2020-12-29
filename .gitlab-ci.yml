@@ -25,6 +25,7 @@ release-linux:
     - echo "$CI_SSH_KEY" | base64 -d | ssh-add -
 
     # Load GPG signing key into GPG agent
+    - gpg-agent --daemon
     - echo -e "$DEB_SIGNING_KEY" | base64 -d |  gpg --import
 
     # Get Cattr release version
