@@ -1,6 +1,6 @@
 {
 	"name": "cattr",
-	"version": "2.4.3",
+	"version": "2.4.4",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
 	"main": "app/src/app.js",
@@ -18,10 +18,8 @@
 		"build-development": "npx cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"build-production": "npx cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"build-release": "npx cross-env NODE_ENV=production MAKE_RELEASE=yes node_modules/webpack/bin/webpack.js --progress --hide-modules --config=./node_modules/laravel-mix/setup/webpack.config.js",
-		"package-linux": "npx electron-builder -l",
-		"package-windows-portable": "npx electron-builder -w portable",
-		"package-windows-nsis": "npx electron-builder -w nsis",
-		"package-windows-msi": "npx electron-builder -w msi",
+		"package-linux": "npx electron-builder -l appimage deb",
+		"package-windows": "npx electron-builder -w portable nsis msi",
 		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -m",
 		"package-mac-unsigned": "npx electron-builder -m",
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
