@@ -21,6 +21,7 @@
 		"package-linux": "npx electron-builder -l",
 		"package-windows-portable": "npx electron-builder -w portable",
 		"package-windows-nsis": "npx electron-builder -w nsis",
+		"package-windows-msi": "npx electron-builder -w msi",
 		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -m",
 		"package-mac-unsigned": "npx electron-builder -m",
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
@@ -74,6 +75,10 @@
 		"win": {
 			"publisherName": "amazingcat LLC",
 			"icon": "icon.ico"
+		},
+		"nsis": {
+			"oneClick": false,
+			"perMachine": false
 		}
 	},
 	"repository": {
