@@ -46,13 +46,13 @@
     .main {
 
       align-items: center;
-      border-radius: 4px;
-      box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.33);
+      /* border-radius: 4px;
+      box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.33); */
       background: white;
       display: flex;
       flex-flow: row nowrap;
       overflow: hidden;
-      margin: 15px;
+      margin: 0px;
 
     }
 
@@ -178,7 +178,7 @@
 
   </div>
   <script>
-    const {ipcRenderer, remote} = require('electron');
+    const {ipcRenderer, remote, app } = require('electron');
     const IPCRouter = require('@amazingcat/electron-ipc-router');
 
     const notificationRouter = new IPCRouter(ipcRenderer, 'screenshot-notie');

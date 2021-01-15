@@ -164,7 +164,7 @@ module.exports = {
     // Send a screenshot and interval when window become ready
     notification.webContents.on('dom-ready', async () => {
 
-      notification.show();
+      //notification.show();
       notification.duration = userPreferences.get('screenshotNotificationTime') * 1000;
       // Send screenshot to FE
       notificationRouter.emit('notification/screenshot', { screenshot: screenshot.toString('base64'), interval });
