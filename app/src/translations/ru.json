@@ -7,6 +7,7 @@
     "Search...": "Поиск...",
     "On pause": "На паузе",
     "Sync": "Синхронизация",
+    "Settings": "Настройки",
     "User Settings": "Настройки",
     "Account Settings": "Аккаунт",
     "Authorization": "Вход",
@@ -111,6 +112,9 @@
     "Synced to server": "Синхронизирован с сервером",
     "Not synced yet": "Не синхронизирован с сервером",
     "Remove": "Удалить",
-    "Internal Server Error": "Внутренняя ошибка сервера"
+    "Internal Server Error": "Внутренняя ошибка сервера",
+    "Awesome!": "Отлично!",
+    "Recent intervals": "Последние интервалы",
+    "Create a new task": "Создать задачу"
   }
 }

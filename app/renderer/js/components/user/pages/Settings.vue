@@ -197,8 +197,8 @@ export default {
         if ('language' in this.formData)
           this.$i18n.locale = this.formData.language;
 
-        this.$alert(this.$t('Settings saved successfully!'), 'Woohoo!', {
-          confirmButtonText: 'Yay!',
+        this.$alert(this.$t('Settings saved successfully!'), this.$t('Settings'), {
+          confirmButtonText: this.$t('Awesome!'),
         });
 
       } else {

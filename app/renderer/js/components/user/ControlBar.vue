@@ -229,11 +229,11 @@ export default {
 
         this.$confirm(
           this.$t('Your daily report is ready. In which format you\'d like to export it?'),
-          this.$t('Daily Report'),
+          this.$t('Daily report'),
           {
             distinguishCancelAndClose: true,
-            confirmButtonText: 'Markdown',
-            cancelButtonText: 'Plain text',
+            confirmButtonText: this.$t('Markdown'),
+            cancelButtonText: this.$t('Plain text'),
             messageType: 'success',
             customClass: 'rg-msg',
             center: true,
