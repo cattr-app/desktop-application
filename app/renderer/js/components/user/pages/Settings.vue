@@ -174,9 +174,9 @@ export default {
                             </div>
                         </div>
                     `;
-        this.$alert(htmlError, 'Whoops!', {
+        this.$alert(htmlError, this.$t('Logout error'), {
           dangerouslyUseHTMLString: true,
-          confirmButtonText: `${this.$t('OK')} 😢`,
+          confirmButtonText: `${this.$t('OK')}`,
         });
 
       }
@@ -203,7 +203,7 @@ export default {
 
       } else {
 
-        this.$alert(res.body.message, this.$t('Whoops!'), {
+        this.$alert(res.body.message, this.$t('Settings error'), {
           confirmButtonText: this.$t('OK'),
         });
 

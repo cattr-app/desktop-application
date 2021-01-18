@@ -118,7 +118,7 @@ export default {
                   message: createdTask.body.message,
                 },
               }),
-              confirmButtonText: this.$t('Ok'),
+              confirmButtonText: this.$t('OK'),
             });
 
           }

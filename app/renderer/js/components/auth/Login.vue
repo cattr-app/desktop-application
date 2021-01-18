@@ -122,21 +122,21 @@ export default {
         hostname: [
           {
             required: true,
-            message: this.$t('Please, enter hostname'),
+            message: this.$t('Hostname (e.g. "time.acme.corp") is required'),
             trigger: 'blur',
           },
         ],
         login: [
           {
             required: true,
-            message: this.$t('Please, enter your login'),
+            message: this.$t('Email is required'),
             trigger: 'blur',
           },
         ],
         password: [
           {
             required: true,
-            message: this.$t('Please, enter your password'),
+            message: this.$t('Password is required'),
             trigger: 'blur',
           },
         ],
@@ -155,7 +155,7 @@ export default {
         case 2:
           return this.$t('Authorization');
         default:
-          return 'Account created';
+          return this.$t('Account created');
 
       }
 
@@ -246,10 +246,10 @@ export default {
 
       } else {
 
-        this.ucError = this.$t('There is no user with given credentials');
+        this.ucError = this.$t('Invalid email or password');
         this.ucValid = false;
-        this.$alert(this.ucError, 'Whoops!', {
-          confirmButtonText: `${this.$t('Sad')} :C`,
+        this.$alert(this.ucError, this.$t('Login failed'), {
+          confirmButtonText: this.$t('OK'),
         });
 
       }
@@ -319,21 +319,21 @@ export default {
       switch (hostValidity.code) {
 
         case 400:
-          error = this.$t('Incorrect hostname, please check your input');
+          error = this.$t('Incorrect hostname, please, check your input');
           break;
         case 404:
-          error = this.$t('Defined hostname is not an Cattr instance');
+          error = this.$t('Cattr is not found on this hostname');
           break;
         case 500:
-          error = this.$t('Something went wrong on server side');
+          error = this.$t('Error on the remote server side');
           break;
         default:
-          error = `${this.$t('We don\'t know what just happened')} ¯\\_(ツ)_/¯`;
+          error = this.$t('Unknown error occured');
           break;
 
       }
-      this.$alert(error, 'Whoops!', {
-        confirmButtonText: this.$t('Ok'),
+      this.$alert(error, this.$t('Login failed'), {
+        confirmButtonText: this.$t('OK'),
       });
       this.loading = false;
       return false;
