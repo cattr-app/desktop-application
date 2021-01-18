@@ -108,6 +108,7 @@
     "Logout error": "Ошибка выхода из приложения",
     "Settings error": "Ошибка сохранения настроек",
     "Tracking error": "Ошибка отслеживания времени",
+    "Task create error": "Ошибка создания задачи",
     "Prove your activity": "Вы ещё работаете?",
     "Synced to server": "Синхронизирован с сервером",
     "Not synced yet": "Не синхронизирован с сервером",
@@ -115,6 +116,7 @@
     "Internal Server Error": "Внутренняя ошибка сервера",
     "Awesome!": "Отлично!",
     "Recent intervals": "Последние интервалы",
-    "Create a new task": "Создать задачу"
+    "Create a new task": "Создать задачу",
+    "Insufficient permissions to create task in this project": "Недостаточно прав для создания задачи в этом проекте"
   }
 }

@@ -110,8 +110,21 @@ export default {
           if (createdTask.code !== 200) {
 
             this.requestInProgress = false;
+
+            // Task creation access is restricted
+            if (createdTask.code === 403) {
+
+              return this.$msgbox({
+                title: this.$t('Task create error'),
+                message: this.$t('Insufficient permissions to create task in this project'),
+                confirmButtonText: this.$t('OK'),
+              });
+
+            }
+
+            // All other errors
             return this.$msgbox({
-              title: this.$t('Houston, we have a problem'),
+              title: this.$t('Task create error'),
               message: this.$createElement(Message, {
                 props: {
                   title: `Error ${createdTask.body.id}`,
