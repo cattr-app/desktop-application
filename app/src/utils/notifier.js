@@ -161,6 +161,42 @@ module.exports = {
     // Pass webContents to the router instance
     notificationRouter.setWebContents(notification.webContents);
 
+    // Generate and inject CSP policy
+    notification.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+
+      // Build a CSP and apply the default policy
+      let cspValue = "default-src 'self';";
+
+      // Apply assets policy
+      cspValue += "style-src 'self' data: 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;";
+
+      // Scripts: allow unsafe-eval in dev mode, otherwise Chrome DevTools wouldn't work
+      if (config.isDeveloperModeEnabled)
+        cspValue += "script-src 'self' 'unsafe-eval' 'unsafe-inline';";
+      else
+        cspValue += "script-src 'self' 'unsafe-inline';";
+
+      // If Sentry is enabled, inject also a connect-src CSP allowing requests to Sentry host
+      if (config.sentry.enabled) {
+
+        // Parse frontend's DSN to extract the host
+        const frontendDsnUrl = new URL(config.sentry.dsnFrontend);
+
+        // Inject connect-src policy allowing connections to self and Sentry hostname
+        cspValue += `connect-src 'self' ${frontendDsnUrl.origin};`;
+
+      }
+
+      // Returning injection by callback
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          'Content-Security-Policy': cspValue,
+        },
+      });
+
+    });
+
     // Send a screenshot and interval when window become ready
     notification.webContents.on('dom-ready', async () => {
 
