@@ -1,7 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const log = require('debug')('build:notarization');
+const debug = require('debug');
 require('dotenv').config();
+
+debug.enable('cattr:notarization');
+const log = debug('cattr:notarization');
 
 /**
  * Application ID
