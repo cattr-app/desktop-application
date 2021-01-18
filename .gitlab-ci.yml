@@ -53,3 +53,7 @@ release-linux:
 
     # Copy signed files back to remote
     - scp -o StrictHostKeyChecking=no {Release.gpg,InRelease} "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/"
+
+    # Copy manifest files to remote
+    - cd manifests
+    - scp -R . cattr-deploy@dl.cattr.app:/srv/dl/manifests
