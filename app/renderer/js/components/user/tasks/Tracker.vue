@@ -32,6 +32,12 @@
         :span="10"
       >
         <el-button
+          type="text"
+          icon="el-icon-files"
+          size="medium"
+          @click="openIntervalsQueue"
+        />
+        <el-button
           :disabled="!trackingTask || trackingLoad"
           class="tracker-toggler"
           :type="trackingInProgress ? 'success' : 'danger'"
@@ -131,6 +137,25 @@ export default {
         return;
 
       this.$router.push({ name: 'user.project', params: { id: this.trackingTask.Project.id } });
+
+    },
+
+    /**
+     * Opens intervals queue
+     */
+    openIntervalsQueue() {
+
+      this.$emit('load-task-position', null);
+
+      // Make this button acting as "toggle" between intervals and main pages
+      if (this.$route.name === 'user.intervalsQueue') {
+
+        this.$router.push({ name: 'user.tasks' });
+        return;
+
+      }
+
+      this.$router.push({ name: 'user.intervalsQueue' });
 
     },
 
