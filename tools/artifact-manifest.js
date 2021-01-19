@@ -62,14 +62,14 @@ module.exports = () => {
       link: null,
     };
 
-    // Normalized (lower-cased) file name
-    const artifactName = file.toLowerCase();
+    // Artifact file extension (like .exe)
+    const artifactName = path.extname(file.toLowerCase());
 
     // Collect macOS artifacts
     if (process.platform === 'darwin') {
 
       // DMG distribution
-      if (artifactName.includes('.dmg')) {
+      if (artifactName === '.dmg') {
 
         artifact.format = 'dmg';
         artifact.formatHuman = 'DMG Package';
@@ -82,7 +82,7 @@ module.exports = () => {
     if (process.platform === 'win32') {
 
       // MSI installer
-      if (artifactName.includes('.msi')) {
+      if (artifactName === '.msi') {
 
         artifact.format = 'msi';
         artifact.formatHuman = 'MSI Installer';
@@ -90,7 +90,7 @@ module.exports = () => {
       }
 
       // EXE portable
-      if (artifactName.includes('.exe')) {
+      if (artifactName === '.exe') {
 
         artifact.format = 'exe';
         artifact.formatHuman = 'Portable';
@@ -102,21 +102,21 @@ module.exports = () => {
     // Collect Linux artifacts
     if (process.platform === 'linux') {
 
-      if (artifactName.includes('.appimage')) {
+      if (artifactName === '.appimage') {
 
         artifact.format = 'appimage';
         artifact.formatHuman = 'AppImage';
 
       }
 
-      if (artifactName.includes('.deb')) {
+      if (artifactName === '.deb') {
 
         artifact.format = 'deb';
         artifact.formatHuman = 'Deb Package';
 
       }
 
-      if (artifactName.includes('.tar.gz')) {
+      if (artifactName === '.tar.gz') {
 
         artifact.format = 'tgz';
         artifact.formatHuman = 'Portable tarball';
