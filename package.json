@@ -1,6 +1,6 @@
 {
 	"name": "cattr",
-	"version": "2.4.5-experimental.a",
+	"version": "2.4.5-experimental.b",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
 	"main": "app/src/app.js",
