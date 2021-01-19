@@ -68,7 +68,7 @@ release-mac:
   script:
 
     # Unlock keychain
-    - security unlock-keychain "$APPLE_CI_HOST_PASSWORD"
+    - security unlock-keychain -p "$APPLE_CI_HOST_PASSWORD"
 
     # Install dependencies and build desktop application
     - npm install
