@@ -113,13 +113,14 @@ module.exports = () => {
 
         artifact.format = 'deb';
         artifact.formatHuman = 'Deb Package';
+        artifact.link = `https://dl.cattr.app/packages/deb/amd64/${file}`;
 
       }
 
-      if (artifactName === '.tar.gz') {
+      if (artifactName === '.gz' && file.toLowerCase().includes('.tar.gz')) {
 
         artifact.format = 'tgz';
-        artifact.formatHuman = 'Portable tarball';
+        artifact.formatHuman = 'Tarball';
 
       }
 
@@ -129,7 +130,8 @@ module.exports = () => {
     if (artifact.format !== null && artifact.formatHuman !== null) {
 
       log('found %s artifact at %s', artifact.format, file);
-      artifact.link = `https://dl.cattr.app/desktop/${manifest.version}/${file}`;
+      if (!artifact.link)
+        artifact.link = `https://dl.cattr.app/desktop/${manifest.version}/${file}`;
       manifest.artifacts.push(artifact);
 
     }
