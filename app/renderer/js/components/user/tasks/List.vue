@@ -29,10 +29,10 @@
     <template v-else>
       <p class="no-tasks">
         <template v-if="searchPattern.length > 0">
-          😦 {{ $t('There is no tasks for query') }} "{{ searchPattern }}"
+          {{ $t('There are no tasks for query') }} "{{ searchPattern }}"
         </template>
         <template v-else>
-          😨 {{ $t('There is no tasks at all') }}
+          {{ $t('There are no tasks at all') }}
         </template>
       </p>
     </template>

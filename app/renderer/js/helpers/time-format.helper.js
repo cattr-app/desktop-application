@@ -34,3 +34,24 @@ export function formatSeconds(seconds) {
   return `${leftpad(hours)}:${leftpad(minutes)}:${leftpad(secs)}`;
 
 }
+
+/**
+ * Splits seconds into hours-minutes-seconds
+ * @param {Number} seconds
+ * @returns {Object}
+ */
+export function splitSecondsIntoHMS(seconds) {
+
+  let secs = Number(seconds);
+
+  // Getting amount of hours
+  const hours = Math.floor(secs / 3600);
+  secs %= 3600;
+
+  // Getting amount of seconds
+  const minutes = Math.floor(secs / 60);
+  secs %= 60;
+
+  return { hours, minutes, seconds: secs };
+
+}
