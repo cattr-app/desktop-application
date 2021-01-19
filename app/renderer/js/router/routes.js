@@ -5,6 +5,7 @@ import UserSettings from '../components/user/pages/Settings.vue';
 import Info from '../components/user/tasks/Info.vue';
 import TaskCreate from '../components/user/tasks/Create.vue';
 import Project from '../components/user/pages/Project.vue';
+import IntervalsQueue from '../components/user/pages/IntervalsQueue.vue';
 
 export default [
   {
@@ -42,6 +43,11 @@ export default [
         name: 'user.createTask',
         path: 'create',
         component: TaskCreate,
+      },
+      {
+        name: 'user.intervalsQueue',
+        path: 'queue',
+        component: IntervalsQueue,
       },
     ],
   },

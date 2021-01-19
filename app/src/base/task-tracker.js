@@ -591,6 +591,7 @@ class TaskTracker extends EventEmitter {
           throw new UIError(500, `Interval validation error, between ${startAt} and ${endAt}`);
 
         log.debug(`Interval was synced (assigned ID is ${pushedInterval.id})`);
+        await IntervalsController.pushSyncedIntervalInQueue(interval, intervalScreenshot, pushedInterval.id);
 
         // Notifies user
         this.emit('interval-pushed', {

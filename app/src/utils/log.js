@@ -129,9 +129,15 @@ class Logger {
       return;
 
     // Looks like that object is given as parameter, so it's likely Error instance
-    if (typeof arguments_[0] === 'string' && typeof arguments_[1] === 'object') {
+    if (
 
-      const [message, error] = arguments_;
+      (typeof arguments_[0] === 'string' && typeof arguments_[1] === 'object')
+      || (typeof arguments_[0] === 'string' && typeof arguments_[1] === 'string' && typeof arguments_[2] === 'object')
+
+    ) {
+
+      const message = (arguments_.length === 2) ? arguments_[0] : `(${arguments_[0]}) ${arguments_[1]}`;
+      const error = (arguments_.length === 2) ? arguments_[1] : arguments_[2];
 
       // Handle API errors
       if (error.isApiError) {
