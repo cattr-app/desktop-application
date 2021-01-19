@@ -10,6 +10,64 @@ const TaskTracker = require('../base/task-tracker');
 const log = new Log('Controller:Time-Intervals');
 
 /**
+ * Number of synced intervals we keep in database queue
+ * @type {Number}
+ */
+const NUMBER_OF_SYNCED_INTERVALS_TO_KEEP = 5;
+
+/**
+ * Returns all intervals in both latest pushed & unsynced queues
+ * @async
+ * @returns {Promise.<Interval[]>}
+ */
+module.exports.fetchIntervalsQueue = async () => database.Interval.findAll({ include: database.Task });
+
+/**
+ * Puts interval in the queue
+ * @async
+ * @param {Object} interval   Interval (API-formatted) to put into queue
+ * @param {Buffer} screenshot Associated screenshot
+ * @param {String} remoteId   Identifier of the interval on remote
+ * @returns {Promise.<Interval>}
+ */
+module.exports.pushSyncedIntervalInQueue = async (interval, screenshot, remoteId) => {
+
+  // Get number of synced intervals in queue
+  const intervalsInQueue = await database.Interval.count({ where: { synced: true } });
+
+  // Remove the first interval in the queue
+  if (intervalsInQueue >= NUMBER_OF_SYNCED_INTERVALS_TO_KEEP) {
+
+    await database.Interval.destroy({
+      where: { synced: true },
+      order: [['createdAt', 'ASC']],
+      limit: 1,
+    });
+
+  }
+
+  const formattedInterval = {
+    taskId: interval.task_id,
+    startAt: interval.start_at,
+    endAt: interval.end_at,
+    userId: interval.user_id,
+    systemActivity: interval.activity_fill,
+    keyboardActivity: interval.keyboard_fill,
+    mouseActivity: interval.mouse_fill,
+    synced: true,
+    remoteId,
+  };
+
+  // Attach screenshot if it is exists
+  if (screenshot)
+    formattedInterval.screenshot = screenshot;
+
+  // Save & return the interval
+  return database.Interval.create(formattedInterval);
+
+};
+
+/**
  * Backs up the interval into local database
  * @param   {Object}  interval      object representing interval
  * @param   {Buffer}  [screenshot]  binary formatted screenshot
@@ -18,25 +76,16 @@ const log = new Log('Controller:Time-Intervals');
 module.exports.backupInterval = async (interval, screenshot) => {
 
   // Hotfix to keep consinstency between API v1 & v1-ng
-  const convertedInterval = (typeof interval.task_id !== 'undefined')
-    ? {
-      taskId: interval.task_id,
-      startAt: interval.start_at,
-      endAt: interval.end_at,
-      userId: interval.user_id,
-      systemActivity: interval.activity_fill,
-      keyboardActivity: interval.keyboard_fill,
-      mouseActivity: interval.mouse_fill,
-    }
-    : {
-      taskId: interval.taskId,
-      startAt: interval.start.toISOString(),
-      endAt: interval.end.toISOString(),
-      userId: interval.userId,
-      systemActivity: interval.systemActivity,
-      keyboardActivity: interval.keyboardActivity,
-      mouseActivity: interval.mouseActivity,
-    };
+  const convertedInterval = {
+    taskId: interval.task_id,
+    startAt: interval.start_at,
+    endAt: interval.end_at,
+    userId: interval.user_id,
+    systemActivity: interval.activity_fill,
+    keyboardActivity: interval.keyboard_fill,
+    mouseActivity: interval.mouse_fill,
+    synced: false,
+  };
 
   // Attach screenshot if it is exists
   if (screenshot)
@@ -133,7 +182,7 @@ module.exports.destroyInterval = async intervalId => {
   try {
 
     // Delete request on server
-    await api.intervals.remove(intervalId);
+    await api.intervals.remove(Number(intervalId));
 
     // Log changes
     log.debug(`Interval (${intervalId}) successfully destroyed`);
@@ -156,7 +205,9 @@ module.exports.destroyInterval = async intervalId => {
 module.exports.backedUpIntervalsPush = async () => {
 
   // Check for backed up intervals
-  const backedUpIntervals = await database.Interval.findAll();
+  const backedUpIntervals = await database.Interval.findAll({
+    where: { synced: false },
+  });
 
   // If any of them presented
   if (backedUpIntervals) {
@@ -211,5 +262,24 @@ module.exports.backedUpIntervalsPush = async () => {
     }
 
   }
+
+};
+
+/**
+ * Removes interval locally
+ * @async
+ * @param {String} id Interval ID
+ */
+module.exports.removeInterval = async id => {
+
+  const interval = await database.Interval.findOne({ where: { id } });
+  if (!interval)
+    throw new Error(`Interval #${id} is not exists`);
+
+  // Destroy interval on remote if it is synced
+  if (interval.synced)
+    await module.exports.destroyInterval(interval.remoteId);
+
+  await interval.destroy();
 
 };

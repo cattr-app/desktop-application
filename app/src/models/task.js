@@ -61,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
     Task.belongsTo(models.Project, { foreignKey: 'projectId' });
 
     // One Task has many Intervals
-    Task.hasMany(models.Interval, { as: 'Interval', foreignKey: 'id' });
+    Task.hasMany(models.Interval, { as: 'Interval', foreignKey: 'taskId', sourceKey: 'externalId' });
 
     // One Task has many Tracks
     Task.hasMany(models.Track);

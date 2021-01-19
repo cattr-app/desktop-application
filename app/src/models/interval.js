@@ -1,4 +1,3 @@
-
 module.exports = (sequelize, DataTypes) => {
 
   const Interval = sequelize.define('Interval', {
@@ -9,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
     },
 
-    // Parent task UUID
-    taskId: DataTypes.UUID,
+    // Remote identifier of the related task
+    taskId: DataTypes.STRING,
 
     // Timestamp of the moment when this interval was started
     startAt: DataTypes.DATE,
@@ -33,10 +32,21 @@ module.exports = (sequelize, DataTypes) => {
     // Associated user ID
     userId: DataTypes.INTEGER,
 
+    // Is this interval synced?
+    synced: DataTypes.BOOLEAN,
+
+    // Identifier of this interval on remote
+    remoteId: DataTypes.STRING,
+
   }, {});
 
   // Building relations
-  Interval.associate = models => Interval.belongsTo(models.Task, { foreignKey: 'taskId' });
+  Interval.associate = models => {
+
+    Interval.belongsTo(models.Task);
+    Interval.hasOne(models.Task, { foreignKey: 'externalId', sourceKey: 'taskId' });
+
+  };
 
   // Return model
   return Interval;
