@@ -27,7 +27,7 @@
 
     body {
 
-      animation: fadein .5s;
+      /* animation: fadein .5s; */
       box-sizing: border-box;
       color: #444;
       display: flex;
@@ -45,26 +45,20 @@
 
     .main {
 
-      align-items: center;
-      /* border-radius: 4px;
-      box-shadow: 5px 5px 15px 5px rgba(0, 0, 0, 0.33); */
+      align-items: flex-start;
       background: white;
       display: flex;
+      flex-direction: column;
       flex-flow: row nowrap;
       overflow: hidden;
-      margin: 0px;
+      margin: 6px;
 
     }
 
     .modal-body {
-      padding: 5px;
       display: flex;
       justify-content: center;
       align-items: center;
-    }
-
-    .cell {
-      padding: 6px;
     }
 
     .text {
@@ -76,11 +70,17 @@
 
       display: flex;
       flex: 1;
-      flex-flow: row nowrap;
+      flex-flow: column nowrap;
+      /*flex-direction: column;*/
       padding: 0;
       justify-content: center;
       align-items: center;
 
+    }
+
+    .buttons-close {
+      justify-content: flex-end !important;
+      align-items: flex-end !important;
     }
 
     .buttons button {
@@ -105,9 +105,10 @@
       background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
+      align-items: flex-start;
       width: 16px;
       height: 16px;
-      margin-left: 1em;
+      /*margin-left: 1em;*/
 
     }
 
@@ -118,6 +119,7 @@
       background-repeat: no-repeat;
       width: 16px;
       height: 16px;
+      justify-content: center;
 
     }
 
@@ -147,9 +149,9 @@
       background-position: center;
       background-repeat: no-repeat;
       background-size: contain;
-      height: 20vh;
-      padding: 0 3vw;
-      width: 20vw;
+      height: 60vh;
+      padding: 0 3vw 0 15vw;
+      width: 60vw;
 
     }
 
@@ -164,18 +166,20 @@
 
       <div class="cell" id="screenshot"></div>
 
-      <div class="cell text">
-        <div class="title">Cattr</div>
+      <div class="cell text ">
+        <!-- <div class="title">Cattr</div> -->
         <div class="body"></div>
       </div>
 
     </div>
-
-    <div class="cell buttons">
-      <button id="button-delete" class="btn-delete-bin" />
+    <div class="buttons buttons-close cell">
       <button id="button-close" />
+      <!-- <button id="button-delete" class="btn-delete-bin" />  -->
     </div>
 
+  </div>
+  <div class="cell buttons">
+    <button id="button-delete" class="btn-delete-bin" />
   </div>
   <script>
     const {ipcRenderer, remote, app } = require('electron');
@@ -227,18 +231,18 @@
     });
 
     // Listener to handle translations
-    notificationRouter.serve('notification/translation', async request => {
+    /* notificationRouter.serve('notification/translation', async request => {
 
       document.querySelector('div.body').innerHTML = request.packet.body.body;
       document.querySelector('#button-close').title = request.packet.body.close;
       document.querySelector('#button-delete').title = request.packet.body.delete;
 
-    });
+    }); */
 
     // Main flow
     document.addEventListener('DOMContentLoaded', () => {
 
-      const style = document.createElement('style');
+      /* const style = document.createElement('style');
       style.innerHTML = '@keyframes fadein {\n' +
         '  from {\n' +
         `    transform: translateX(${remote.getCurrentWindow().getSize()[0]}px);\n` +
@@ -247,7 +251,7 @@
         '    transform: translateX(0px);\n' +
         '  }\n' +
         '}';
-      document.querySelector('head').appendChild(style);
+      document.querySelector('head').appendChild(style);*/
 
       document.querySelector('#button-close').addEventListener('click', () => {
 
@@ -296,7 +300,7 @@
         windowClosing = true;
         event.preventDefault();
         event.returnValue = '';
-        document.querySelector('body').style.animation = 'fadeout .3s';
+        //document.querySelector('body').style.animation = 'fadeout .3s';
         setTimeout(() => remote.getCurrentWindow().close(), 300);
 
       }

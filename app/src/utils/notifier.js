@@ -160,7 +160,7 @@ module.exports = {
 
     // Pass webContents to the router instance
     notificationRouter.setWebContents(notification.webContents);
-    notification.webContents.openDevTools({ mode: 'detach' });
+    /* notification.webContents.openDevTools({ mode: 'detach' }); */
 
     // Generate and inject CSP policy
     notification.webContents.session.webRequest.onHeadersReceived((details, callback) => {
