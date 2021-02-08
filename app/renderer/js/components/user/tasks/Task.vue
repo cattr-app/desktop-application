@@ -18,7 +18,7 @@
         class="project-name clickable"
         @click="openProject"
       >
-        {{ task.Project.name }}
+        {{ projectName }}
       </p>
     </el-col>
     <el-col
@@ -113,6 +113,19 @@ export default {
       return this.$router.history.current.name === 'user.project';
 
     },
+
+    projectName() {
+
+      if (this.task.Project === null) {
+        
+        return '';
+      
+      }
+
+      return this.task.Project.name;
+
+    },
+
   },
 
   methods: {
