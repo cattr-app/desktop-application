@@ -130,7 +130,7 @@ export default {
 
     goBack() {
 
-      Promise.resolve(this.$router.go(-1));
+      Promise.resolve(this.$router.push({ path: 'tasks' }));
 
     },
 

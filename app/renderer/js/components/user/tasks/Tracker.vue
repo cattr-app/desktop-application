@@ -17,7 +17,7 @@
               class="project-name clickable"
               @click="openProject"
             >
-              {{ trackingTask.Project.name }}
+              {{ projectName }}
             </p>
           </template>
           <template v-else>
@@ -70,6 +70,7 @@ export default {
 
   },
   computed: {
+
     trackingLoad() {
 
       return this.$store.getters.trackLoad;
@@ -98,6 +99,18 @@ export default {
       return new Date(totalTime * 1000).toISOString().substr(11, 8);
 
     },
+
+    projectName() {
+
+      if (this.trackingTask.Project === null) {
+        
+        return '';
+      
+      }
+
+      return this.trackingTask.Project.name;
+
+    }
 
   },
 

@@ -7,7 +7,7 @@
       class="project-name clickable"
       @click="openProjectPage()"
     >
-      {{ task.Project.name }}
+      {{ projectName }}
     </p>
     <el-divider
       style="margin: 0;"
@@ -68,6 +68,18 @@ export default {
     task() {
 
       return this.$store.getters.tasks.find(t => t.id === this.taskId);
+
+    },
+
+    projectName() {
+
+      if (this.task.Project === null) {
+        
+        return '';
+      
+      }
+
+      return this.task.Project.name;
 
     },
 

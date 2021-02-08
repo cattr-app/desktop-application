@@ -122,8 +122,8 @@ module.exports = {
 
     // Calculate notie dimensions (1/6 of screen size on both axis)
     // const width = Math.round(display.workAreaSize.width / 5);
-    const width = 384;
-    const height = 100;
+    const width = Math.round(display.workAreaSize.width / 7);
+    const height = Math.round(display.workAreaSize.height / 7);
 
     // Calculate notie positioning
     const posX = display.workArea.x + display.workArea.width - width;
@@ -160,9 +160,48 @@ module.exports = {
 
     // Pass webContents to the router instance
     notificationRouter.setWebContents(notification.webContents);
+    notification.webContents.openDevTools({ mode: 'detach' });
+
+    // Generate and inject CSP policy
+    notification.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+
+      // Build a CSP and apply the default policy
+      let cspValue = "default-src 'self';";
+
+      // Apply assets policy
+      cspValue += "style-src 'self' data: 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;";
+
+      // Scripts: allow unsafe-eval in dev mode, otherwise Chrome DevTools wouldn't work
+      if (config.isDeveloperModeEnabled)
+        cspValue += "script-src 'self' 'unsafe-eval' 'unsafe-inline';";
+      else
+        cspValue += "script-src 'self' 'unsafe-inline';";
+
+      // If Sentry is enabled, inject also a connect-src CSP allowing requests to Sentry host
+      if (config.sentry.enabled) {
+
+        // Parse frontend's DSN to extract the host
+        const frontendDsnUrl = new URL(config.sentry.dsnFrontend);
+
+        // Inject connect-src policy allowing connections to self and Sentry hostname
+        cspValue += `connect-src 'self' ${frontendDsnUrl.origin};`;
+
+      }
+
+      // Returning injection by callback
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          'Content-Security-Policy': cspValue,
+        },
+      });
+
+    });
 
     // Send a screenshot and interval when window become ready
     notification.webContents.on('dom-ready', async () => {
+
+      notification.duration = userPreferences.get('screenshotNotificationTime') * 1000;
 
       // Send screenshot to FE
       notificationRouter.emit('notification/screenshot', { screenshot: screenshot.toString('base64'), interval });
