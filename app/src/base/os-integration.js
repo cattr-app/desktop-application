@@ -3,6 +3,7 @@ const EventEmitter = require('events');
 const Log = require('../utils/log');
 const Tracker = require('./task-tracker');
 const userPreferences = require('./user-preferences');
+const authentication = require('./authentication');
 
 const log = new Log('OSIntegration');
 
@@ -274,6 +275,13 @@ class OSIntegration extends EventEmitter {
 
     // Verify the screen capture access on macOS
     if (process.platform === 'darwin') {
+
+      // Getting current user properties
+      const user = await authentication.getCurrentUser();
+
+      // Do not verify display capture access if screenshot capture is disabled for this user
+      if (!user.screenshotsEnabled)
+        return { available: true };
 
       // Check is screenshot capture access is granted
       if (systemPreferences.getMediaAccessStatus('screen') === 'granted')

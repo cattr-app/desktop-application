@@ -24,3 +24,4 @@ require('./time.js')(router);
 require('./translation.js')(router);
 require('./user-preferences.js')(router);
 require('./offline-mode.js')(router);
+require('./intervals.js')(router);

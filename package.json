@@ -1,6 +1,6 @@
 {
 	"name": "cattr",
-	"version": "2.4.4",
+	"version": "2.4.5",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
 	"main": "app/src/app.js",
@@ -19,8 +19,8 @@
 		"build-production": "npx cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"build-release": "npx cross-env NODE_ENV=production MAKE_RELEASE=yes node_modules/webpack/bin/webpack.js --progress --hide-modules --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"package-linux": "npx electron-builder -p never -l appimage deb tar.gz",
-		"package-windows": "npx electron-builder -w portable nsis msi",
-		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -m",
+		"package-windows": "npx electron-builder -p never -w portable msi",
+		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -p never -m",
 		"package-mac-unsigned": "npx electron-builder -m",
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
 	},
@@ -36,6 +36,7 @@
 			}
 		],
 		"afterSign": "tools/macos-notarization.js",
+		"afterAllArtifactBuild": "tools/artifact-manifest.js",
 		"asar": "true",
 		"directories": {
 			"buildResources": "resources",
@@ -228,10 +229,10 @@
 		"electron-notarize": "^1.0.0",
 		"element-theme-chalk": "^2.14.1",
 		"element-ui": "^2.14.1",
-		"eslint": "^7.15.0",
+		"eslint": "^7.17.0",
 		"eslint-config-airbnb-base": "^14.2.1",
 		"eslint-plugin-import": "^2.22.1",
-		"eslint-plugin-vue": "^7.3.0",
+		"eslint-plugin-vue": "^7.4.1",
 		"fstream": "^1.0.12",
 		"laravel-mix": "^5.0.9",
 		"minimist": "^1.2.5",

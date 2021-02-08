@@ -414,8 +414,15 @@ module.exports.createTask = async task => {
 
   } catch (err) {
 
-    if (err.isNetworkError || err.isApiError)
+    if (err.isNetworkError || err.isApiError) {
+
+      // Not authorized for this action
+      if (err.status === 403)
+        throw new UIError(403, 'Task create is not allowed for this account', 'ETSK403');
+
       throw new UIError(555, 'Cannot create task due to the network or server error', 'ETSK555');
+
+    }
 
     throw err;
 

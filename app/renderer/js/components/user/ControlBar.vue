@@ -150,13 +150,11 @@ export default {
 
       this.reportGenerationInProgress = false;
       this.$alert(
-        this.$t('Get back and do some work before!'),
-        this.$t('Your daily report is empty'),
+        this.$t('Daily report'),
+        this.$t('Your daily report is empty. Get back and do some work before!'),
         {
-          confirmButtonText: this.$t('Okay'),
+          confirmButtonText: this.$t('OK'),
           messageType: 'warning',
-          customClass: 'rg-msg',
-          confirmButtonClass: 'rg-msg__okie',
         },
       );
 
@@ -181,10 +179,8 @@ export default {
             this.$t('Your daily report is unavailable in offline mode'),
             this.$t('Network is not available ✈️'),
             {
-              confirmButtonText: this.$t('Okay'),
+              confirmButtonText: this.$t('OK'),
               messageType: 'error',
-              customClass: 'rg-msg',
-              confirmButtonClass: 'rg-msg',
             },
           );
           return;
@@ -201,10 +197,8 @@ export default {
             this.$t('Error occured during report export'),
             `<pre>${JSON.stringify(req)}</pre>`,
             {
-              confirmButtonText: this.$t('Okay'),
+              confirmButtonText: this.$t('OK'),
               messageType: 'error',
-              customClass: 'rg-msg',
-              confirmButtonClass: 'rg-msg__okie',
             },
           );
           return;
@@ -234,16 +228,14 @@ export default {
       if (reportBuffer !== '') {
 
         this.$confirm(
-          this.$t('Do you want to copy the report formatted in Markdown or in plain text?'),
-          this.$t('Success!'),
+          this.$t('Your daily report is ready. In which format you\'d like to export it?'),
+          this.$t('Daily report'),
           {
             distinguishCancelAndClose: true,
-            confirmButtonText: 'Markdown',
-            cancelButtonText: 'Plain text',
+            confirmButtonText: this.$t('Markdown'),
+            cancelButtonText: this.$t('Plain text'),
             messageType: 'success',
             customClass: 'rg-msg',
-            confirmButtonClass: 'rg-msg__okie',
-            cancelButtonClass: 'rg-msg__okie',
             center: true,
           },
 
@@ -251,7 +243,7 @@ export default {
 
           this.$message({
             type: 'success',
-            message: 'Markdown report has been copied to clipboard',
+            message: this.$t('Report successfully copied to the clipboard'),
           });
 
           // Copy text to clipboard
@@ -288,7 +280,7 @@ export default {
 
           this.$message({
             type: 'success',
-            message: 'Plain text report has been copied to clipboard',
+            message: this.$t('Report successfully copied to the clipboard'),
           });
 
         });

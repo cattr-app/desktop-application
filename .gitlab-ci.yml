@@ -53,3 +53,42 @@ release-linux:
 
     # Copy signed files back to remote
     - scp -o StrictHostKeyChecking=no {Release.gpg,InRelease} "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/"
+
+    # Copy manifest files to remote
+    - cd manifests
+    - scp -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
+
+release-mac:
+  stage: release
+  tags:
+    - macos
+    - host
+  only:
+    - release
+  script:
+
+    # Unlock keychain
+    - security unlock-keychain -p "$APPLE_CI_HOST_PASSWORD"
+
+    # Install dependencies and build desktop application
+    - npm install
+    - npm run build-production
+    - npm run package-mac
+
+    # Load private key into SSH agent
+    - eval $(ssh-agent -s)
+    - echo "$CI_SSH_KEY" | base64 -d | ssh-add -
+
+    # Get Cattr release version
+    - cd target
+    - RELEASE_VERSION=`(cat latest-mac.yml | awk 'NR==1 {print $2}')`
+  
+    # Create a release folder directory on remote location
+    - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
+
+    # Copy AppImage and .tar.gz releases to remote location
+    - scp -o StrictHostKeyChecking=no *.dmg "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
+
+    # Copy manifest files to remote
+    - cd manifests
+    - scp -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
