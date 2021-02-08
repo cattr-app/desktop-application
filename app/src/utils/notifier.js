@@ -122,8 +122,8 @@ module.exports = {
 
     // Calculate notie dimensions (1/6 of screen size on both axis)
     // const width = Math.round(display.workAreaSize.width / 5);
-    const width = 154;
-    const height = 100;
+    const width = Math.round(display.workAreaSize.width / 7);
+    const height = Math.round(display.workAreaSize.height / 7);
 
     // Calculate notie positioning
     const posX = display.workArea.x + display.workArea.width - width;
@@ -160,7 +160,7 @@ module.exports = {
 
     // Pass webContents to the router instance
     notificationRouter.setWebContents(notification.webContents);
-    /* notification.webContents.openDevTools({ mode: 'detach' }); */
+    notification.webContents.openDevTools({ mode: 'detach' });
 
     // Generate and inject CSP policy
     notification.webContents.session.webRequest.onHeadersReceived((details, callback) => {
@@ -202,6 +202,7 @@ module.exports = {
     notification.webContents.on('dom-ready', async () => {
 
       notification.duration = userPreferences.get('screenshotNotificationTime') * 1000;
+
       // Send screenshot to FE
       notificationRouter.emit('notification/screenshot', { screenshot: screenshot.toString('base64'), interval });
 
