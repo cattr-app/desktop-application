@@ -92,3 +92,47 @@ release-mac:
     # Copy manifest files to remote
     - cd manifests
     - scp -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
+
+release-windows:
+  stage: release
+  tags:
+    - windows
+    - host
+  only:
+    - release
+  script:
+
+    # Install and build desktop application
+    - npm install
+    - npm run build-production
+
+    # Build "portable" executable
+    - npm run package-windows
+    
+    # By default the ssh-agent service is disabled. Allow it to be manually started for the next step to work.
+    - Get-Service -Name ssh-agent | Set-Service -StartupType Manual
+
+    # Start the ssh-agent service to preserve the server keys
+    - Start-Service ssh-agent
+
+    # Start the sshd service
+    - Start-Service sshd
+    
+    # Load private key into SSH agent
+    # Now load your key files into ssh-agent
+    - echo $CI_SSH_KEY_WIN | base64 -di | ssh-add -
+
+    # Get Cattr release version
+    - cd target
+    - $release_json = Get-Content -Path .\manifests\release-windows.json | ConvertFrom-Json
+    - $RELEASE_VERSION=$release_json.version
+    
+    # Create a release folder directory on remote location
+    - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
+
+    # Copy exe and .msi releases to remote location
+    - scp -o StrictHostKeyChecking=no *.exe *.msi "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
+
+    # Copy manifest files to remote
+    - cd manifests
+    - scp -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
