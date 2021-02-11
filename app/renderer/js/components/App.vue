@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import Loader from './Loader';
-import Message from './Message';
+import Loader from './Loader.vue';
+import Message from './Message.vue';
 import captureScreen from '../utils/screenshot';
 
 export default {
@@ -35,7 +35,28 @@ export default {
       try {
 
         // Capturing screenshots
-        const screenshots = await captureScreen(this.$refs['screen-capture']);
+        let screenshots = null;
+
+        // Retrying screenshot capture for three times
+        let retryIteration = 0;
+        while (retryIteration < 3) {
+
+          try {
+
+            // eslint-disable-next-line no-await-in-loop
+            screenshots = await captureScreen(this.$refs['screen-capture']);
+            break;
+
+          } catch (err) {
+
+            if (retryIteration === 2)
+              throw err;
+
+            retryIteration += 1;
+
+          }
+
+        }
 
         // Respond
         return req.send(200, { screenshots });
