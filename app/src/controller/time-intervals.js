@@ -269,10 +269,16 @@ module.exports.backedUpIntervalsPush = async () => {
  * Removes interval locally
  * @async
  * @param {String} id Interval ID
+ * @param {Object} options Additional options
  */
-module.exports.removeInterval = async id => {
+module.exports.removeInterval = async (id, opts) => {
 
-  const interval = await database.Interval.findOne({ where: { id } });
+  let interval = null;
+  if (opts && opts.remoteIdentifier)
+    interval = await database.Interval.findOne({ where: { remoteId: id } });
+  else
+    interval = await database.Interval.findOne({ where: { id } });
+
   if (!interval)
     throw new Error(`Interval #${id} is not exists`);
 
