@@ -114,9 +114,6 @@ release-windows:
 
     # Start the ssh-agent service to preserve the server keys
     - Start-Service ssh-agent
-
-    # Start the sshd service
-    - Start-Service sshd
     
     # Load private key into SSH agent
     # Now load your key files into ssh-agent
