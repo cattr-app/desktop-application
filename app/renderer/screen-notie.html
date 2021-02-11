@@ -140,7 +140,8 @@
 
       // Setting window close timer
       windowDuration = request.packet.body.duration;
-      // windowCloseTimer = setTimeout(() => window.close(), windowDuration);
+      console.log(windowDuration);
+      windowCloseTimer = setTimeout(() => window.close(), windowDuration);
 
     });
 
@@ -194,7 +195,6 @@
         windowClosing = true;
         event.preventDefault();
         event.returnValue = '';
-        //document.querySelector('body').style.animation = 'fadeout .3s';
         setTimeout(() => remote.getCurrentWindow().close(), 300);
 
       }
