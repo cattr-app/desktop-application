@@ -130,7 +130,7 @@ export default {
 
     goBack() {
 
-      Promise.resolve(this.$router.push({ path: 'tasks' }));
+      this.$router.push({ name: 'user.tasks' });
 
     },
 
@@ -150,8 +150,8 @@ export default {
 
       this.reportGenerationInProgress = false;
       this.$alert(
-        this.$t('Daily report'),
         this.$t('Your daily report is empty. Get back and do some work before!'),
+        this.$t('Daily report'),
         {
           confirmButtonText: this.$t('OK'),
           messageType: 'warning',
