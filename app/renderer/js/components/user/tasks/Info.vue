@@ -73,11 +73,8 @@ export default {
 
     projectName() {
 
-      if (this.task.Project === null) {
-        
+      if (this.task.Project === null)
         return '';
-      
-      }
 
       return this.task.Project.name;
 
@@ -149,13 +146,6 @@ export default {
         this.$emit('trackStart', this.task);
 
       }
-
-    },
-
-    back() {
-
-      // this.$router.push({ name: 'user.tasks' });
-      this.$router.go(-1);
 
     },
   },
