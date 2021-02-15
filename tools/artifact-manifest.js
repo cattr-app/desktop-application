@@ -63,13 +63,13 @@ module.exports = () => {
     };
 
     // Artifact file extension (like .exe)
-    const artifactName = path.extname(file.toLowerCase());
+    const artifactExtension = path.extname(file.toLowerCase());
 
     // Collect macOS artifacts
     if (process.platform === 'darwin') {
 
       // DMG distribution
-      if (artifactName === '.dmg') {
+      if (artifactExtension === '.dmg') {
 
         artifact.format = 'dmg';
         artifact.formatHuman = 'DMG Package';
@@ -82,18 +82,29 @@ module.exports = () => {
     if (process.platform === 'win32') {
 
       // MSI installer
-      if (artifactName === '.msi') {
+      if (artifactExtension === '.msi') {
 
         artifact.format = 'msi';
         artifact.formatHuman = 'MSI Installer';
 
       }
 
-      // EXE portable
-      if (artifactName === '.exe') {
+      // Executable
+      if (artifactExtension === '.exe') {
 
-        artifact.format = 'exe';
-        artifact.formatHuman = 'Portable';
+        if (file.indexOf('Setup') > -1) {
+
+          // NSIS installer
+          artifact.format = 'nsis';
+          artifact.formatHuman = 'Installer';
+
+        } else {
+
+          // Portable
+          artifact.format = 'exe';
+          artifact.formatHuman = 'Portable';
+
+        }
 
       }
 
@@ -102,14 +113,14 @@ module.exports = () => {
     // Collect Linux artifacts
     if (process.platform === 'linux') {
 
-      if (artifactName === '.appimage') {
+      if (artifactExtension === '.appimage') {
 
         artifact.format = 'appimage';
         artifact.formatHuman = 'AppImage';
 
       }
 
-      if (artifactName === '.deb') {
+      if (artifactExtension === '.deb') {
 
         artifact.format = 'deb';
         artifact.formatHuman = 'Deb Package';
@@ -117,7 +128,7 @@ module.exports = () => {
 
       }
 
-      if (artifactName === '.gz' && file.toLowerCase().includes('.tar.gz')) {
+      if (artifactExtension === '.gz' && file.toLowerCase().includes('.tar.gz')) {
 
         artifact.format = 'tgz';
         artifact.formatHuman = 'Tarball';
