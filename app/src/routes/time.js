@@ -4,6 +4,7 @@ const { UIError } = require('../utils/errors');
 const auth = require('../base/authentication');
 const { db } = require('../models');
 const OfflineMode = require('../base/offline-mode');
+const TaskTracker = require('../base/task-tracker');
 
 const log = new Logger('Router:Time');
 log.debug('Loaded');
@@ -26,6 +27,11 @@ module.exports = router => {
 
       } else
         totalTimeToday = await Time.getLocalTotalTimeForToday();
+
+      // If tracker is running, add the current interval duration to total time
+      if (TaskTracker.isActive)
+        totalTimeToday.time += TaskTracker.ticker.ticks || 0;
+
       // Returning response
       log.debug('Time successfully synced');
       return await request.send(200, { time: totalTimeToday });

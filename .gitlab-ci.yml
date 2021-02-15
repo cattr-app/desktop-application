@@ -16,7 +16,7 @@ release-linux:
     - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
 
     # Install and build desktop application
-    - npm install
+    - npm ci
     - npm run build-production
     - npm run package-linux
 
@@ -71,7 +71,7 @@ release-mac:
     - security unlock-keychain -p "$APPLE_CI_HOST_PASSWORD"
 
     # Install dependencies and build desktop application
-    - npm install
+    - npm ci
     - npm run build-production
     - npm run package-mac
 
@@ -103,7 +103,7 @@ release-windows:
   script:
 
     # Install and build desktop application
-    - npm install
+    - npm ci
     - npm run build-production
 
     # Build "portable" executable
