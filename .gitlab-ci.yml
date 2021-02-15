@@ -125,7 +125,7 @@ release-windows:
     - $RELEASE_VERSION=$release_json.version
     
     # Create a release folder directory on remote location
-    - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
+    - ssh -o StrictHostKeyChecking=no -n -T cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
 
     # Copy exe and .msi releases to remote location
     - scp -o StrictHostKeyChecking=no *.exe *.msi "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
