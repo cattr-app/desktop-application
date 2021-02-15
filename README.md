@@ -1,9 +1,7 @@
 Cattr Desktop App
 ==========
-
 Electron desktop application for Cattr
 
-**This is open experimental version, which is not intended to be used in production**
 
 ## Installation
 1. Clone this repository
@@ -16,11 +14,6 @@ There are two major differences between development and production modes:
 1. Automatical error reporting disabled in development mode.
 2. Development installation uses different keychain service name and application folder path (with "-develop" suffix).
 
-**TL;DR:** Use only dev mode during development and do not launch two instances in production mode simultaneously.
-
-** For VS Code users: **
-You can use VS Code debugger with the config within this project
-
 ## Build
 1. Ensure that all necessary dependencies are installed
 2. Ensure that `package.json` and `src/base/config.js` contains right configuration
@@ -28,9 +21,9 @@ You can use VS Code debugger with the config within this project
 4. Build executable for your favourite platform (output directory is /target).
 
 How to build executable?
-  - **macOS:** `npm run package-mac` will produce .dmg archive with application
-  - **Linux:** `npm run package-linux` will produce .AppImage file
-  - **Windows:** `npm run package-windows` will produce .exe file
+  - **macOS:** `npm run package-mac` will produce signed & notarized DMG
+  - **Linux:** `npm run package-linux` will produce Tarball, DPKG and AppImage
+  - **Windows:** `npm run package-windows` will produce installer and portable executables
 
 Compatibility sheet:
   - **Host with macOS:** can produce builds only for macOS

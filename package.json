@@ -1,6 +1,6 @@
 {
 	"name": "cattr",
-	"version": "2.4.8",
+	"version": "2.5.0",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
 	"main": "app/src/app.js",
@@ -19,7 +19,7 @@
 		"build-production": "npx cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"build-release": "npx cross-env NODE_ENV=production MAKE_RELEASE=yes node_modules/webpack/bin/webpack.js --progress --hide-modules --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"package-linux": "npx electron-builder -p never -l appimage deb tar.gz",
-		"package-windows": "npx electron-builder -p never -w portable msi",
+		"package-windows": "npx electron-builder -p never -w portable nsis",
 		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -p never -m",
 		"package-mac-unsigned": "npx electron-builder -m",
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
@@ -235,17 +235,17 @@
 		"eslint-plugin-vue": "^7.4.1",
 		"fstream": "^1.0.12",
 		"laravel-mix": "^5.0.9",
-		"minimist": "^1.2.5",
 		"mini-css-extract-plugin": "^1.3.3",
+		"minimist": "^1.2.5",
 		"node-abi": "^2.19.3",
 		"sass": "^1.30.0",
 		"sass-loader": "^10.1.0",
 		"vue": "^2.6.12",
 		"vue-i18n": "^8.22.2",
 		"vue-router": "^3.4.9",
-		"vue-template-compiler": "^2.6.12",
-		"vuex": "^3.6.0",
 		"vue-simple-markdown": "^1.1.4",
-		"vuedraggable": "^2.24.3"
+		"vue-template-compiler": "^2.6.12",
+		"vuedraggable": "^2.24.3",
+		"vuex": "^3.6.0"
 	}
 }
