@@ -3,6 +3,7 @@ const Tasks = require('../controller/tasks');
 const { UIError } = require('../utils/errors');
 const Time = require('../controller/time');
 const UserPreferences = require('../base/user-preferences');
+const TaskTracker = require('../base/task-tracker');
 
 const log = new Logger('Router:Tasks');
 log.debug('Loaded');
@@ -28,8 +29,15 @@ const purifyInstances = instances => instances.map(instance => {
   // Related time tracked into this task (we use [0] index because every time we ask for
   // related track we filter it for only today date on the upper layer, so recieve an array
   // length == 1)
-  if (instance.dataValues.Tracks && instance.dataValues.Tracks.length > 0)
+  if (instance.dataValues.Tracks && instance.dataValues.Tracks.length > 0) {
+
     returnObject.TrackedTime = Number(instance.dataValues.Tracks[0].overallTime);
+
+    // If tracking is active, take current (unsent yet) interval into account
+    if (TaskTracker.isActive && TaskTracker.currentTask.id === instance.id)
+      returnObject.TrackedTime += TaskTracker.ticker.ticks;
+
+  }
 
   // Return purified model
   return returnObject;
