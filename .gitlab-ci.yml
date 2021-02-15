@@ -128,7 +128,7 @@ release-windows:
     - ssh -o StrictHostKeyChecking=no -n -T cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
 
     # Copy exe and .msi releases to remote location
-    - scp -o StrictHostKeyChecking=no *.exe *.msi "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
+    - scp -o StrictHostKeyChecking=no *.exe "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
 
     # Copy manifest files to remote
     - cd manifests
