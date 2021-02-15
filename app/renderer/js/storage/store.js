@@ -348,12 +348,6 @@ export default {
 
     },
 
-    /* totalTimeSync(context, { totalTime }) {
-
-      context.commit('totalTimeSync', totalTime);
-
-    },
- */
     totalTimeSync({ commit }, payload) {
 
       commit('totalTimeSync', payload);
