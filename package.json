@@ -138,7 +138,8 @@
 				"warn",
 				{
 					"code": 120,
-					"ignoreTemplateLiterals": true
+					"ignoreTemplateLiterals": true,
+					"ignoreStrings": true
 				}
 			],
 			"nonblock-statement-body-position": [
@@ -207,6 +208,7 @@
 		"@amazingcat/electron-ipc-router": "1.2.2",
 		"@amazingcat/node-cattr": "3.3.5",
 		"@sentry/electron": "^2.0.4",
+		"axios": "^0.21.1",
 		"chalk": "^4.1.0",
 		"electron-hotkey": "0.0.1-alpha.1",
 		"is-plain-obj": "^3.0.0",
