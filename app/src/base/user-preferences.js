@@ -53,8 +53,8 @@ const preferences = {
   // Preferences entry for screenshot notification
   screenshotNotificationTime: {
     type: 'number',
-    name: 'Screenshot notification duration (in seconds)',
-    description: 'For how long we should show you the captured screenshot?',
+    name: 'Screenshot notification duration',
+    description: 'Duration of notification in seconds',
     default: 5,
     frontend: {
       element: 'number',
@@ -65,8 +65,8 @@ const preferences = {
   // Preferences entry for the inactive tasks display
   showInactiveTasks: {
     type: 'boolean',
-    name: 'Show inactive tasks',
-    description: 'Should we show you inactive tasks too?',
+    name: 'Display closed tasks',
+    description: 'Should we show you inactive (closed) tasks?',
     default: false,
     frontend: {
       element: 'toggle',
@@ -77,7 +77,7 @@ const preferences = {
   language: {
     type: 'string',
     name: 'Language',
-    description: 'Interface language. Application restart is required to apply changes',
+    description: 'Interface language',
     default: 'en',
     frontend: {
       element: 'options',
@@ -93,6 +93,17 @@ const preferences = {
     frontend: {
       element: 'toggle',
       options: { 'Hide window & continue tracking': true, 'Stop tracking & quit': false },
+    },
+  },
+
+  usageStatistics: {
+    type: 'boolean',
+    name: 'Send usage statistics',
+    description: 'Share usage statistics with Cattr Developers. Statistics include only versions of Cattr Desktop, Operating System, and backend installation ID. We don\'t collect any personal data, and all collected statistics will be used only to better understand how we can improve the desktop application experience.',
+    default: true,
+    frontend: {
+      element: 'toggle',
+      options: { 'Allow usage statistics collection': true, 'Do not send usage reports': false },
     },
   },
 

@@ -28,6 +28,7 @@ const packageVersion = packageManifest.version;
 const configuration = {
 
   packageId,
+  packageVersion,
 
   // Application data directory
   appdata: isDeveloperModeEnabled ? app.getPath('userData').concat('-develop') : app.getPath('userData'),
@@ -104,6 +105,23 @@ configuration.credentialsStore = {
 configuration.userPreferences = {
 
   file: `${configuration.appdata}/at-user-preferences.json`,
+
+};
+
+// Usage statistics reporter
+configuration.usageStatistics = {
+
+  /**
+   * Report usage statistics
+   * Notice that even if reporting is enabled here, priority is on User Preferences parameter.
+   * In other words, even if stats is enabled here, user's decision in Settings is more important.
+   */
+  enabled: true,
+
+  /**
+   * Base URL of statistics collector
+   */
+  collectorUrl: 'https://stats.cattr.app',
 
 };
 

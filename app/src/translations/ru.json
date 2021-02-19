@@ -20,8 +20,7 @@
     "Sign In": "Войти",
     "Logout": "Выйти",
     "Language": "Язык",
-    "Screenshot notification duration (in seconds)": "Длительность уведомления о скриншоте (в секундах)",
-    "Show inactive tasks": "Показывать неактивные задачи",
+    "Screenshot notification duration": "Длительность уведомления о скриншоте",
     "Show screenshot notification": "Показывать уведомление о скриншоте",
     "Window close action": "Действие при закрытии окна",
     "Save": "Сохранить",
@@ -32,10 +31,12 @@
     "No": "Нет",
     "Russian": "Русский",
     "English": "Английский",
-    "Interface language. Application restart is required to apply changes": "Язык интерфейса. Для применения нужен перезапуск приложения",
-    "For how long (in seconds) we should show you the captured screenshot?": "Длительность отображения уведомления о скриншоте",
-    "Should we show you inactive tasks too?": "Отображать неактивные задачи в списке?",
-    "Should we notify you about captured screenshot?": "Показывать уведомление о сделанном скриншоте?",
+    "Interface language": "Язык интерфейса",
+    "Duration of notification in seconds": "Длительность (в секундах) показа уведомления о скриншоте",
+    "Display closed tasks": "Показывать закрытые задачи",
+    "Should we show you inactive (closed) tasks?": "Показывать закрытые (неактивные) задачи?",
+    "Should we notify you about captured screenshot?": "Показывать уведомление о скриншоте?",
+    "Should we close or hide application on window close?": "При закрытии окна Cattr, выходить из приложения или сворачивать в трей?",
     "Something went wrong": "Что-то пошло не так",
     "Sad": "Грустно",
     "Whoops!": "Упс",
@@ -117,6 +118,10 @@
     "Awesome!": "Отлично!",
     "Recent intervals": "Последние интервалы",
     "Create a new task": "Создать задачу",
-    "Insufficient permissions to create task in this project": "Недостаточно прав для создания задачи в этом проекте"
+    "Insufficient permissions to create task in this project": "Недостаточно прав для создания задачи в этом проекте",
+    "Send usage statistics": "Отправлять статистику использования",
+    "Share usage statistics with Cattr Developers. Statistics include only versions of Cattr Desktop, Operating System, and backend installation ID. We don't collect any personal data, and all collected statistics will be used only to better understand how we can improve the desktop application experience.": "Отправлять разработчикам Cattr статистику об использовании приложения: идентификатор серверного приложения, версию Cattr Desktop и ОС. Мы не собираем персональные данные, а вся статистика будет использована только для улучшения Cattr Desktop",
+    "Allow usage statistics collection": "Делиться статистикой использования",
+    "Do not send usage reports": "Не отправлять статистику использования"
   }
 }

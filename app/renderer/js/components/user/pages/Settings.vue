@@ -38,8 +38,8 @@
             />
           </el-select>
         </template>
+        <small class="el-form-item-comment">{{ $t(formField.description) }}</small>
       </el-form-item>
-      <el-form-item />
     </el-form>
     <div class="settings__footer">
       <el-button
@@ -268,6 +268,14 @@ export default {
           .el-select {
             width: 100%;
           }
+        }
+
+        .el-form-item-comment {
+          color: #444;
+          display: inline-block;
+          font-size: .8em;
+          margin-top: .9em;
+          line-height: 2em;
         }
       }
     }
