@@ -1,6 +1,6 @@
 {
 	"name": "cattr",
-	"version": "2.5.1",
+	"version": "2.5.2",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
 	"main": "app/src/app.js",
@@ -206,7 +206,7 @@
 	],
 	"dependencies": {
 		"@amazingcat/electron-ipc-router": "1.2.2",
-		"@amazingcat/node-cattr": "3.3.5",
+		"@amazingcat/node-cattr": "3.3.6",
 		"@sentry/electron": "^2.0.4",
 		"axios": "^0.21.1",
 		"chalk": "^4.1.0",
