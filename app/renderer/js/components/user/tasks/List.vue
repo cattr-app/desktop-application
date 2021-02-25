@@ -269,11 +269,16 @@ export default {
 
         }
 
-        if (searchRegex.test(item.Project.name)) {
+        // Workaround for tasks without project access (ugh!)
+        if (item.Project !== null) {
 
-          // We should reset lastIndex on positive matchs to avoid issues with RegExp reuse
-          searchRegex.lastIndex = 0;
-          return true;
+          if (searchRegex.test(item.Project.name)) {
+
+            // We should reset lastIndex on positive matchs to avoid issues with RegExp reuse
+            searchRegex.lastIndex = 0;
+            return true;
+
+          }
 
         }
 
