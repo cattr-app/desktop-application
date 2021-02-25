@@ -11,5 +11,6 @@ module.exports = () => {
   require('./relaunch-on-logout.js');
   require('./power-manager.js');
   require('./os-inactivity-handler.js');
+  require('./usage-statistic');
 
 };
