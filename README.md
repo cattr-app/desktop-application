@@ -20,6 +20,10 @@ There are two major differences between development and production modes:
 3. Build application in production mode via `npm run build-production`
 4. Build executable for your favourite platform (output directory is /target).
 
+## Upload Sentry sourcemaps
+1. Copy `.sentry.main.example` to `.sentry.main`, then fill with configuration for Main process project.
+2. Copy `.sentry.renderer.example` to `.sentry.renderer.example`, then fill with configuration for Renderer process project.
+
 How to build executable?
   - **macOS:** `npm run package-mac` will produce signed & notarized DMG
   - **Linux:** `npm run package-linux` will produce Tarball, DPKG and AppImage
