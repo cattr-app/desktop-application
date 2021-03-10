@@ -23,6 +23,7 @@ There are two major differences between development and production modes:
 ## Upload Sentry sourcemaps
 1. Copy `.sentry.main.example` to `.sentry.main`, then fill with configuration for Main process project.
 2. Copy `.sentry.renderer.example` to `.sentry.renderer.example`, then fill with configuration for Renderer process project.
+3. During release preparation, run `npm run build-release` to build & submit release files to Sentry.
 
 How to build executable?
   - **macOS:** `npm run package-mac` will produce signed & notarized DMG
