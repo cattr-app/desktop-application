@@ -108,16 +108,11 @@ release-windows:
 
     # Build "portable" executable
     - npm run package-windows
-    
-    # By default the ssh-agent service is disabled. Allow it to be manually started for the next step to work.
-    - Get-Service -Name ssh-agent | Set-Service -StartupType Manual
 
-    # Start the ssh-agent service to preserve the server keys
-    - Start-Service ssh-agent
-    
     # Load private key into SSH agent
-    # Now load your key files into ssh-agent
-    - echo $CI_SSH_KEY_WIN | base64 -di | ssh-add -
+    # Copy private key into temporary file, since we had issues 
+    # with SSH agent on Windows 10 all the way down
+    - echo $CI_SSH_KEY_WIN | base64 -di > .sshkey
 
     # Get Cattr release version
     - cd target
@@ -125,11 +120,14 @@ release-windows:
     - $RELEASE_VERSION=$release_json.version
     
     # Create a release folder directory on remote location
-    - ssh -o StrictHostKeyChecking=no -n -T cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
+    - ssh -i .sshkey -o StrictHostKeyChecking=no -n -T cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
 
     # Copy exe and .msi releases to remote location
-    - scp -o StrictHostKeyChecking=no *.exe "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
+    - scp -i .sshkey -o StrictHostKeyChecking=no *.exe "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
 
     # Copy manifest files to remote
     - cd manifests
-    - scp -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
+    - scp -i .sshkey -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
+
+    # Remove key material
+    - rm .sshkey  
