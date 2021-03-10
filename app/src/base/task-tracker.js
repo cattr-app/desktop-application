@@ -77,13 +77,6 @@ class TaskTracker extends EventEmitter {
     this.captureInterval = null;
 
     /**
-      * Time holder for previous interval's end, in order to compare it with
-      * current interval's start date (fix for core's validation error)
-      * @type {Date} Interval's end date that's written here when it is sent
-      */
-    this.prevEndAt = new Date();
-
-    /**
      * Properties of active (currently tracked) interval
      * @type {Object}
      */
@@ -200,10 +193,14 @@ class TaskTracker extends EventEmitter {
       this.ticker.reset();
 
       // Capture & push interval
-      await this.captureCurrentInterval(ticks);
+      this.captureCurrentInterval(ticks, this.currentInterval.startedAt, new Date());
+
+      // Recalculate new interval startAt
+      const newStartAt = new Date();
+      newStartAt.setSeconds(newStartAt.getSeconds() + 1);
 
       // Reset currentInterval properties
-      this.currentInterval.startedAt = new Date();
+      this.currentInterval.startedAt = new Date(newStartAt);
       this.currentInterval.everPaused = false;
 
       log.debug('Interval captured by timer request');
@@ -483,7 +480,7 @@ class TaskTracker extends EventEmitter {
    * @async
    * @param {Number} [ticksOverride] Amount of ticks tracked during this time interval
    */
-  async captureCurrentInterval(ticksOverride) {
+  async captureCurrentInterval(ticksOverride, startAtRaw, endAtRaw) {
 
     // Fail if timer is stopped, or current task canno't be obtained
     if (!this.active || !this.currentTask)
@@ -493,26 +490,14 @@ class TaskTracker extends EventEmitter {
 
       // Get properties of current user account
       const currentUser = await Authentication.getCurrentUser();
-
       const currentTaskId = this.currentTask.id;
 
       // Get amount of ticks tracked
       const ticks = (typeof ticksOverride === 'number') ? ticksOverride : this.ticker.ticks;
 
       // Saving timestamp of this period end (NOW moment)
-      let startAt = this.currentInterval.startedAt;
-      let endAt = new Date();
-
-      if (startAt.getTime() - this.prevEndAt.getTime() <= 1000) {
-
-        const startSec = this.currentInterval.startedAt.getSeconds();
-        startAt.setSeconds((startSec) + 1);
-        const endSec = endAt.getSeconds();
-        endAt.setSeconds(endSec + 1);
-
-      }
-
-      this.prevEndAt = endAt;
+      let startAt = startAtRaw || this.currentInterval.startedAt;
+      let endAt = endAtRaw || new Date();
 
       // Calculate start date using few conditions
       if (
@@ -531,7 +516,6 @@ class TaskTracker extends EventEmitter {
         // In case if we can't be sure that currentInterval.startAt value is correct
         // we calculate it by subtraction ticks from Date.now()
         startAt = new Date(endAt.getTime() - (ticks * 1000));
-        this.prevEndAt = endAt;
 
       }
 
