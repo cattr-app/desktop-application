@@ -4,6 +4,7 @@ stages:
 release-linux:
   stage: release
   tags:
+    - amazing
     - linux
     - docker
   only:
@@ -61,6 +62,7 @@ release-linux:
 release-mac:
   stage: release
   tags:
+    - amazing
     - macos
     - host
   only:
@@ -96,6 +98,7 @@ release-mac:
 release-windows:
   stage: release
   tags:
+    - amazing
     - windows
     - host
   only:
@@ -109,25 +112,17 @@ release-windows:
     # Build "portable" executable
     - npm run package-windows
 
-    # Load private key into SSH agent
-    # Copy private key into temporary file, since we had issues 
-    # with SSH agent on Windows 10 all the way down
-    - echo $CI_SSH_KEY_WIN | base64 -di > .sshkey
-
     # Get Cattr release version
     - cd target
     - $release_json = Get-Content -Path .\manifests\release-windows.json | ConvertFrom-Json
     - $RELEASE_VERSION=$release_json.version
     
     # Create a release folder directory on remote location
-    - ssh -i .sshkey -o StrictHostKeyChecking=no -n -T cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
+    - ssh -i $CI_SSH_KEY_WIN -o StrictHostKeyChecking=no -n -T cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
 
     # Copy exe and .msi releases to remote location
-    - scp -i .sshkey -o StrictHostKeyChecking=no *.exe "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
+    - scp -i $CI_SSH_KEY_WIN -o StrictHostKeyChecking=no *.exe "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
 
     # Copy manifest files to remote
     - cd manifests
-    - scp -i .sshkey -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
-
-    # Remove key material
-    - rm .sshkey  
+    - scp -i $CI_SSH_KEY_WIN -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
