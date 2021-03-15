@@ -288,7 +288,15 @@ class OSIntegration extends EventEmitter {
         return { available: true };
 
       // Trigger macOS to ask user for screen capture permission
-      desktopCapturer.getSources({ types: ['screen'] });
+      try {
+
+        desktopCapturer.getSources({ types: ['screen'] });
+
+      } catch (_) {
+
+        // Do nothing, since it just a softfail trigger
+
+      }
 
       // Restrict tracking
       return { available: false, reason: 'macos_no_capture_permission' };

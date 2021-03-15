@@ -299,7 +299,7 @@ export default {
           switch (res.body.reason) {
 
             case 'macos_no_capture_permission':
-              err.error = 'To start tracking, allow Cattr to access screen capture in macOS settings';
+              err.error = 'To start tracking, allow Cattr to access screen capture in macOS settings, then restart the app';
               break;
 
             default:

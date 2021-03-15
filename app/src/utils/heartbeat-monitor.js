@@ -68,7 +68,7 @@ class HeartbeatMonitor {
 
     } catch (error) {
 
-      log.error('HB001', `Error occured during heartbeating: ${error}`);
+      log.error('HB001', `Error occured during heartbeating: ${error}`, true);
       return false;
 
     }

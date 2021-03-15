@@ -95,7 +95,7 @@
     "Error": "Ошибка",
     "Success! Opening your browser...": "Всё получилось! Открываем браузер...",
     "Sign into web app": "Войти в веб-приложение",
-    "To start tracking, allow Cattr to access screen capture in macOS settings": "Для начала работы, разрешите Cattr доступ к записи экрана в настройках macOS",
+    "To start tracking, allow Cattr to access screen capture in macOS settings, then restart the app": "Для начала работы, разрешите Cattr доступ к записи экрана в настройках macOS, затем перезапустите приложение",
     "Tracking is not available": "Отслеживание времени недоступно",
     "Are you sure you want to sign in to": "Вы уверены что хотите войти на",
     "Single Sign-On": "Универсальный вход",
