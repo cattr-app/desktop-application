@@ -97,9 +97,10 @@ Vue.use(VueSimpleMarkdown);
       },
     });
 
+    // Populate Sentry error reports with company identifier
     Vue.prototype.$ipc.serve(
-      'auth/user-fetched',
-      req => Sentry.configureScope(scope => scope.setUser({ email: req.packet.body.email })),
+      'auth/company-instance-fetched',
+      req => Sentry.configureScope(scope => scope.setTag('companyIdentifier', req.packet.body.cid)),
     );
 
 

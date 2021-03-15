@@ -36,8 +36,33 @@ let _currentUser = null;
  */
 module.exports.events = new EventEmitter();
 
-// Handle first user-fetched event to fulfill Sentry reports with user email
-module.exports.events.once('user-fetched', user => Sentry.configureScope(s => s.setUser({ email: user.email })));
+// Save company identifier to Sentry
+module.exports.events.once('company-instance-fetched', cid => Sentry.configureScope(s => s.setTag('companyIdentifier', cid)));
+
+/**
+ * Fetches company identifier
+ * @async
+ * @returns {String|null} Company identifier
+ */
+const fetchCompanyIdentifier = async () => {
+
+  // Fetch company identifier submittable to Sentry
+  try {
+
+    const companyDetails = await api.company.about();
+    const companyIdentifier = companyDetails.app ? companyDetails.app.instance_id : null;
+    if (companyIdentifier)
+      module.exports.events.emit('company-instance-fetched', companyIdentifier);
+
+    return companyIdentifier || null;
+
+  } catch (_) {
+
+    return null;
+
+  }
+
+};
 
 /**
  * Returns SSO parameters from application protocol call if they are presented
@@ -161,6 +186,9 @@ module.exports.authenticate = async (email, password) => {
 
   }
 
+  // Fetch company identifier
+  await fetchCompanyIdentifier();
+
   // Fire authenticated event
   module.exports.events.emit('authenticated');
 
@@ -268,6 +296,7 @@ module.exports.getCurrentUser = async () => {
     try {
 
       user = await api.authentication.me();
+      await fetchCompanyIdentifier();
 
     } catch (err) {
 
