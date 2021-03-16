@@ -30,12 +30,34 @@ export default {
 
   async mounted() {
 
+    /* Show UI notification within app window */
+    this.$ipc.serve('misc/ui-notification', async req => {
+
+      let { type, message } = req.packet.body;
+
+      // Soft-fail unknown types to message
+      if (!['success', 'warning', 'message', 'error'].includes(type))
+        type = 'message';
+
+      // Covert object-ish messages to JSON before display
+      if (typeof message === 'object')
+        message = JSON.stringify(message);
+
+      this.$message({
+        message,
+        type,
+        duration: (type === 'error') ? 0 : 10000, // Do not autohide errors
+        showClose: true,
+      });
+
+    });
+
     this.$ipc.serve('misc/capture-screenshot', async req => {
 
       try {
 
         // Capturing screenshots
-        let screenshots = null;
+        let screenshot = null;
 
         // Retrying screenshot capture for three times
         let retryIteration = 0;
@@ -44,7 +66,7 @@ export default {
           try {
 
             // eslint-disable-next-line no-await-in-loop
-            screenshots = await captureScreen(this.$refs['screen-capture']);
+            screenshot = await captureScreen(this.$refs['screen-capture']);
             break;
 
           } catch (err) {
@@ -59,9 +81,11 @@ export default {
         }
 
         // Respond
-        return req.send(200, { screenshots });
+        return req.send(200, { screenshot });
 
       } catch (error) {
+
+        const stringifiedError = JSON.stringify(error, Object.getOwnPropertyNames(error));
 
         // Show error
         this.$msgbox({
@@ -69,7 +93,7 @@ export default {
           message: this.$createElement(Message, {
             props: {
               title: this.$t('Error occurred during screenshot capture'),
-              message: JSON.stringify(error),
+              message: stringifiedError,
             },
           }),
           confirmButtonText: this.$t('OK'),
@@ -77,7 +101,7 @@ export default {
         });
 
         // Return error to backend
-        return req.send(400, { error });
+        return req.send(400, { stringifiedError });
 
       }
 

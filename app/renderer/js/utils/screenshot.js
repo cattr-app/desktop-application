@@ -67,22 +67,43 @@ export default async canvas => {
   // Closing MediaStreams
   userMediaStreams.forEach(mediaStream => mediaStream.getVideoTracks()[0].stop());
 
-  // Converting ImageBitmap
-  userMediaGrabbers = userMediaGrabbers.map(snap => {
+  // Getting canvas size for splitted screenshots
+  const canvasSize = userMediaGrabbers
 
-    // Creating canvas with the same image size
-    canvas.width = snap.width; // eslint-disable-line no-param-reassign
-    canvas.height = snap.height; // eslint-disable-line no-param-reassign
+    // Get W&H for each snap
+    .map(snap => ([snap.width, snap.height]))
 
-    // Placing ImageBitmap on this canvas using bitmaprenderer context
-    canvas.getContext('2d').drawImage(snap, 0, 0);
+    // Sum them
+    .reduce((dimensions, [width, height]) => {
 
-    // Rendering canvas to JPEG image with 50% quality in DataURL (base64)
-    return canvas.toDataURL('image/jpeg', 0.5);
+      // Selecting max height over each screen
+      if (height > dimensions.height)
+        dimensions.height = height; // eslint-disable-line no-param-reassign
+
+      // Summarize width
+      dimensions.width += width; // eslint-disable-line no-param-reassign
+
+      return dimensions;
+
+    }, { width: 0, height: 0 });
+
+  // Creating canvas with the same image size
+  canvas.width = canvasSize.width; // eslint-disable-line no-param-reassign
+  canvas.height = canvasSize.height; // eslint-disable-line no-param-reassign
+
+  // Obtaining BitmapRenderer context
+  const ctx = canvas.getContext('2d');
+
+  // Placing snaps as ImageBitmaps on BitmapRenderer context
+  let lastSnapEndedX = 0;
+  userMediaGrabbers = userMediaGrabbers.forEach(snap => {
+
+    ctx.drawImage(snap, lastSnapEndedX, 0);
+    lastSnapEndedX += snap.width;
 
   });
 
-  // Return screenshots array
-  return userMediaGrabbers;
+  // Return rendered canvas as JPEG image with 50% quality in DataURL (base64)
+  return canvas.toDataURL('image/jpeg', 0.5);
 
 };

@@ -99,7 +99,6 @@
 	"eslintConfig": {
 		"env": {
 			"browser": true,
-			"es6": true,
 			"node": true
 		},
 		"extends": [
@@ -112,7 +111,7 @@
 			"SharedArrayBuffer": "readonly"
 		},
 		"parserOptions": {
-			"ecmaVersion": 2018,
+			"ecmaVersion": 2020,
 			"sourceType": "module"
 		},
 		"plugins": [
@@ -212,7 +211,6 @@
 		"chalk": "^4.1.0",
 		"electron-hotkey": "0.0.1-alpha.1",
 		"is-plain-obj": "^3.0.0",
-		"jimp": "^0.16.1",
 		"keytar": "^7.2.0",
 		"sequelize": "^6.3.5",
 		"sqlite3": "^5.0.0",

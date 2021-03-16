@@ -569,6 +569,7 @@ class TaskTracker extends EventEmitter {
         } catch (err) {
 
           log.error('Error occured during screenshot capture for interval', err, true);
+          this.emit('screenshot-capture-failed', err);
 
         }
 
