@@ -250,6 +250,7 @@ export default {
         this.ucValid = false;
         this.$alert(this.ucError, this.$t('Login failed'), {
           confirmButtonText: this.$t('OK'),
+          callback: () => {},
         });
 
       }
@@ -334,6 +335,7 @@ export default {
       }
       this.$alert(error, this.$t('Login failed'), {
         confirmButtonText: this.$t('OK'),
+        callback: () => {},
       });
       this.loading = false;
       return false;

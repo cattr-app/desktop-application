@@ -155,6 +155,7 @@ export default {
         {
           confirmButtonText: this.$t('OK'),
           messageType: 'warning',
+          callback: () => {},
         },
       );
 
@@ -181,6 +182,7 @@ export default {
             {
               confirmButtonText: this.$t('OK'),
               messageType: 'error',
+              callback: () => {},
             },
           );
           return;
@@ -199,6 +201,7 @@ export default {
             {
               confirmButtonText: this.$t('OK'),
               messageType: 'error',
+              callback: () => {},
             },
           );
           return;

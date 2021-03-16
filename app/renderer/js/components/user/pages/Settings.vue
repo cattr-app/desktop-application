@@ -177,6 +177,7 @@ export default {
         this.$alert(htmlError, this.$t('Logout error'), {
           dangerouslyUseHTMLString: true,
           confirmButtonText: `${this.$t('OK')}`,
+          callback: () => {},
         });
 
       }
@@ -197,15 +198,25 @@ export default {
         if ('language' in this.formData)
           this.$i18n.locale = this.formData.language;
 
-        this.$alert(this.$t('Settings saved successfully!'), this.$t('Settings'), {
-          confirmButtonText: this.$t('Awesome!'),
-        });
+        this.$alert(
+          this.$t('Settings saved successfully!'),
+          this.$t('Settings'),
+          {
+            confirmButtonText: this.$t('Awesome!'),
+            callback: () => {},
+          },
+        );
 
       } else {
 
-        this.$alert(res.body.message, this.$t('Settings error'), {
-          confirmButtonText: this.$t('OK'),
-        });
+        this.$alert(
+          res.body.message,
+          this.$t('Settings error'),
+          {
+            confirmButtonText: this.$t('OK'),
+            callback: () => {},
+          },
+        );
 
       }
 

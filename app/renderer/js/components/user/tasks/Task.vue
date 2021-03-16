@@ -208,7 +208,7 @@ export default {
             }, 500);
 
           })
-          .catch(data => this.$alert(data.error, this.$t('Tracking error'), { confirmButtonText: 'OK' }));
+          .catch(data => this.$alert(data.error, this.$t('Tracking error'), { confirmButtonText: 'OK', callback: () => {} }));
 
         return;
 
@@ -232,7 +232,7 @@ export default {
         })
         .catch(data => {
 
-          this.$alert(this.$t(data.error), this.$t('Tracking is not available'), { confirmButtonText: this.$t('OK') });
+          this.$alert(this.$t(data.error), this.$t('Tracking is not available'), { confirmButtonText: this.$t('OK'), callback: () => {} });
 
         });
 
