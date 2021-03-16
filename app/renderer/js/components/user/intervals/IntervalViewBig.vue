@@ -1,7 +1,7 @@
 <template>
   <div class="interval__view_big">
     <p class="interval__view__name">
-      <span>{{ interval.Task.name }}</span>
+      <span>{{ taskName }}</span>
 
       <!-- Interval is synced to server -->
       <el-tooltip
@@ -68,6 +68,12 @@ export default {
   },
 
   computed: {
+
+    taskName() {
+
+      return this.interval.Task ? this.interval.Task.name : this.$t('(not available)');
+
+    },
 
     /**
      * Returns formatted end datetime of the interval

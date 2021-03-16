@@ -116,11 +116,8 @@ export default {
 
     projectName() {
 
-      if (this.task.Project === null) {
-        
+      if (this.task.Project === null)
         return '';
-      
-      }
 
       return this.task.Project.name;
 
