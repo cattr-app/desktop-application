@@ -12,5 +12,6 @@ module.exports = () => {
   require('./power-manager.js');
   require('./os-inactivity-handler.js');
   require('./usage-statistic');
+  require('./log-rotate');
 
 };
