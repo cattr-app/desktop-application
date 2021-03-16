@@ -560,8 +560,18 @@ class TaskTracker extends EventEmitter {
       let intervalScreenshot = null;
       if (currentUser.screenshotsEnabled) {
 
-        intervalScreenshot = await Screenshot.makeScreenshot();
-        log.debug('Screenshot captured');
+        try {
+
+          // Capture screenshot in the soft-fail manner
+          intervalScreenshot = await Screenshot.makeScreenshot();
+          log.debug('Screenshot captured');
+
+        } catch (err) {
+
+          log.error('Error occured during screenshot capture for interval', err, true);
+
+        }
+
 
       }
 

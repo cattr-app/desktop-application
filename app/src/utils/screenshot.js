@@ -43,7 +43,10 @@ const makeScreenshot = () => Promise.resolve()
     // Handle unsuccessfull response
     if (res.code !== 200) {
 
-      log.error(`ESCR501-${res.code}`, `Error in response from screenshot capture request: ${JSON.stringify(res.body)}`);
+      const isBodyEmpty = Object.keys(res.body).length === 0;
+
+      // Log error, but submit to error collecting platform only if body is not empty
+      log.error(`ESCR501-${res.code}`, `Error in response from screenshot capture request: ${JSON.stringify(res.body)}`, isBodyEmpty);
       throw new UIError(res.code, `Error during screenshot capture request: ${res.body}`, `ESCR501-${res.code}`);
 
     }
@@ -51,7 +54,7 @@ const makeScreenshot = () => Promise.resolve()
     // Checking amount of screenshots
     if (res.body.screenshots.length === 0) {
 
-      log.error('ESCR502', 'Screenshot capture response doesn\'t contain any screenshots');
+      log.error('ESCR502', 'Screenshot capture response doesn\'t contain any screenshots', true);
       throw new UIError(500, 'No screenshots was captured', 'ESCR502');
 
     }

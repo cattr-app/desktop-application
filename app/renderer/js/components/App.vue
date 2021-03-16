@@ -63,9 +63,6 @@ export default {
 
       } catch (error) {
 
-        // Return error to backend
-        req.send(400, { error });
-
         // Show error
         this.$msgbox({
           title: this.$t('Error occurred during screenshot capture'),
@@ -76,7 +73,11 @@ export default {
             },
           }),
           confirmButtonText: this.$t('OK'),
+          callback: () => {},
         });
+
+        // Return error to backend
+        return req.send(400, { error });
 
       }
 
