@@ -30,6 +30,38 @@ export default {
 
   async mounted() {
 
+    /* Trigger update check */
+    try {
+
+      const updateRequest = await this.$ipc.request('misc/update-available', {});
+      if (updateRequest.body.version) {
+
+        const message = this
+          .$t('<span>Latest version: <b>$$</b><br>Installed: <b>%%</b></span><br><br><small>You can disable update notifications in Settings</small>')
+          .replace('$$', updateRequest.body.version)
+          .replace('%%', updateRequest.body.current);
+
+        this
+          .$confirm(message, this.$t('Update is available'), {
+            dangerouslyUseHTMLString: true,
+            confirmButtonText: this.$t('Download update'),
+            cancelButtonText: this.$t('Skip'),
+          })
+          .then(() => {
+
+            // Trigger navigation to downloads page
+            // WebContents watcher will prevent this navigation within Renderer ctx,
+            // instead it'll open this URL by shell.openExternal
+            window.location.href = updateRequest.body.downloadsPageUrl;
+
+          }).catch(() => {});
+
+      }
+
+    } catch (_) {
+      // Do nothing
+    }
+
     /* Show UI notification within app window */
     this.$ipc.serve('misc/ui-notification', async req => {
 
@@ -52,6 +84,7 @@ export default {
 
     });
 
+    /* Capture screenshot */
     this.$ipc.serve('misc/capture-screenshot', async req => {
 
       try {

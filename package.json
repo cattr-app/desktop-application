@@ -111,7 +111,7 @@
 			"SharedArrayBuffer": "readonly"
 		},
 		"parserOptions": {
-			"ecmaVersion": 2020,
+			"ecmaVersion": 2021,
 			"sourceType": "module"
 		},
 		"plugins": [
@@ -212,6 +212,7 @@
 		"electron-hotkey": "0.0.1-alpha.1",
 		"is-plain-obj": "^3.0.0",
 		"keytar": "^7.2.0",
+		"semver": "^7.3.4",
 		"sequelize": "^6.3.5",
 		"sqlite3": "^5.0.0",
 		"umzug": "^2.3.0",

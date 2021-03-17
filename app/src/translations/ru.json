@@ -123,6 +123,14 @@
     "Share usage statistics with Cattr Developers. Statistics include only versions of Cattr Desktop, Operating System, and backend installation ID. We don't collect any personal data, and all collected statistics will be used only to better understand how we can improve the desktop application experience.": "Отправлять разработчикам Cattr статистику об использовании приложения: идентификатор серверного приложения, версию Cattr Desktop и ОС. Мы не собираем персональные данные, а вся статистика будет использована только для улучшения Cattr Desktop",
     "Allow usage statistics collection": "Делиться статистикой использования",
     "Do not send usage reports": "Не отправлять статистику использования",
-    "(not available)": "(не доступно)"
+    "(not available)": "(не доступно)",
+    "<span>Latest version: <b>$$</b><br>Installed: <b>%%</b></span><br><br><small>You can disable update notifications in Settings</small>": "<span>Актуальная версия: <b>$$</b><br>Установлена: <b>%%</b></span><br><br><small>Уведомление можно отключить в настройках.</small>",
+    "Update is available": "Доступно обновление",
+    "Download update": "Загрузить",
+    "Skip": "Пропустить",
+    "Show update notifications": "Уведомления о доступных обновлениях",
+    "Notify about Cattr Desktop updates available on launch": "Показывать уведомление о доступном обновлении при запуске приложения",
+    "Show notifications": "Показывать уведомления",
+    "Disable notifications": "Скрыть уведолмения"
   }
 }

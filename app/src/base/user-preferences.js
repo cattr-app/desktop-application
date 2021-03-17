@@ -96,6 +96,17 @@ const preferences = {
     },
   },
 
+  updateNotification: {
+    type: 'boolean',
+    name: 'Show update notifications',
+    description: 'Notify about Cattr Desktop updates available on launch',
+    default: true,
+    frontend: {
+      element: 'toggle',
+      options: { 'Show notifications': true, 'Disable notifications': false },
+    },
+  },
+
   usageStatistics: {
     type: 'boolean',
     name: 'Send usage statistics',

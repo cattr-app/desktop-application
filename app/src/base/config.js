@@ -125,5 +125,29 @@ configuration.usageStatistics = {
 
 };
 
+// New release available notification
+configuration.updateNotification = {
+
+  /**
+   * Enables update notification mechanism
+   * Notice that user preference "DISABLE" is overriding this value
+   * @type {Boolean}
+   */
+  enabled: true,
+
+  /**
+   * Base URL to retrieve releases manifest
+   * @type {String}
+   */
+  manifestBaseUrl: 'https://dl.cattr.app/manifests/',
+
+  /**
+   * URL to downloads page
+   * @type {String}
+   */
+  downloadsPageUrl: 'https://cattr.app/desktop',
+
+};
+
 // Export configuration
 module.exports = configuration;
