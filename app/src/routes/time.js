@@ -121,6 +121,37 @@ module.exports = router => {
 
     });
 
+    // Dirtiest fix (I've ever seen) for tasks the user doesn't have access to
+
+    const localTodayTasksRestQuery = await db.models.Task.findAll({
+
+      where: {
+        externalId: {
+          [Op.in]: todayTasksIDs,
+        },
+        [Op.not]: {
+          projectId: {
+            [Op.substring]: '%-%',
+          },
+        },
+      },
+    });
+
+    if (localTodayTasksRestQuery !== undefined || localTodayTasksRestQuery.length !== 0) {
+
+      const miscTasks = localTodayTasksRestQuery.map(task => ({
+        id: task.dataValues.id,
+        externalId: task.dataValues.externalId,
+        name: task.dataValues.name,
+        url: task.dataValues.externalUrl,
+        // eslint-disable-next-line comma-dangle
+        trackedTime: taskTimeByIds.get(Number(task.externalId))
+      }));
+
+      localTodayProjects.push({ name: 'Misc', tasks: miscTasks });
+
+    }
+
     // Return today tasks object
     return request.send(200, { projects: localTodayProjects });
 
