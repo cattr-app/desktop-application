@@ -9,23 +9,14 @@
     >
       {{ projectName }}
     </p>
-    <el-divider
-      style="margin: 0;"
-      class="section-divider"
-    />
 
-    <p
-      v-if="descriptionPresent"
-      class="task-description"
-    >
-      <vue-simple-markdown
-        class="md"
-        :source="task.description"
-      />
-    </p>
+    <!-- "vue/no-v-html" rule is disabled bc renderedDescription is sanitized -->
+    <!-- eslint-disable-next-line vue/no-v-html,vue/max-attributes-per-line -->
+    <div v-if="descriptionPresent" class="task-description" v-html="renderedDescription" />
     <p v-else>
       {{ $t('Description is empty') }}
     </p>
+    <br>
 
     <div class="task-controls">
       <el-button
@@ -48,9 +39,8 @@
 </template>
 
 <script>
-// import VueMarkdown from 'vue-markdown';
-import 'vue-simple-markdown/dist/vue-simple-markdown.css';
-
+import marked from 'marked';
+import DOMPurify from 'dompurify';
 
 export default {
   name: 'Info',
@@ -65,6 +55,26 @@ export default {
   },
 
   computed: {
+
+    renderedDescription() {
+
+      marked.setOptions({
+        pedantic: false,
+        gfm: true,
+        tables: true,
+        breaks: false,
+        sanitize: false,
+        smartLists: true,
+        smartypants: false,
+        xhtml: false,
+      });
+
+      return DOMPurify.sanitize(
+        marked(this.task.description || ''),
+        { USE_PROFILES: { html: true } },
+      );
+
+    },
     task() {
 
       return this.$store.getters.tasks.find(t => t.id === this.taskId);
