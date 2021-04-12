@@ -131,6 +131,12 @@
     "Show update notifications": "Уведомления о доступных обновлениях",
     "Notify about Cattr Desktop updates available on launch": "Показывать уведомление о доступном обновлении при запуске приложения",
     "Show notifications": "Показывать уведомления",
-    "Disable notifications": "Скрыть уведолмения"
+    "Disable notifications": "Скрыть уведолмения",
+    "%% seconds left": "Осталось %% секунд",
+    "Your timer was stopped due to inactivity": "Трекер остановлен по неактивности",
+    "I'm on break": "На перерыве",
+    "I'm working": "Я работаю",
+    "Back to work": "Вернуться к работе",
+    "Time on break today: ": "Времени на перерыве сегодня: "
   }
 }

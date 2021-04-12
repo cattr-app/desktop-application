@@ -15,20 +15,20 @@
         <el-progress
           type="circle"
           :show-text="false"
-          :percentage="(progressPercentage > -1) ? progressPercentage : 0"
+          :percentage="progressPercentage > -1 ? progressPercentage : 0"
           :color="progressColors"
         />
         <br>
         <p class="time">
-          <span class="time__left">{{ (timeLeft > -1) ? timeLeft : 0 }}</span> seconds left
+          <span class="time__left">{{ $t('%% seconds left').replaceAll('%%', (timeLeft > -1 ? timeLeft : 0)) }}</span>
         </p>
       </template>
       <template v-else>
         <p class="time time__stopped">
-          Your timer was stopped due to inactivity
+          {{ $t("Your timer was stopped due to inactivity") }}
         </p>
         <p class="time time__left">
-          {{ lostTimeSeconds }}
+          {{ $t("Time on break today: ").concat(lostTimeSeconds) }}
         </p>
       </template>
     </div>
@@ -37,21 +37,29 @@
       class="dialog-footer"
     >
       <template v-if="modalView === 'request'">
-        <el-button @click="userActivityFail">I'm on break</el-button>
+        <el-button @click="userActivityFail">{{
+          $t("I'm on break")
+        }}</el-button>
         <el-button
           type="primary"
           @click="userActivityProve"
-        >I'm working</el-button>
+        >
+          {{ $t("I'm working") }}
+        </el-button>
       </template>
       <template v-else>
         <el-button
           type="danger"
           @click="close"
-        >OK</el-button>
+        >
+          {{ $t("OK") }}
+        </el-button>
         <el-button
           type="danger"
           @click="resumeWork"
-        >Back to work</el-button>
+        >{{
+          $t("Back to work")
+        }}</el-button>
       </template>
     </span>
   </el-dialog>
@@ -65,7 +73,6 @@ export default {
   data() {
 
     return {
-
       /**
        * Is inactivity modal visible?
        * @type {Boolean}
@@ -122,12 +129,16 @@ export default {
        */
       timeLeftCounter: null,
 
+      /**
+       * Protecting from repeated clicking on user decision buttons
+       * @type {Boolean}
+       */
+      isUserActed: false,
     };
 
   },
 
   computed: {
-
     /**
      * Computes filling percentage of progress circle
      * @returns {Number} Percentage to fill
@@ -152,7 +163,6 @@ export default {
   },
 
   watch: {
-
     /**
      * Watching for time left for activity prooving
      */
@@ -170,7 +180,6 @@ export default {
       this.reportProofStatus(false);
 
     },
-
   },
 
   mounted() {
@@ -187,7 +196,6 @@ export default {
   },
 
   methods: {
-
     /**
      * Shows inactivity proof modal window
      * @param {Number} stopTime Proof duration in milliseconds
@@ -202,7 +210,10 @@ export default {
       this.$set(this, 'timeLeftCoefficient', 100 / this.timeLeft);
 
       // Set time left decrementer
-      const counterId = setInterval(() => this.$set(this, 'timeLeft', (this.timeLeft - 1)), 1000);
+      const counterId = setInterval(
+        () => this.$set(this, 'timeLeft', this.timeLeft - 1),
+        1000,
+      );
       this.$set(this, 'timeLeftCounter', counterId);
 
       // Show modal
@@ -224,7 +235,10 @@ export default {
       this.$set(this, 'timeLost', alreadyLostTime);
 
       // Set lost time increment counting timer
-      const counterId = setInterval(() => this.$set(this, 'timeLost', (this.timeLost + 1)), 1000);
+      const counterId = setInterval(
+        () => this.$set(this, 'timeLost', this.timeLost + 1),
+        1000,
+      );
       this.$set(this, 'timeLostCounter', counterId);
 
       // Changing the view
@@ -262,6 +276,7 @@ export default {
       this.$set(this, 'timeLostCounter', null);
       this.$set(this, 'timeLeft', null);
       this.$set(this, 'timeLeftCoefficient', 0);
+      this.$set(this, 'isUserActed', false);
 
     },
 
@@ -280,6 +295,11 @@ export default {
      */
     userActivityProve() {
 
+      if (this.isUserActed)
+        return;
+
+      this.isUserActed = true;
+
       this.reportProofStatus(true);
       this.close();
 
@@ -289,6 +309,11 @@ export default {
      * Handle activity fail decision from user side
      */
     userActivityFail() {
+
+      if (this.isUserActed)
+        return;
+
+      this.isUserActed = true;
 
       this.reportProofStatus(false);
       this.close();
@@ -300,11 +325,15 @@ export default {
      */
     resumeWork() {
 
+      if (this.isUserActed)
+        return;
+
+      this.isUserActed = true;
+
       this.$ipc.emit('tracking/resume-work-after-inactivity', { verified: true });
       this.close();
 
     },
-
   },
 };
 </script>
