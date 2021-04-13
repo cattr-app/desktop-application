@@ -121,7 +121,6 @@ module.exports = router => {
     });
 
     // Dirtiest fix (I've ever seen) for tasks the user doesn't have access to
-
     const localTodayTasksRestQuery = await db.models.Task.findAll({
 
       where: {
@@ -143,8 +142,7 @@ module.exports = router => {
         externalId: task.dataValues.externalId,
         name: task.dataValues.name,
         url: task.dataValues.externalUrl,
-        // eslint-disable-next-line comma-dangle
-        trackedTime: taskTimeByIds.get(Number(task.externalId))
+        trackedTime: taskTimeByIds.get(Number(task.externalId)),
       }));
 
       localTodayProjects.push({ name: 'Misc', tasks: miscTasks });
