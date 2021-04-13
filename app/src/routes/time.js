@@ -112,8 +112,7 @@ module.exports = router => {
         externalId: task.externalId,
         name: task.name,
         url: task.externalUrl,
-        // eslint-disable-next-line comma-dangle
-        trackedTime: taskTimeByIds.get(Number(task.externalId))
+        trackedTime: taskTimeByIds.get(Number(task.externalId)),
       }));
 
       // Return purified project property
