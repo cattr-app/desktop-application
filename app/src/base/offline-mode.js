@@ -43,6 +43,22 @@ class OfflineModeHandler extends EventEmitter {
      */
     this._PING_TIMER_INTERVAL = 30 * 1000;
 
+    /**
+     * Is tracker active right now?
+     * @type {Boolean}
+     */
+    this.trackingActive = false;
+
+  }
+
+  /**
+   * Set current tracker status
+   * @param {Boolean} status
+   */
+  setTrackerStatus(status) {
+
+    this.trackingActive = Boolean(status);
+
   }
 
   /**
@@ -108,13 +124,13 @@ class OfflineModeHandler extends EventEmitter {
   /**
    * Disarm offline mode if server is available
    */
-  async restoreWithCheck(startHeartbeat = true) {
+  async restoreWithCheck() {
 
     if (this._isEnabled && await auth.ping())
       this.restore();
 
     // If the tracking is enabled and the connection is restored, we start the heartbeat again
-    if (startHeartbeat)
+    if (this.heartbeatEnabled)
       heartbeatMonitor.start();
 
   }

@@ -12,7 +12,6 @@ const TaskController = require('../controller/tasks');
 const IntervalsController = require('../controller/time-intervals');
 const eventCounter = require('../utils/event-counter');
 const heartbeatMonitor = require('../utils/heartbeat-monitor');
-const offlineMode = require('./offline-mode');
 
 const log = new Log('TaskTracker');
 
@@ -220,6 +219,17 @@ class TaskTracker extends EventEmitter {
   }
 
   /**
+   * Updates tracker status
+   * @param {*} status
+   */
+  setTrackerStatus(status) {
+
+    this.active = Boolean(status);
+    OfflineMode.setTrackerStatus(status);
+
+  }
+
+  /**
    * Starts inactivity detection
    * @returns {Number} ID of corresponding inactivity detection timer
    */
@@ -398,7 +408,7 @@ class TaskTracker extends EventEmitter {
     eventCounter.start();
 
     // Enable heartbeat
-    if (!offlineMode.enabled)
+    if (!OfflineMode.enabled)
       heartbeatMonitor.start();
     else
       log.debug('Skipping heartbeat enabling, since we\'re offline');
@@ -408,7 +418,7 @@ class TaskTracker extends EventEmitter {
     this.ticker.start();
 
     // Dispatch corresponding event
-    this.active = true;
+    this.setTrackerStatus(true);
     this.emit(action, this.currentTask.id);
     log.debug(`Started task "${this.currentTask.name}" with ${this.captureInterval}s capture interval`);
 
@@ -445,7 +455,7 @@ class TaskTracker extends EventEmitter {
       await this.captureCurrentInterval(ticks);
 
     // Move current task to previous, reset active flag
-    this.active = false;
+    this.setTrackerStatus(false);
     this.previousTask = this.currentTask;
     this.currentTask = null;
 

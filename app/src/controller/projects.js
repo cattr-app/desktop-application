@@ -2,7 +2,6 @@ const EventEmitter = require('events');
 const api = require('../base/api');
 const database = require('../models').db.models;
 const OfflineMode = require('../base/offline-mode');
-const TaskTracker = require('../base/task-tracker');
 const Log = require('../utils/log');
 
 const log = new Log('Projects');
@@ -53,7 +52,7 @@ module.exports.syncProjects = async () => {
   try {
 
     actualProjects = await api.projects.list(projectOptions);
-    OfflineMode.restoreWithCheck(TaskTracker.isActive);
+    OfflineMode.restoreWithCheck();
 
   } catch (err) {
 

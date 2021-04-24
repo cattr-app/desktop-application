@@ -6,7 +6,6 @@ const projectController = require('./projects');
 const auth = require('../base/authentication');
 const Log = require('../utils/log');
 const OfflineMode = require('../base/offline-mode');
-const TaskTracker = require('../base/task-tracker');
 const { UIError } = require('../utils/errors');
 
 const log = new Log('Controller:Tasks');
@@ -219,7 +218,7 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
   try {
 
     actualTasks = await api.tasks.list(taskOptions);
-    await OfflineMode.restoreWithCheck(TaskTracker.isActive);
+    OfflineMode.restoreWithCheck();
 
   } catch (err) {
 
