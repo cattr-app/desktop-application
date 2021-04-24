@@ -1,7 +1,4 @@
-// In the renderer process.
-const { desktopCapturer, remote } = require('electron');
-
-const { screen } = remote;
+const { desktopCapturer } = require('electron');
 
 /**
  * Returns available "display" MediaDevices
@@ -19,13 +16,6 @@ export default async canvas => {
   // Getting available MediaDevices
   const mediaDevices = await getMediaDevices();
 
-  // Calculate boundaries
-  const screens = screen.getAllDisplays();
-  const bounds = screens.reduce((bnds, scr) => ({
-    width: bnds.width + scr.bounds.width,
-    height: bnds.height + scr.bounds.height,
-  }), { width: 0, height: 0 });
-
   // Getting MediaStream from all fetched devices
   let userMediaStreams = mediaDevices.map(device => {
 
@@ -39,8 +29,6 @@ export default async canvas => {
         mandatory: {
           chromeMediaSource: 'desktop',
           chromeMediaSourceId: device.id,
-          minWidth: bounds.width,
-          minHeight: bounds.height,
         },
       },
     });

@@ -3,14 +3,14 @@ const mix = require('laravel-mix');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 
 mix.setPublicPath('./build');
-mix.disableSuccessNotifications();
+mix.disableNotifications();
 mix.webpackConfig({ target: 'electron-renderer', devtool: 'source-map' });
 
 /* Build JS */
 if (mix.inProduction)
-  mix.js('./app/renderer/js/app.js', 'app.js').sourceMaps();
+  mix.js('./app/renderer/js/app.js', 'app.js').vue().sourceMaps();
 else
-  mix.js('./app/renderer/js/app.js', 'app.js');
+  mix.js('./app/renderer/js/app.js', 'app.js').vue();
 
 /* Build SASS */
 mix

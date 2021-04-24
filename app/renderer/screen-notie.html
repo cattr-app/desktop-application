@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' data: 'unsafe-inline'; img-src 'self' data:">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Cattr</title>
   <style>
@@ -43,7 +40,7 @@
 
       background: #fff;
       background-repeat: no-repeat;
-      background-size: 100% 100%;  
+      background-size: 100% 100%;
       backdrop-filter: contrast(0.85);
       border: 2px solid #5A4DC5;
 
@@ -54,7 +51,7 @@
       top: .5em;
       left: .5em;
     }
-    
+
     .buttons {
       position: absolute;
       top: 0;
@@ -96,7 +93,7 @@
     <button id="button-close" class="btn btn-close" />
   </div>
   <script>
-    const { ipcRenderer, remote, app } = require('electron');
+    const { ipcRenderer } = require('electron');
     const IPCRouter = require('@amazingcat/electron-ipc-router');
 
     const notificationRouter = new IPCRouter(ipcRenderer, 'screenshot-notie');
@@ -120,7 +117,7 @@
     // Listener to handle delete request from FE
     notificationRouter.serve('notification/screenshot', request => {
 
-      // Translate to b64
+      // Translate to DataURL
       document
         .querySelector('body')
         .style['background-image'] = ''
@@ -131,7 +128,8 @@
       // Save screenshot id for possible delete
       windowInterval = request.packet.body.interval;
 
-      remote.getCurrentWindow().showInactive();
+      // Display notification
+      notificationRouter.emit('notification/display', {});
 
     });
 
@@ -179,24 +177,12 @@
 
           }
 
-          window.close();
+          // Close notification
+          notificationRouter.emit('notification/destroy', {});
 
         }
 
       });
-
-    });
-
-    window.addEventListener('beforeunload', event => {
-
-      if (!windowClosing) {
-
-        windowClosing = true;
-        event.preventDefault();
-        event.returnValue = '';
-        setTimeout(() => remote.getCurrentWindow().close(), 300);
-
-      }
 
     });
 
