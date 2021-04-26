@@ -10,6 +10,13 @@ release-linux:
   only:
     - release
   image: node:erbium-slim
+  artifacts:
+    untracked: false
+    expire_in: 30 days
+    paths:
+      - "target/*.AppImage"
+      - "target/*.tar.gz"
+      - "target/*.deb"
   script:
 
     # Init container, install dependencies
@@ -67,6 +74,11 @@ release-mac:
     - host
   only:
     - release
+  artifacts:
+    untracked: false
+    expire_in: 30 days
+    paths:
+      - "target/*.dmg"
   script:
 
     # Unlock keychain
@@ -103,6 +115,11 @@ release-windows:
     - host
   only:
     - release
+  artifacts:
+    untracked: false
+    expire_in: 30 days
+    paths:
+      - "target/*.exe"
   script:
 
     # Install and build desktop application
