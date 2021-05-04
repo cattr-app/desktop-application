@@ -19,7 +19,7 @@
 		"build-production": "npx cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"build-release": "npx cross-env NODE_ENV=production MAKE_RELEASE=yes node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"package-linux": "npx electron-builder -p never -l appimage deb tar.gz",
-		"package-windows": "npx electron-builder -p never -w portable nsis",
+		"package-windows": "npx electron-builder -p never -w portable nsis appx",
 		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -p never -m",
 		"package-mac-unsigned": "npx electron-builder -m",
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
@@ -85,6 +85,13 @@
 		"nsis": {
 			"oneClick": false,
 			"perMachine": false
+		},
+		"appx": {
+			"identityName": "AmazingcatLLC.Cattr",
+			"displayName": "Cattr",
+			"publisher": "CN=3CE10A6B-6A65-461A-A33A-E6AD2673F412",
+			"publisherDisplayName": "amazingcat LLC",
+			"languages": ["en-US", "ru-RU"]
 		}
 	},
 	"repository": {
