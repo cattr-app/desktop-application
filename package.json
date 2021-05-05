@@ -91,7 +91,10 @@
 			"displayName": "Cattr",
 			"publisher": "CN=3CE10A6B-6A65-461A-A33A-E6AD2673F412",
 			"publisherDisplayName": "amazingcat LLC",
-			"languages": ["en-US", "ru-RU"]
+			"languages": [
+				"en-US",
+				"ru-RU"
+			]
 		}
 	},
 	"repository": {
@@ -212,7 +215,7 @@
 	],
 	"dependencies": {
 		"@amazingcat/electron-ipc-router": "1.3.2",
-		"@amazingcat/node-cattr": "3.3.6",
+		"@amazingcat/node-cattr": "3.3.8",
 		"@sentry/electron": "^2.4.1",
 		"axios": "^0.21.1",
 		"chalk": "^4.1.1",
