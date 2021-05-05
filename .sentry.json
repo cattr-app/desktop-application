@@ -1,0 +1,10 @@
+{
+  "url": "https://sentry.amazingcat.net",
+  "org": "amazingcat",
+  "frontend": {
+    "project": "cattr-desktop-vue"
+  },
+  "backend": {
+    "project": "cattr-desktop-electron"
+  }
+}
