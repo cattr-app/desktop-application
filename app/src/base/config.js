@@ -133,7 +133,7 @@ configuration.updateNotification = {
    * Notice that user preference "DISABLE" is overriding this value
    * @type {Boolean}
    */
-  enabled: true,
+  enabled: (!process.windowsStore && !process.mas),
 
   /**
    * Base URL to retrieve releases manifest
