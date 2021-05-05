@@ -33,22 +33,31 @@ if (mix.inProduction && process.env.MAKE_RELEASE) {
   // eslint-disable-next-line global-require
   const packageManifest = require('./package.json');
 
+  // eslint-disable-next-line global-require
+  const sentryConfiguration = require('./.sentry.json');
+
   mix.webpackConfig({
     plugins: [
       new SentryWebpackPlugin({
         include: 'build',
         urlPrefix: 'build/',
         ignore: ['mix-manifest.json', 'app.css.map'],
-        configFile: path.resolve(__dirname, '.sentry.renderer'),
+        configFile: '.sentry.renderer',
         release: `${packageManifest.name}@${packageManifest.version}`,
         setCommits: { auto: true },
+        url: sentryConfiguration.url,
+        org: sentryConfiguration.org,
+        project: sentryConfiguration.frontend.project,
       }),
       new SentryWebpackPlugin({
         include: 'app/src',
         urlPrefix: 'app/src/',
-        configFile: path.resolve(__dirname, '.sentry.main'),
+        configFile: '.sentry.main',
         release: `${packageManifest.name}@${packageManifest.version}`,
         setCommits: { auto: true },
+        url: sentryConfiguration.url,
+        org: sentryConfiguration.org,
+        project: sentryConfiguration.backend.project,
       }),
     ],
   });
