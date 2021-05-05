@@ -8,17 +8,27 @@ const { init } = require('@sentry/electron/dist/main');
 
 const config = require('../base/config');
 
+module.exports.isEnabled = Boolean(config.sentry.enabled);
+
 // Initializes Sentry with configuration
-if (config.sentry.enabled) {
+if (module.exports.isEnabled) {
 
   init({
 
     dsn: config.sentry.dsn,
     release: config.sentry.release,
+    beforeSend(event) {
+
+      if (module.exports.isEnabled)
+        return event;
+
+      return null;
+
+    },
 
   });
 
 }
 
 // Exporting Sentry object
-module.exports = Sentry;
+module.exports.Sentry = { Sentry };

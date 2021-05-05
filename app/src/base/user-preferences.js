@@ -3,6 +3,7 @@ const { EventEmitter } = require('events');
 const Logger = require('../utils/log');
 const translationsLoader = require('../utils/translations');
 const configuration = require('./config');
+const Sentry = require('../utils/sentry');
 
 const log = new Logger('UserPreferences');
 
@@ -118,6 +119,17 @@ const preferences = {
     },
   },
 
+  errorReporting: {
+    type: 'boolean',
+    name: 'Share error reports',
+    description: 'When an error occurs, Cattr Desktop will send an anonymized report to the development team with details concerning that error. Application restart is required to apply the new sharing policy.',
+    default: true,
+    frontend: {
+      element: 'toggle',
+      options: { 'Share error reports with Developers': true, 'Do not share error reports': false },
+    },
+  },
+
 };
 
 class UserPreferences extends EventEmitter {
@@ -182,6 +194,9 @@ class UserPreferences extends EventEmitter {
       this.preferencesFileBuffer = defaultConfigurationContent;
 
     }
+
+    // Run onpreferencesloaded hook
+    this.emit('preferences-loaded');
 
   }
 
@@ -322,4 +337,14 @@ class UserPreferences extends EventEmitter {
 
 }
 
-module.exports = new UserPreferences();
+// Create a single global instance of UserPreferences
+const userPreferences = new UserPreferences();
+
+// Subscribe to loaded hook to adjust Sentry state per user's preference
+userPreferences.on('preferences-loaded', () => {
+
+  Sentry.isEnabled = userPreferences.get('errorReporting');
+
+});
+
+module.exports = userPreferences;
