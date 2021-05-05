@@ -120,6 +120,7 @@ release-windows:
     expire_in: 30 days
     paths:
       - "target/*.exe"
+      - "target/*.appx"
   script:
 
     # Install and build desktop application
