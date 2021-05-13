@@ -8,21 +8,6 @@
       @blur="setSearchFieldState(false)"
     />
     <el-button
-      v-if="!searchFieldActive && $route.path === '/user/tasks' && !isOffline"
-      type="secondary"
-      icon="el-icon-circle-plus-outline"
-      circle
-      @click="goTo('create')"
-    />
-    <el-button
-      v-if="!searchFieldActive && $route.path === '/user/tasks'"
-      :loading="reportGenerationInProgress"
-      type="secondary"
-      icon="el-icon-s-order"
-      circle
-      @click="getReport"
-    />
-    <el-button
       v-if="!searchFieldActive && $route.path === '/user/tasks'"
       type="secondary"
       circle
@@ -34,6 +19,14 @@
         :class="{ animated: syncInProgress}"
       />
     </el-button>
+    <el-button
+      v-if="!searchFieldActive && $route.path === '/user/tasks'"
+      :loading="reportGenerationInProgress"
+      type="secondary"
+      icon="el-icon-s-order"
+      circle
+      @click="getReport"
+    />
     <el-button
       v-if="!searchFieldActive && $route.path === '/user/tasks'"
       type="secondary"
@@ -284,6 +277,7 @@ export default {
           this.$message({
             type: 'success',
             message: this.$t('Report successfully copied to the clipboard'),
+            duration: 1500,
           });
 
         });
