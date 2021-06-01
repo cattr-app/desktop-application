@@ -9,7 +9,7 @@ const { resolve } = require('path');
 const chalk = require('chalk');
 const config = require('../base/config');
 
-const Sentry = require('./sentry');
+const { Sentry: { Sentry } } = require('./sentry');
 
 // Checkings logs directory availability
 if (!fs.existsSync(config.logger.directory))
