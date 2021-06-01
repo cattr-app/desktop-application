@@ -145,8 +145,9 @@ class Logger {
         // Obtaining stack trace to logger call
         const stack = new Error(null).stack.split('\n').splice(2).join('\n');
 
-        // It's an API Error!
-        this.constructor.captureApiError(message, error);
+        // Suppress submission of validation errors to Sentry
+        if (error.message !== 'Validation error')
+          this.constructor.captureApiError(message, error);
 
         // Log error into stderr
         console.error(`${chalk.red('[E]')} ${chalk.dim(`[${Logger._getFormattedDateTime()}]`)} ${chalk.green(`[${this.moduleName}]`)} ${chalk.red(`(API${error.statusCode}) ${message}: ${error}\n<BEGIN STACK TRACE>\n${stack}\n<END STACK TRACE>`)}`);

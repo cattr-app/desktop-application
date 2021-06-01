@@ -208,7 +208,21 @@ export default {
             }, 500);
 
           })
-          .catch(data => this.$alert(data.error, this.$t('Tracking error'), { confirmButtonText: 'OK', callback: () => {} }));
+          .catch(error => {
+
+            // Stop tracking
+            this.$emit('trackEnd', this.task);
+            this.clickProtected = false;
+            this.loading = false;
+
+            // Show error message
+            this.$alert(
+              error.message || 'Unknown error occured',
+              `${this.$t('Tracking error')} ${error.id || ''}`,
+              { confirmButtonText: 'OK', callback: () => {} },
+            );
+
+          });
 
         return;
 
