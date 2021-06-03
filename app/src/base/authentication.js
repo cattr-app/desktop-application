@@ -216,7 +216,7 @@ module.exports.getToken = async () => {
 
         // Obtaininig hostname
         const { hostname } = await keychain.getSavedCredentials();
-        await this.setHostname(hostname);
+        await this.setHostname(hostname, true);
         return token;
 
       }
@@ -227,8 +227,8 @@ module.exports.getToken = async () => {
       // Trying to get saved credentials (we need hostname)
       const { hostname } = await keychain.getSavedCredentials();
 
-      // Setting hostname for API client
-      await this.setHostname(hostname);
+      // Forcefully setting hostname for API client
+      await this.setHostname(hostname, true);
 
       // Actually refreshing token
       const newToken = await api.authentication.refresh();
@@ -427,15 +427,16 @@ module.exports.userAuthentication = async (email, password, save = true) => {
 
 /**
  * Sets remote API hostname
- * @param   {String}           hostname  Hostname
- * @returns {Boolean|UIError}            Boolean(true) if success, UIError otherwise
+ * @param   {String} hostname  Hostname
+ * @param   {Boolean} [force=false]
+ * @returns {Boolean|UIError} Boolean(true) if success, UIError otherwise
  */
-module.exports.setHostname = async hostname => {
+module.exports.setHostname = async (hostname, force = false) => {
 
   if (typeof hostname !== 'string')
     throw new UIError(400, 'Incorrect hostname given', 'EAUTH001');
 
-  return api.setBaseUrl(hostname);
+  return api.setBaseUrl(hostname, force);
 
 };
 

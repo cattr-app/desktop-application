@@ -53,10 +53,14 @@ const deferredIntervalsPush = async () => {
         end_at: rawInterval.endAt,
         user_id: rawInterval.userId,
         activity_fill: rawInterval.systemActivity,
-        mouse_fill: rawInterval.mouseActivity,
-        keyboard_fill: rawInterval.keyboardActivity,
 
       };
+
+      if (rawInterval.mouseActivity)
+        preparedInterval.mouse_fill = rawInterval.mouseActivity;
+
+      if (rawInterval.keyboardActivity)
+        preparedInterval.keyboard_fill = rawInterval.keyboardActivity;
 
       // Push deferred interval
       let res = null;
@@ -105,3 +109,4 @@ const deferredIntervalsPush = async () => {
 
 // Push deferred intervals if connection is restored
 OfflineMode.on('connection-restored', deferredIntervalsPush);
+OfflineMode.once('connection-ok', deferredIntervalsPush);

@@ -51,11 +51,15 @@ module.exports.pushSyncedIntervalInQueue = async (interval, screenshot, remoteId
     endAt: interval.end_at,
     userId: interval.user_id,
     systemActivity: interval.activity_fill,
-    keyboardActivity: interval.keyboard_fill,
-    mouseActivity: interval.mouse_fill,
     synced: true,
     remoteId,
   };
+
+  if (interval.keyboard_fill)
+    formattedInterval.keyboardActivity = interval.keyboard_fill;
+
+  if (interval.mouse_fill)
+    formattedInterval.mouseActivity = interval.mouse_fill;
 
   // Attach screenshot if it is exists
   if (screenshot)
@@ -75,16 +79,45 @@ module.exports.pushSyncedIntervalInQueue = async (interval, screenshot, remoteId
 module.exports.backupInterval = async (interval, screenshot) => {
 
   // Hotfix to keep consinstency between API v1 & v1-ng
-  const convertedInterval = {
-    taskId: interval.task_id,
-    startAt: interval.start_at,
-    endAt: interval.end_at,
-    userId: interval.user_id,
-    systemActivity: interval.activity_fill,
-    keyboardActivity: interval.keyboard_fill,
-    mouseActivity: interval.mouse_fill,
-    synced: false,
-  };
+  let convertedInterval = null;
+
+  // Option 1: Backend-formatted interval
+  if (typeof interval.task_id !== 'undefined') {
+
+    convertedInterval = {
+      taskId: interval.task_id,
+      startAt: interval.start_at,
+      endAt: interval.end_at,
+      userId: interval.user_id,
+      systemActivity: interval.activity_fill,
+      synced: false,
+    };
+
+    if (interval.keyboard_fill)
+      convertedInterval.keyboardActivity = interval.keyboard_fill;
+
+    if (interval.mouse_fill)
+      convertedInterval.mouseActivity = interval.mouse_fill;
+
+  } else {
+
+    // Option 2: Local-formatted interval
+    convertedInterval = {
+      taskId: interval.taskId,
+      userId: interval.userId,
+      startAt: interval.start,
+      endAt: interval.end,
+      synced: false,
+      systemActivity: interval.systemActivity,
+    };
+
+    if (interval.keyboardActivity)
+      convertedInterval.keyboardActivity = interval.keyboardActivity;
+
+    if (interval.mouseActivity)
+      convertedInterval.mouseActivity = interval.mouseActivity;
+
+  }
 
   // Attach screenshot if it is exists
   if (screenshot)
@@ -93,7 +126,9 @@ module.exports.backupInterval = async (interval, screenshot) => {
   try {
 
     // Storing interval into local DB
-    return await database.Interval.create(convertedInterval);
+    const savedInterval = await database.Interval.create(convertedInterval);
+    savedInterval._isBackedUp = true;
+    return savedInterval;
 
   } catch (error) {
 
@@ -119,10 +154,14 @@ module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
     start: new Date(interval.start_at),
     end: new Date(interval.end_at),
     systemActivity: interval.activity_fill,
-    keyboardActivity: interval.keyboard_fill,
-    mouseActivity: interval.mouse_fill,
 
   };
+
+  if (interval.keyboard_fill)
+    actualInterval.keyboardActivity = interval.keyboard_fill;
+
+  if (interval.mouse_fill)
+    actualInterval.mouseActivity = interval.mouse_fill;
 
   // Check offline mode status
   if (OfflineMode.enabled && !interval._isDeferred) {
@@ -160,7 +199,7 @@ module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
 
       OfflineMode.trigger();
       log.warning('Backing up time interval request due and triggering the offline mode');
-      return module.exports.backupInterval(interval, intervalScreenshot);
+      return module.exports.backupInterval({ ...interval }, intervalScreenshot);
 
     }
 
@@ -221,9 +260,13 @@ module.exports.backedUpIntervalsPush = async () => {
         end_at: interval.endAt,
         user_id: interval.userId,
         activity_fill: interval.systemActivity,
-        keyboard_fill: interval.keyboardActivity,
-        mouse_fill: interval.mouseActivity,
       };
+
+      if (interval.keyboardActivity)
+        formattedInterval.keyboard_fill = interval.keyboardActivity;
+
+      if (interval.mouseActivity)
+        formattedInterval.mouse_fill = interval.mouseActivity;
 
       intervalPushPromises.push(module.exports.pushTimeInterval(formattedInterval, interval.screenshot));
 
