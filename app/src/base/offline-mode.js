@@ -103,6 +103,9 @@ class OfflineModeHandler extends EventEmitter {
    */
   async restore() {
 
+    // Notify about connection OK status
+    this.emit('connection-ok');
+
     if (!this._isEnabled)
       return;
 
@@ -126,11 +129,19 @@ class OfflineModeHandler extends EventEmitter {
    */
   async restoreWithCheck() {
 
-    if (this._isEnabled && await auth.ping())
+    const connectivityEstablished = await auth.ping();
+
+    // Notify about connection OK status
+    if (connectivityEstablished)
+      this.emit('connection-ok');
+
+    // Restore OfflineMode status if we're offline,
+    // but connection is established during the latest ping
+    if (this._isEnabled && connectivityEstablished)
       this.restore();
 
     // If the tracking is enabled and the connection is restored, we start the heartbeat again
-    if (this.heartbeatEnabled)
+    if (this.heartbeatEnabled && connectivityEstablished)
       heartbeatMonitor.start();
 
   }

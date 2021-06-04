@@ -12,6 +12,12 @@
           :key="interval.id"
           :interval="interval"
         />
+        <p
+          v-if="!intervals || intervals.length === 0"
+          class="no-intervals"
+        >
+          {{ $t('Nothing there') }} 🤷
+        </p>
       </div>
     </template>
   </el-container>
@@ -108,6 +114,12 @@ export default {
         width: 100%;
       }
 
+    }
+
+    .no-intervals {
+      font-size: 1.1em;
+      margin-top: 1.5em;
+      text-align: center;
     }
 
     .intervals {

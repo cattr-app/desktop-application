@@ -68,7 +68,7 @@ module.exports = router => {
       // Pass UIErrors directly to renderer
       if (error instanceof UIError) {
 
-        return router.emit('tracking/stop-confirmation', {
+        return request.send(400, {
           code: error.code,
           message: error.message,
           id: error.errorId,
@@ -78,7 +78,7 @@ module.exports = router => {
 
       // It'll be extremely weird if real errors will occur there. We should log them.
       log.error('Operating error occured in stop tracking route', error);
-      router.emit('tracking/stop-confirmation', { code: 500, message: 'Internal error occured', id: 'ERTR501' });
+      request.send(500, { code: 500, message: 'Internal error occured', id: 'ERTR501' });
 
       return false;
 

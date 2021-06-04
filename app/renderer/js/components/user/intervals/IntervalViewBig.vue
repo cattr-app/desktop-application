@@ -42,6 +42,7 @@
       </el-tooltip>
     </div>
     <img
+      v-if="interval.screenshot"
       :src="`data:image/png;base64,${interval.screenshot}`"
       class="screenshot"
     >

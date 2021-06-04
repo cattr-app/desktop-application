@@ -401,6 +401,16 @@ class TaskTracker extends EventEmitter {
     this.currentInterval.everPaused = false;
     this.currentTaskTimeTrackedToday = await TaskController.getTaskTodayTime(this.currentTask.id);
 
+    // Recalculate interval's start time if we're switching between tasks
+    if (action === 'switched') {
+
+      // Recalculate new interval startAt
+      const newStartAt = new Date();
+      newStartAt.setSeconds(newStartAt.getSeconds() + 1);
+      this.currentInterval.startedAt = new Date(newStartAt);
+
+    }
+
     // Enable inactivity detection
     this.startInactivityDetection();
 
@@ -596,7 +606,10 @@ class TaskTracker extends EventEmitter {
           throw new UIError(500, `Interval validation error, between ${startAt} and ${endAt}`);
 
         log.debug(`Interval was synced (assigned ID is ${pushedInterval.id})`);
-        await IntervalsController.pushSyncedIntervalInQueue(interval, intervalScreenshot, pushedInterval.id);
+
+        // Push interval in Recent Queue if it is already backed up
+        if (!pushedInterval._isBackedUp)
+          await IntervalsController.pushSyncedIntervalInQueue(interval, intervalScreenshot, pushedInterval.id);
 
         // Notifies user
         this.emit('interval-pushed', {

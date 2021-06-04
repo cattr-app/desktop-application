@@ -26,7 +26,7 @@ const deferredIntervalsPush = async () => {
   threadLock = true;
 
   // Getting all deferred intervals
-  const deferredIntervals = await TimeIntervalModel.findAll();
+  const deferredIntervals = await TimeIntervalModel.findAll({ where: { synced: false } });
 
   // Skip sync routine if there are no deffered intervals
   if (deferredIntervals.length === 0) {
@@ -53,10 +53,14 @@ const deferredIntervalsPush = async () => {
         end_at: rawInterval.endAt,
         user_id: rawInterval.userId,
         activity_fill: rawInterval.systemActivity,
-        mouse_fill: rawInterval.mouseActivity,
-        keyboard_fill: rawInterval.keyboardActivity,
 
       };
+
+      if (rawInterval.mouseActivity)
+        preparedInterval.mouse_fill = rawInterval.mouseActivity;
+
+      if (rawInterval.keyboardActivity)
+        preparedInterval.keyboard_fill = rawInterval.keyboardActivity;
 
       // Push deferred interval
       let res = null;
@@ -68,8 +72,12 @@ const deferredIntervalsPush = async () => {
 
       log.debug(`Deferred interval (${res.id}) has been pushed`);
 
-      // Remove raw interval from database
-      await rawInterval.destroy();
+      // Update interval status
+      rawInterval.synced = true;
+      await rawInterval.save();
+
+      // Remove old intervals from queue
+      await IntervalsController.reduceSyncedIntervalQueue();
 
     }
 
@@ -105,3 +113,4 @@ const deferredIntervalsPush = async () => {
 
 // Push deferred intervals if connection is restored
 OfflineMode.on('connection-restored', deferredIntervalsPush);
+OfflineMode.once('connection-ok', deferredIntervalsPush);

@@ -363,9 +363,10 @@ export default {
         context.commit('trackLoad', false);
         if (res.code !== 200) {
 
-          const err = new Error('Internal Server Error');
+          const err = new Error();
+          err.id = res.body.id;
           err.success = false;
-          err.error = Vue.$t('Internal Server Error');
+          err.message = res.body.message;
           throw err;
 
         }
