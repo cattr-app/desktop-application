@@ -401,6 +401,16 @@ class TaskTracker extends EventEmitter {
     this.currentInterval.everPaused = false;
     this.currentTaskTimeTrackedToday = await TaskController.getTaskTodayTime(this.currentTask.id);
 
+    // Recalculate interval's start time if we're switching between tasks
+    if (action === 'switched') {
+
+      // Recalculate new interval startAt
+      const newStartAt = new Date();
+      newStartAt.setSeconds(newStartAt.getSeconds() + 1);
+      this.currentInterval.startedAt = new Date(newStartAt);
+
+    }
+
     // Enable inactivity detection
     this.startInactivityDetection();
 
