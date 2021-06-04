@@ -26,7 +26,7 @@ const deferredIntervalsPush = async () => {
   threadLock = true;
 
   // Getting all deferred intervals
-  const deferredIntervals = await TimeIntervalModel.findAll();
+  const deferredIntervals = await TimeIntervalModel.findAll({ where: { synced: false } });
 
   // Skip sync routine if there are no deffered intervals
   if (deferredIntervals.length === 0) {
@@ -72,8 +72,12 @@ const deferredIntervalsPush = async () => {
 
       log.debug(`Deferred interval (${res.id}) has been pushed`);
 
-      // Remove raw interval from database
-      await rawInterval.destroy();
+      // Update interval status
+      rawInterval.synced = true;
+      await rawInterval.save();
+
+      // Remove old intervals from queue
+      await IntervalsController.reduceSyncedIntervalQueue();
 
     }
 

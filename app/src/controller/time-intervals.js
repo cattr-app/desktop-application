@@ -15,6 +15,28 @@ const log = new Log('Controller:Time-Intervals');
 const NUMBER_OF_SYNCED_INTERVALS_TO_KEEP = 5;
 
 /**
+ * Remove a single old interval from queue
+ * @async
+ */
+module.exports.reduceSyncedIntervalQueue = async () => {
+
+  // Get number of synced intervals in queue
+  const intervalsInQueue = await database.Interval.count({ where: { synced: true } });
+
+  // Remove the first interval in the queue
+  if (intervalsInQueue >= NUMBER_OF_SYNCED_INTERVALS_TO_KEEP) {
+
+    await database.Interval.destroy({
+      where: { synced: true },
+      order: [['createdAt', 'ASC']],
+      limit: 1,
+    });
+
+  }
+
+};
+
+/**
  * Returns all intervals in both latest pushed & unsynced queues
  * @async
  * @returns {Promise.<Interval[]>}
@@ -31,19 +53,8 @@ module.exports.fetchIntervalsQueue = async () => database.Interval.findAll({ inc
  */
 module.exports.pushSyncedIntervalInQueue = async (interval, screenshot, remoteId) => {
 
-  // Get number of synced intervals in queue
-  const intervalsInQueue = await database.Interval.count({ where: { synced: true } });
-
-  // Remove the first interval in the queue
-  if (intervalsInQueue >= NUMBER_OF_SYNCED_INTERVALS_TO_KEEP) {
-
-    await database.Interval.destroy({
-      where: { synced: true },
-      order: [['createdAt', 'ASC']],
-      limit: 1,
-    });
-
-  }
+  // Reduce uneccessary intervals
+  await module.exports.reduceSyncedIntervalQueue();
 
   const formattedInterval = {
     taskId: interval.task_id,
