@@ -167,8 +167,6 @@ const showBrowserNotification = async (screenshot, interval) => {
   // Pass webContents to the router instance
   notificationRouter.setWebContents(notificationBrowserWindow.webContents);
 
-  notificationBrowserWindow.webContents.openDevTools({ mode: 'detach' });
-
   // Send a screenshot and interval when window become ready
   notificationBrowserWindow.webContents.on('dom-ready', async () => {
 
