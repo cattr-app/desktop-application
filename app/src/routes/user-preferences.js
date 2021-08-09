@@ -1,5 +1,6 @@
 const Logger = require('../utils/log');
 const { UIError } = require('../utils/errors');
+const config = require('../base/config')
 const userPreferences = require('../base/user-preferences');
 
 const log = new Logger('Router:UserPreferences');
@@ -15,7 +16,15 @@ module.exports = router => {
     try {
 
       const preferences = await userPreferences.exportWithStructure();
-      return request.send(200, { preferences });
+      return request.send(200, {
+        preferences,
+        version: {
+          package: config.packageId,
+          number: config.packageVersion,
+          devMode: config.isDeveloperModeEnabled,
+          sentry: config.sentry.enabled
+        }
+      });
 
     } catch (error) {
 
