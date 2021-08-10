@@ -141,6 +141,12 @@
     "When an error occurs, Cattr Desktop will send an anonymized report to the development team with details concerning that error. Application restart is required to apply the new sharing policy.": "При возникновении ошибки, Cattr Desktop отправит анонимный отчет об ошибке разработчикам. Для применения изменений требуется перезапуск приложения",
     "Share error reports": "Отчеты об ошибках",
     "Share error reports with Developers": "Делиться отчетами с разработчиками",
-    "Do not share error reports": "Не отправлять отчеты об ошибках"
+    "Do not share error reports": "Не отправлять отчеты об ошибках",
+    "Cattr set up to track these types of activity:": "Cattr будет собирать следующие данные об активности:",
+    "Tracking active window title": "Отслеживание названий активных приложений",
+    "Capturing desktop screenshots": "Запись скриншотов рабочего стола",
+    "Reach your company administrator for more info.": "Если у вас есть вопросы, свяжитесь с администратором компании.",
+    "Tracking features": "Отслеживание активности",
+    "Cattr settings was updated. Now we tracking these types of activity:": "Настройки учетной записи были изменены. Теперь мы отслеживаем следующие виды активности:"
   }
 }

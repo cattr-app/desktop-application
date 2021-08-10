@@ -7,7 +7,7 @@
       <draggable
         class="dragArea"
         :class="{ dragArea: true }"
-        :options="{draggable: '.drag'}"
+        :options="{ draggable: '.drag' }"
         @end="onEnd"
       >
         <transition-group
@@ -18,9 +18,9 @@
             v-for="(task, index) in filteredTasks"
             :key="task.id"
             :pin-order="task.pinOrder !== null ? task.pinOrder : false"
-            :class="{drag: task.pinOrder !== null}"
+            :class="{ drag: task.pinOrder !== null }"
             :task="task"
-            :style="{'z-index': index}"
+            :style="{ 'z-index': index }"
             @load-task-position="loadTaskPosition($event)"
           />
         </transition-group>
@@ -29,10 +29,10 @@
     <template v-else>
       <p class="no-tasks">
         <template v-if="searchPattern.length > 0">
-          {{ $t('There are no tasks for query') }} "{{ searchPattern }}"
+          {{ $t("There are no tasks for query") }} "{{ searchPattern }}"
         </template>
         <template v-else>
-          {{ $t('There are no tasks at all') }}
+          {{ $t("There are no tasks at all") }}
         </template>
       </p>
     </template>
@@ -51,23 +51,19 @@ import Task from './Task.vue';
 const escapeRegExp = s => s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 
 export default {
-
   name: 'List',
   components: {
     Task,
     Draggable,
   },
   props: {
-
     list: {
       type: Array,
       default: null,
     },
-
   },
 
   computed: {
-
     /**
      * Returns identifiers of highlighted tasks
      * @returns {Array<String>} Array with internal identifiers of highlighted tasks
@@ -107,7 +103,10 @@ export default {
       try {
 
         const filteredTasks = this.filterList(this.searchPattern, this.tasks);
-        const highlight = this.sortTasksByHighlights(filteredTasks, this.highlights);
+        const highlight = this.sortTasksByHighlights(
+          filteredTasks,
+          this.highlights,
+        );
         const formatted = this.sortByPinOrder(highlight);
 
         return formatted;
@@ -119,15 +118,60 @@ export default {
       }
 
     },
-
   },
 
-  mounted() {
+  async mounted() {
+
+    /* Trigger new tracking features check */
+    try {
+
+      const updateRequest = await this.$ipc.request(
+        'misc/unacknowledged-tracking-features',
+        {},
+      );
+      if (updateRequest.body.features) {
+
+        let content = `<p>${this.$t(
+          'Cattr settings was updated. Now we tracking these types of activity:',
+        )}</p><ol>`;
+        updateRequest.body.features.forEach(f => {
+
+          switch (f) {
+
+            case 'APP_MONITORING':
+              content += `<li>${this.$t('Tracking active window title')}</li>`;
+              break;
+
+            case 'DESKTOP_SCREENSHOTS':
+              content += `<li>${this.$t(
+                'Capturing desktop screenshots',
+              )}</li>`;
+              break;
+
+            default:
+              content += `<li>${f}</li>`;
+              break;
+
+          }
+
+        });
+        content += `</ol><p>${this.$t(
+          'Reach your company administrator for more info.',
+        )}</p>`;
+        await this.$alert(content, this.$t('Tracking features'), {
+          dangerouslyUseHTMLString: true,
+          confirmButtonText: 'OK',
+        });
+
+      }
+
+    } catch (_) {
+      // Do nothing
+    }
 
   },
 
   methods: {
-
     loadTaskPosition() {
 
       this.$emit('load-task-position', null);
@@ -188,14 +232,23 @@ export default {
      */
     async onEnd(evt) {
 
-      await this.swapPinnedTasksOrder(this.tasks[evt.oldIndex], this.tasks[evt.newIndex]);
+      await this.swapPinnedTasksOrder(
+        this.tasks[evt.oldIndex],
+        this.tasks[evt.newIndex],
+      );
 
     },
 
     async swapPinnedTasksOrder(task1, task2) {
 
-      await this.$ipc.emit('tasks/pinOrder/update', { id: task1.id, pinOrder: task2.pinOrder });
-      await this.$ipc.emit('tasks/pinOrder/update', { id: task2.id, pinOrder: task1.pinOrder });
+      await this.$ipc.emit('tasks/pinOrder/update', {
+        id: task1.id,
+        pinOrder: task2.pinOrder,
+      });
+      await this.$ipc.emit('tasks/pinOrder/update', {
+        id: task2.id,
+        pinOrder: task1.pinOrder,
+      });
 
     },
 
@@ -239,15 +292,20 @@ export default {
       if (!q)
         return list;
 
-      const words = q.split(' ').map(s => s.trim()).filter(s => s.length !== 0);
+      const words = q
+        .split(' ')
+        .map(s => s.trim())
+        .filter(s => s.length !== 0);
       const hasTrailingSpace = q.endsWith(' ');
-      const regexString = words.map((word, i) => {
+      const regexString = words
+        .map((word, i) => {
 
-        if (i + 1 === words.length && !hasTrailingSpace)
-          return `(?=.*(?:^|)${escapeRegExp(word)})`;
-        return `(?=.*(?:^|)${escapeRegExp(word)}(?:^|\\s))`;
+          if (i + 1 === words.length && !hasTrailingSpace)
+            return `(?=.*(?:^|)${escapeRegExp(word)})`;
+          return `(?=.*(?:^|)${escapeRegExp(word)}(?:^|\\s))`;
 
-      }).join('');
+        })
+        .join('');
 
       const searchRegex = new RegExp(`${regexString}.+`, 'gi');
       return list.filter(item => {
@@ -308,31 +366,30 @@ export default {
 
     },
   },
-
 };
 </script>
 
 <style lang="scss" scoped>
 .tasks {
-
   .no-tasks {
     font-size: 1.1em;
     margin-top: 1.5em;
     text-align: center;
   }
 
-  .fade-task-enter-active, .fade-task-leave-active {
-    transition: opacity .5s;
+  .fade-task-enter-active,
+  .fade-task-leave-active {
+    transition: opacity 0.5s;
   }
 
-  .fade-task-enter, .fade-task-leave-to {
+  .fade-task-enter,
+  .fade-task-leave-to {
     opacity: 0;
   }
 
   .flip-list-move {
-    transition: transform .5s;
+    transition: transform 0.5s;
     z-index: 99999;
   }
-
 }
 </style>

@@ -9,6 +9,7 @@ const db = require('../models');
 const OfflineUser = require('../controller/offline-user');
 const OfflineMode = require('./offline-mode');
 const Sentry = require('../utils/sentry');
+const trackingFeatures = require('../controller/tracking-features');
 
 const log = new Log('AuthenticationProvider');
 
@@ -319,6 +320,7 @@ module.exports.getCurrentUser = async () => {
       _currentUser = user;
       module.exports.events.emit('user-fetched', _currentUser);
       OfflineUser.setProperties(user);
+      trackingFeatures.updateFromUser(user);
       await OfflineUser.commit();
       return user;
 
