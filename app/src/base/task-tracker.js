@@ -9,9 +9,11 @@ const Screenshot = require('../utils/screenshot');
 const Authentication = require('./authentication');
 const TimeController = require('../controller/time');
 const TaskController = require('../controller/tasks');
-const IntervalsController = require('../controller/time-intervals');
 const eventCounter = require('../utils/event-counter');
 const heartbeatMonitor = require('../utils/heartbeat-monitor');
+const IntervalsController = require('../controller/time-intervals');
+const trackingFeature = require('../controller/tracking-features');
+const activeWindow = require('./active-window');
 
 const log = new Log('TaskTracker');
 
@@ -203,6 +205,14 @@ class TaskTracker extends EventEmitter {
       this.currentInterval.everPaused = false;
 
       log.debug('Interval captured by timer request');
+
+    });
+
+    /**
+     * Handle active window change
+     */
+    activeWindow.on('updated', window => {
+
 
     });
 
@@ -427,6 +437,11 @@ class TaskTracker extends EventEmitter {
     this.ticker.reset();
     this.ticker.start();
 
+    // Enable active window tracking
+    const trackingFeatures = await trackingFeature.getCurrentFeatures();
+    if (trackingFeatures.includes('APP_MONITORING'))
+      activeWindow.start();
+
     // Dispatch corresponding event
     this.setTrackerStatus(true);
     this.emit(action, this.currentTask.id);
@@ -450,6 +465,9 @@ class TaskTracker extends EventEmitter {
     if (emitEvent)
       this.emit('stopping');
 
+    // Stop active window tracking if active
+    if (activeWindow.active)
+      activeWindow.stop();
 
     // Stop inactivity detection
     this.stopInactivityDetection();
@@ -511,6 +529,7 @@ class TaskTracker extends EventEmitter {
       // Get properties of current user account
       const currentUser = await Authentication.getCurrentUser();
       const currentTaskId = this.currentTask.id;
+      const currentTrackingFeatures = await trackingFeature.getCurrentFeatures() || [];
 
       // Get amount of ticks tracked
       const ticks = (typeof ticksOverride === 'number') ? ticksOverride : this.ticker.ticks;
@@ -578,7 +597,7 @@ class TaskTracker extends EventEmitter {
 
       // Creating screenshot, if screenshot capture enabled for this user account
       let intervalScreenshot = null;
-      if (currentUser.screenshotsEnabled) {
+      if (currentTrackingFeatures.includes('DESKTOP_SCREENSHOTS')) {
 
         try {
 
@@ -592,7 +611,6 @@ class TaskTracker extends EventEmitter {
           this.emit('screenshot-capture-failed', err);
 
         }
-
 
       }
 

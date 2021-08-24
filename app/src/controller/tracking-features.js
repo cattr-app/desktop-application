@@ -125,6 +125,23 @@ class TrackingFeatures extends EventEmitter {
 
   }
 
+  /**
+   * Get list of active tracking features
+   * @async
+   * @returns {Promise.<string[]|null>}
+   */
+  async getCurrentFeatures() {
+
+    const featureListRow = await Property.findOne({ where: { key: 'tracking_features' } });
+    if (!featureListRow)
+      return null;
+
+    const featureList = JSON.parse(featureListRow.value);
+    this.emit('fetched', featureList.features);
+    return featureList.features;
+
+  }
+
 }
 
 module.exports = new TrackingFeatures();
