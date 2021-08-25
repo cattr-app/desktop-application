@@ -213,6 +213,16 @@ class TaskTracker extends EventEmitter {
      */
     activeWindow.on('updated', window => {
 
+      try {
+
+         windowUpdate = IntervalsController.pushActiveApplicationUpdate(window);
+         log.debug(`Window updated! \n${windowUpdate}`);
+
+      } catch (err) {
+
+        log.error('Error occured during current app usage update', err, true);
+
+      }
 
     });
 

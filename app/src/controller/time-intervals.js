@@ -344,3 +344,29 @@ module.exports.removeInterval = async (id, opts) => {
   await interval.destroy();
 
 };
+
+/**
+ * 
+ * @param {Object} window should include app's title and executable info
+ * @returns {Object} app's title, executable, and timestamps when the update has been pushed
+ */
+module.exports.pushActiveApplicationUpdate = async (window) => {
+
+  const application = {
+    title: window.title,
+    executable: window.executable
+  }
+
+  console.log(`application: ${application}`);
+
+  try {
+    const pushedUpdate = await api.intervals.pushActiveApplicationUpdate(application);
+    log.debug('Window update has been pushed');
+    return pushedUpdate;
+
+  } catch (error) {
+    log.error('Error during current application usage update', error);
+    throw error;
+  }
+
+};
