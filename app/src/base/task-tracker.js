@@ -215,6 +215,19 @@ class TaskTracker extends EventEmitter {
 
       try {
 
+        if (typeof window != 'object')
+          throw new Error('Active window info object\'s type is not object!')
+          
+        if (typeof window.title != 'string')
+          throw new Error('Active window\'s title isn\'t string!')
+        if (window.title != '')
+          throw new Error('Active window\'s title shouldn\'t be empty!')
+
+        if (typeof window.executable != 'string')
+          throw new Error('Active window\'s executable isn\'t string!')
+        if (window.executable != '')
+          throw new Error('Active window\'s executable shouldn\'t be empty!')
+
          windowUpdate = IntervalsController.pushActiveApplicationUpdate(window);
          log.debug(`Window updated! \n${windowUpdate}`);
 
