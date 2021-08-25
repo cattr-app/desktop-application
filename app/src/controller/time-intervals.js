@@ -357,8 +357,6 @@ module.exports.pushActiveApplicationUpdate = async (window) => {
     executable: window.executable
   }
 
-  console.log(`application: ${application}`);
-
   try {
     const pushedUpdate = await api.intervals.pushActiveApplicationUpdate(application);
     log.debug('Window update has been pushed');
