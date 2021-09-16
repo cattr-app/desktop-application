@@ -211,12 +211,12 @@ class TaskTracker extends EventEmitter {
     /**
      * Handle active window change
      */
-    activeWindow.on('updated', window => {
+    activeWindow.on('updated', async window => {
 
       try {
 
-        const windowUpdate = IntervalsController.pushActiveApplicationUpdate(window);
-        log.debug(`Window updated! \n${windowUpdate}`);
+        await IntervalsController.pushActiveApplicationUpdate(window);
+        log.debug('Active window change event sent');
 
       } catch (err) {
 
