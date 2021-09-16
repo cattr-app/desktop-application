@@ -215,8 +215,8 @@ class TaskTracker extends EventEmitter {
 
       try {
 
-         windowUpdate = IntervalsController.pushActiveApplicationUpdate(window);
-         log.debug(`Window updated! \n${windowUpdate}`);
+        const windowUpdate = IntervalsController.pushActiveApplicationUpdate(window);
+        log.debug(`Window updated! \n${windowUpdate}`);
 
       } catch (err) {
 
