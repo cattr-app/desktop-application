@@ -16,12 +16,12 @@ class TrackingFeatures extends EventEmitter {
     const features = [];
 
     if (user.appMonitoringEnabled) {
-        
-        if (process.platform === 'win32')
-          features.push('APP_MONITORING');
-        else
-          log.warning('App monitoring isn\'t supported on platforms other then Windows');
-        
+
+      if (process.platform === 'win32')
+        features.push('APP_MONITORING');
+      else
+        log.warning('App monitoring isn\'t supported on platforms other then Windows');
+
     }
 
     if (user.screenshotsEnabled)

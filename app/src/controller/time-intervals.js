@@ -319,9 +319,9 @@ module.exports.backedUpIntervalsPush = async () => {
 };
 
 /**
- * Removes interval locally 
+ * Removes interval locally
  * (only on backend side, no relation to frontend functionality)
- * 
+ *
  * @async
  * @param {String} id Interval ID
  * @param {Object} options Additional options
@@ -346,25 +346,28 @@ module.exports.removeInterval = async (id, opts) => {
 };
 
 /**
- * 
+ *
  * @param {Object} window should include app's title and executable info
  * @returns {Object} app's title, executable, and timestamps when the update has been pushed
  */
-module.exports.pushActiveApplicationUpdate = async (window) => {
+module.exports.pushActiveApplicationUpdate = async window => {
 
   const application = {
     title: window.title,
-    executable: window.executable
-  }
+    executable: window.executable,
+  };
 
   try {
+
     const pushedUpdate = await api.intervals.pushActiveApplicationUpdate(application);
     log.debug('Window update has been pushed');
     return pushedUpdate;
 
   } catch (error) {
+
     log.error('Error during current application usage update', error);
     throw error;
+
   }
 
 };

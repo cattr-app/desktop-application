@@ -44,7 +44,7 @@ module.exports = router => {
   router.serve('interval/remove', async req => {
 
     try {
-      
+
       await Interval.removeInterval(req.packet.body.task.intervalId);
 
       TaskTracker.emit('interval-removed', req.packet.body);
