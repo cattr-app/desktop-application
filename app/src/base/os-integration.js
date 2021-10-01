@@ -178,7 +178,7 @@ class OSIntegration extends EventEmitter {
 
     }
 
-    log.debug('Goodby.');
+    log.debug('Goodbye.');
     Log._closeLogStream();
     app.exit(0);
 

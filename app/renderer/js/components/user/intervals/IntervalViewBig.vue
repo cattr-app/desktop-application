@@ -70,6 +70,10 @@ export default {
 
   computed: {
 
+    getDurationInSeconds() {
+      return secondsBetween(this.interval.startAt, this.interval.endAt);
+    },
+
     taskName() {
 
       return this.interval.Task ? this.interval.Task.name : this.$t('(not available)');
@@ -130,11 +134,16 @@ export default {
       try {
 
         // Requesting an interval removal operations on main process
-        const req = await this.$ipc.request('interval/remove', { id: this.interval.id });
+        console.log(this.interval);
+        const req = await this.$ipc.request('interval/remove', { duration: secondsBetween(this.interval.startAt, this.interval.endAt) - 1, task: { intervalId: this.interval.id, id: this.interval.Task.id }, });
 
         // Throw an error if request wasn't successful
         if (req.code !== 204)
           throw new Error(req.body.message);
+
+        // TODO add time refresh here 
+        // like it does when the screenshot is removed 
+        // from the screenshot notification window
 
         // Show a success message
         this.$message({ type: 'success', message: this.$t('Interval successfully removed') });

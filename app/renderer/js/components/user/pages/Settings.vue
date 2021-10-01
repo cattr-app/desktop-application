@@ -65,6 +65,13 @@
       >
         {{ $t('Sign into web app') }}
       </el-button>
+      <br><br>
+      <small style="color: #999">
+        Cattr {{ version.number }} 💖 
+        <br>
+        {{ version.devMode ? '+dev ' : '' }}
+        {{ version.sentry ? '+sentry' : '' }}
+      </small>
     </div>
   </el-container>
 </template>
@@ -86,6 +93,7 @@ export default {
       formData: {},
       formFields: [],
       values: {},
+      version: {}
     };
 
   },
@@ -94,6 +102,7 @@ export default {
 
     this.$ipc.request('user-preferences/export-structure', {}).then(({ body }) => {
 
+      this.version = body.version;
       Object.entries(body.preferences).forEach(([prefKey, prefVal]) => {
 
         const renderableField = {

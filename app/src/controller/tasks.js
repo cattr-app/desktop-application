@@ -32,7 +32,7 @@ const formatTasks = tasks => tasks.map(task => ({
   description: task.description,
   externalUrl: task.url,
   priority: task.priority_id,
-  status: task.active,
+  status: task.active != undefined ? task.active : task.status_id,
   updatedAt: task.updated_at,
 
 }));
@@ -262,7 +262,7 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
 
     localTasks.forEach(localTask => {
 
-      // Skipping iteration, if ocurrency already found
+      // Skipping iteration, if ocurrency already foundf
       if (found)
         return;
 

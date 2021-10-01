@@ -1,5 +1,6 @@
 const Logger = require('../utils/log');
 const Interval = require('../controller/time-intervals');
+const TaskTracker = require('../base/task-tracker');
 
 const log = new Logger('Router:Intervals');
 
@@ -43,8 +44,11 @@ module.exports = router => {
   router.serve('interval/remove', async req => {
 
     try {
+      
+      await Interval.removeInterval(req.packet.body.task.intervalId);
 
-      await Interval.removeInterval(req.packet.body.id);
+      TaskTracker.emit('interval-removed', req.packet.body);
+
       return req.send(204, {});
 
     } catch (err) {

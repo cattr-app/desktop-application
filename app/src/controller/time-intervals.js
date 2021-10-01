@@ -319,7 +319,9 @@ module.exports.backedUpIntervalsPush = async () => {
 };
 
 /**
- * Removes interval locally
+ * Removes interval locally 
+ * (only on backend side, no relation to frontend functionality)
+ * 
  * @async
  * @param {String} id Interval ID
  * @param {Object} options Additional options
@@ -333,7 +335,7 @@ module.exports.removeInterval = async (id, opts) => {
     interval = await database.Interval.findOne({ where: { id } });
 
   if (!interval)
-    throw new Error(`Interval #${id} is not exists`);
+    throw new Error(`Interval #${id} does not exist`);
 
   // Destroy interval on remote if it is synced
   if (interval.synced)
