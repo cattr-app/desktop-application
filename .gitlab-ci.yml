@@ -9,7 +9,7 @@ release-linux:
     - docker
   only:
     - release
-  image: node:erbium-slim
+  image: node:fermium-slim
   artifacts:
     untracked: false
     expire_in: 30 days
