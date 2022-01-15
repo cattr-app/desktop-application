@@ -249,7 +249,7 @@
 		"eslint-plugin-vue": "^7.10.0",
 		"fstream": "^1.0.12",
 		"laravel-mix": "6.0.19",
-		"marked": "^2.0.6",
+		"marked": "^4.0.10",
 		"mini-css-extract-plugin": "^1.6.0",
 		"minimist": "^1.2.5",
 		"node-abi": "^2.30.0",
