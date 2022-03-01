@@ -133,6 +133,9 @@ release-windows:
     - $release_json = Get-Content -Path .\manifests\release-windows.json | ConvertFrom-Json
     - $RELEASE_VERSION=$release_json.version
 
+    - icacls $CI_SSH_KEY_WIN /inheritance:r
+    - icacls $CI_SSH_KEY_WIN /grant:r "%username%":"(R)"
+
     # Create a release folder directory on remote location
     - ssh -i $CI_SSH_KEY_WIN -o StrictHostKeyChecking=no -n -T cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
 
