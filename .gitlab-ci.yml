@@ -39,7 +39,7 @@ release-linux:
     # Get Cattr release version
     - cd target
     - RELEASE_VERSION=`(cat latest-linux.yml | awk 'NR==1 {print $2}')`
-  
+
     # Create a release folder directory on remote location
     - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
 
@@ -96,7 +96,7 @@ release-mac:
     # Get Cattr release version
     - cd target
     - RELEASE_VERSION=`(cat latest-mac.yml | awk 'NR==1 {print $2}')`
-  
+
     # Create a release folder directory on remote location
     - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
 
@@ -110,7 +110,6 @@ release-mac:
 release-windows:
   stage: release
   tags:
-    - amazing
     - windows
     - host
   only:
@@ -122,7 +121,6 @@ release-windows:
       - "target/*.exe"
       - "target/*.appx"
   script:
-
     # Install and build desktop application
     - npm ci
     - npm run build-production
@@ -134,7 +132,7 @@ release-windows:
     - cd target
     - $release_json = Get-Content -Path .\manifests\release-windows.json | ConvertFrom-Json
     - $RELEASE_VERSION=$release_json.version
-    
+
     # Create a release folder directory on remote location
     - ssh -i $CI_SSH_KEY_WIN -o StrictHostKeyChecking=no -n -T cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
 
