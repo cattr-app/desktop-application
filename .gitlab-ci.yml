@@ -1,12 +1,11 @@
 stages:
-  - release
+  - build
+  - deploy
 
-release-linux:
-  stage: release
+build-linux:
+  stage: build
   tags:
-    - amazing
     - linux
-    - docker
   only:
     - release
   image: node:fermium-slim
@@ -17,61 +16,22 @@ release-linux:
       - "target/*.AppImage"
       - "target/*.tar.gz"
       - "target/*.deb"
+  cache:
+    paths:
+      - "target/manifests"
   script:
-
-    # Init container, install dependencies
     - apt update
     - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
 
-    # Install and build desktop application
     - npm ci
     - npm run build-production
+
     - npm run package-linux
 
-    # Load private key into SSH agent
-    - eval $(ssh-agent -s)
-    - echo "$CI_SSH_KEY" | base64 -d | ssh-add -
-
-    # Load GPG signing key into GPG agent
-    - gpg-agent --daemon
-    - echo -e "$DEB_SIGNING_KEY" | base64 -d |  gpg --import
-
-    # Get Cattr release version
-    - cd target
-    - RELEASE_VERSION=`(cat latest-linux.yml | awk 'NR==1 {print $2}')`
-
-    # Create a release folder directory on remote location
-    - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
-
-    # Copy AppImage and .tar.gz releases to remote location
-    - scp -o StrictHostKeyChecking=no *.tar.gz *.AppImage "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
-
-    # Copy deb package to the repository folder
-    - scp -o StrictHostKeyChecking=no *.deb "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/amd64/"
-
-    # Generate Packages and Release files
-    - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app "cd /srv/dl/packages/deb && apt-ftparchive --arch amd64 packages amd64 > Packages && apt-ftparchive release . > Release"
-
-    # Copy Release file to sign it locally
-    - scp -o StrictHostKeyChecking=no "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/Release" .
-
-    # Generate Release.gpg and InRelease signed versions
-    - gpg -abs -o Release.gpg Release
-    - gpg --clearsign -o InRelease Release
-
-    # Copy signed files back to remote
-    - scp -o StrictHostKeyChecking=no {Release.gpg,InRelease} "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/"
-
-    # Copy manifest files to remote
-    - cd manifests
-    - scp -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
-
-release-mac:
-  stage: release
+build-mac:
+  stage: build
   tags:
-    - amazing
     - macos
-    - host
   only:
     - release
   artifacts:
@@ -79,39 +39,21 @@ release-mac:
     expire_in: 30 days
     paths:
       - "target/*.dmg"
+  cache:
+    paths:
+      - "target/manifests"
   script:
-
-    # Unlock keychain
     - security unlock-keychain -p "$APPLE_CI_HOST_PASSWORD"
 
-    # Install dependencies and build desktop application
     - npm ci
     - npm run build-production
+
     - npm run package-mac
 
-    # Load private key into SSH agent
-    - eval $(ssh-agent -s)
-    - echo "$CI_SSH_KEY" | base64 -d | ssh-add -
-
-    # Get Cattr release version
-    - cd target
-    - RELEASE_VERSION=`(cat latest-mac.yml | awk 'NR==1 {print $2}')`
-
-    # Create a release folder directory on remote location
-    - ssh -o StrictHostKeyChecking=no cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
-
-    # Copy AppImage and .tar.gz releases to remote location
-    - scp -o StrictHostKeyChecking=no *.dmg "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
-
-    # Copy manifest files to remote
-    - cd manifests
-    - scp -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
-
-release-windows:
-  stage: release
+build-windows:
+  stage: build
   tags:
     - windows
-    - host
   only:
     - release
   artifacts:
@@ -120,28 +62,47 @@ release-windows:
     paths:
       - "target/*.exe"
       - "target/*.appx"
+  cache:
+    paths:
+      - "target/manifests"
   script:
-    # Install and build desktop application
     - npm ci
     - npm run build-production
 
-    # Build "portable" executable
     - npm run package-windows
 
-    # Get Cattr release version
+deploy:
+  stage: deploy
+  tags:
+    - docker
+  only:
+    - release
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client gnupg
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - eval $(ssh-agent -s)
+    - echo "$CI_SSH_KEY" | base64 -d | ssh-add
+    - gpg-agent --daemon
+    - echo -e "$DEB_SIGNING_KEY" | base64 -d |  gpg --import
+    - RELEASE_VERSION=`(echo $CI_COMMIT_TAG | sed 's/^v//')`
+  script:
+    - ssh cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
     - cd target
-    - $release_json = Get-Content -Path .\manifests\release-windows.json | ConvertFrom-Json
-    - $RELEASE_VERSION=$release_json.version
-
-    - icacls $CI_SSH_KEY_WIN /inheritance:r
-    - icacls $CI_SSH_KEY_WIN /grant:r "%username%":"(R)"
-
-    # Create a release folder directory on remote location
-    - ssh -i $CI_SSH_KEY_WIN -o StrictHostKeyChecking=no -n -T cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
-
-    # Copy exe and .msi releases to remote location
-    - scp -i $CI_SSH_KEY_WIN -o StrictHostKeyChecking=no *.exe "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
-
-    # Copy manifest files to remote
+    - scp *.dmg "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
+    - scp *.exe "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
+    - scp *.tar.gz "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
+    - scp *.AppImage "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
+    - scp *.deb "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/amd64/"
     - cd manifests
-    - scp -i $CI_SSH_KEY_WIN -o StrictHostKeyChecking=no * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
+    - scp * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
+  after_script:
+    - ssh cattr-deploy@dl.cattr.app "cd /srv/dl/packages/deb && apt-ftparchive --arch amd64 packages amd64 > Packages"
+    - ssh cattr-deploy@dl.cattr.app "cd /srv/dl/packages/deb && apt-ftparchive release . > Release"
+    - scp "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/Release" .
+    - gpg -abs -o Release.gpg Release
+    - gpg --clearsign -o InRelease Release
+    - scp Release.gpg "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/"
+    - scp InRelease "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/"
