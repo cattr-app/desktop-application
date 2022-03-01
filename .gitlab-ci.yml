@@ -16,9 +16,7 @@ build-linux:
       - "target/*.AppImage"
       - "target/*.tar.gz"
       - "target/*.deb"
-  cache:
-    paths:
-      - "target/manifests"
+      - "target/manifests/*.json"
   script:
     - apt update
     - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
@@ -39,9 +37,7 @@ build-mac:
     expire_in: 30 days
     paths:
       - "target/*.dmg"
-  cache:
-    paths:
-      - "target/manifests"
+      - "target/manifests/*.json"
   script:
     - security unlock-keychain -p "$APPLE_CI_HOST_PASSWORD"
 
@@ -62,9 +58,7 @@ build-windows:
     paths:
       - "target/*.exe"
       - "target/*.appx"
-  cache:
-    paths:
-      - "target/manifests"
+      - "target/manifests/*.json"
   script:
     - npm ci
     - npm run build-production
