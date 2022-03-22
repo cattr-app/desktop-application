@@ -7,7 +7,10 @@ build-linux:
   tags:
     - linux
   only:
-    - release
+    refs:
+      - release
+    variables:
+      - $CI_FORCE
   image: node:fermium-slim
   artifacts:
     untracked: false
@@ -31,7 +34,10 @@ build-mac:
   tags:
     - macos
   only:
-    - release
+    refs:
+      - release
+    variables:
+      - $CI_FORCE
   artifacts:
     untracked: false
     expire_in: 30 days
@@ -51,7 +57,10 @@ build-windows:
   tags:
     - windows
   only:
-    - release
+    refs:
+      - release
+    variables:
+      - $CI_FORCE
   artifacts:
     untracked: false
     expire_in: 30 days
