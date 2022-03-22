@@ -2,6 +2,7 @@ const Logger = require('../utils/log');
 const config = require('../base/config');
 const update = require('../base/update');
 const osIntegration = require('../base/os-integration');
+const trackingFeatures = require('../controller/tracking-features');
 
 const log = new Logger('Router:Miscellaneous');
 log.debug('Loaded');
@@ -25,6 +26,14 @@ module.exports = router => {
 
     const version = await update.retrieveUpdate();
     return req.send(200, version || { version: null });
+
+  });
+
+  // Handle unacknowledged tracking features poll request
+  router.serve('misc/unacknowledged-tracking-features', async req => {
+
+    const features = await trackingFeatures.retrieveUnacknowledged();
+    return req.send(200, { features });
 
   });
 

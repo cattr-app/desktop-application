@@ -1,6 +1,6 @@
 const Logger = require('../utils/log');
 const { UIError } = require('../utils/errors');
-const config = require('../base/config')
+const config = require('../base/config');
 const userPreferences = require('../base/user-preferences');
 
 const log = new Logger('Router:UserPreferences');
@@ -22,8 +22,8 @@ module.exports = router => {
           package: config.packageId,
           number: config.packageVersion,
           devMode: config.isDeveloperModeEnabled,
-          sentry: config.sentry.enabled
-        }
+          sentry: config.sentry.enabled,
+        },
       });
 
     } catch (error) {

@@ -2,6 +2,7 @@ const { shell } = require('electron');
 const Logger = require('../utils/log');
 const auth = require('../base/authentication');
 const { UIError } = require('../utils/errors');
+const trackingFeatures = require('../controller/tracking-features');
 
 const log = new Logger('Router:Authentication');
 log.debug('Loaded');
@@ -52,10 +53,13 @@ module.exports = router => {
     try {
 
       // Making authentication request
-      const authResponse = await auth.userAuthentication(username, password);
+      const authResponseUser = await auth.userAuthentication(username, password);
+
+      // Fetch tracking features with immediate acknowledge
+      const features = await trackingFeatures.updateFromUser(authResponseUser, true);
 
       // Returning authenticated user object to renderer
-      request.send(200, authResponse);
+      request.send(200, { user: authResponseUser, features });
 
     } catch (error) {
 
@@ -173,8 +177,13 @@ module.exports = router => {
         return request.send(400, { message: 'Single-Sign On URL is not correct', id: 'ESSO001' });
 
       // Try to authenticate
-      await auth.authenticateSSO(ssoParams);
-      return request.send(200, {});
+      const authenticationResponse = await auth.authenticateSSO(ssoParams);
+
+      // Fetch tracking features with immediate acknowledge
+      const features = await trackingFeatures.updateFromUser(authenticationResponse.user, true);
+
+      // Returning authenticated user object to renderer
+      return request.send(200, { features });
 
     } catch (error) {
 

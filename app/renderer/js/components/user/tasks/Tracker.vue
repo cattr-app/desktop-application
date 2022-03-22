@@ -102,15 +102,14 @@ export default {
 
     projectName() {
 
-      if (this.trackingTask.Project === null) {
-        
+      if (this.trackingTask.Project === null)
+
         return '';
-      
-      }
+
 
       return this.trackingTask.Project.name;
 
-    }
+    },
 
   },
 
