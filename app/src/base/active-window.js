@@ -61,9 +61,10 @@ class ActiveWindow extends EventEmitter {
 
         // Detect changes
         if (
-          window.owner.path !== this.currentApplication.executable
+          window && window.owner
+          && (window.owner.path !== this.currentApplication.executable
           || window.title !== this.currentApplication.title
-          || window.url !== this.currentApplication.url
+          || window.url !== this.currentApplication.url)
         )
           this.applyNewWindow(window);
 

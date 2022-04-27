@@ -45,7 +45,7 @@ const configuration = {
 configuration.sentry = {
 
   // Is Sentry enabled?
-  enabled: !isDeveloperModeEnabled,
+  enabled: !isDeveloperModeEnabled || process.env.AT_SENTRY === 'force',
 
   // Main application DSN
   dsn: 'https://b0ab7e30102244948431ecf5b1eb9c9a@sentry.amazingcat.net/15',

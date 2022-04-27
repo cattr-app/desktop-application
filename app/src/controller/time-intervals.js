@@ -185,19 +185,15 @@ module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
   try {
 
     // Push interval to the backend
-    let pushedInterval = null;
     if (intervalScreenshot)
-      pushedInterval = await api.intervals.createWithScreenshot(actualInterval, intervalScreenshot);
+      await api.intervals.createWithScreenshot(actualInterval, intervalScreenshot);
     else
-      pushedInterval = await api.intervals.create(actualInterval);
+      await api.intervals.create(actualInterval);
 
-    log.debug(`Interval was synced (assigned ID is ${pushedInterval.id})`);
+    log.debug('Interval was synced');
 
     // Trigger connection restore in OfflineMode
     OfflineMode.restoreWithCheck();
-
-    // Everything is fine
-    return pushedInterval;
 
   } catch (error) {
 

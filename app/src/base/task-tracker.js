@@ -449,6 +449,7 @@ class TaskTracker extends EventEmitter {
 
     // Enable active window tracking
     const trackingFeatures = await trackingFeature.getCurrentFeatures();
+    console.log(trackingFeatures);
     if (trackingFeatures.includes('APP_MONITORING'))
       activeWindow.start();
 
@@ -629,14 +630,8 @@ class TaskTracker extends EventEmitter {
 
         const pushedInterval = await IntervalsController.pushTimeInterval(interval, intervalScreenshot);
 
-        // Hotfix for the scrappy error handling on backend
-        if (typeof pushedInterval.id === 'undefined')
-          throw new UIError(500, `Interval validation error, between ${startAt} and ${endAt}`);
-
-        log.debug(`Interval was synced (assigned ID is ${pushedInterval.id})`);
-
         // Push interval in Recent Queue if it is already backed up
-        if (!pushedInterval._isBackedUp)
+        if (typeof pushedInterval === 'object' && !pushedInterval._isBackedUp)
           await IntervalsController.pushSyncedIntervalInQueue(interval, intervalScreenshot, pushedInterval.id);
 
         // Notifies user

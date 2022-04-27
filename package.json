@@ -1,6 +1,6 @@
 {
 	"name": "cattr",
-	"version": "2.7.0",
+	"version": "3.0.0-RC1",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
 	"main": "app/src/app.js",
@@ -19,7 +19,9 @@
 		"build-production": "npx cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"build-release": "npx cross-env NODE_ENV=production MAKE_RELEASE=yes node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"package-linux": "npx electron-builder -p never -l appimage deb tar.gz",
+		"package-dev-linux": "npx cross-env AT_DEVMODE=meow AT_SENTRY=force npx electron-builder -p never -l appimage deb tar.gz",
 		"package-windows": "npx electron-builder -p never -w portable nsis appx",
+		"package-dev-windows": "npx cross-env AT_DEVMODE=meow AT_SENTRY=force npx electron-builder -p never -w portable nsis appx",
 		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -p never -m",
 		"package-mac-unsigned": "npx electron-builder -m",
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
@@ -53,6 +55,7 @@
 			"hardenedRuntime": true,
 			"gatekeeperAssess": false,
 			"extendInfo": {
+				"NSAppleEventsUsageDescription": "Please allow access to script browser applications to detect the current URL when triggering instant lookup.",
 				"NSUserNotificationAlertStyle": "alert",
 				"CFBundleURLTypes": [
 					{
@@ -215,37 +218,37 @@
 	],
 	"dependencies": {
 		"@amazingcat/electron-ipc-router": "1.3.2",
-		"@amazingcat/node-cattr": "3.5.0",
+		"@amazingcat/node-cattr": "^4.0.0-RC1",
 		"@sentry/electron": "^2.5.4",
 		"axios": "^0.21.4",
 		"chalk": "^4.1.2",
 		"electron-hotkey": "0.0.1-alpha.1",
 		"is-plain-obj": "^4.0.0",
 		"keytar": "^7.9.0",
-		"nanoid": "^3.3.1",
-		"semver": "^7.3.5",
-		"sequelize": "^6.17.0",
-		"sqlite3": "^5.0.2",
+		"nanoid": "^3.3.2",
+		"semver": "^7.3.7",
+		"sequelize": "^6.19.0",
+		"sqlite3": "^5.0.6",
 		"umzug": "^2.3.0",
 		"uuid": "^8.3.2"
 	},
 	"devDependencies": {
-		"@babel/runtime": "^7.17.8",
-		"@sentry/browser": "^6.19.1",
-		"@sentry/integrations": "^6.19.1",
-		"@sentry/webpack-plugin": "^1.18.8",
+		"@babel/runtime": "^7.17.9",
+		"@sentry/browser": "^6.19.7",
+		"@sentry/integrations": "^6.19.7",
+		"@sentry/webpack-plugin": "^1.18.9",
 		"cross-env": "^7.0.3",
 		"debug": "^4.3.4",
 		"dompurify": "^2.3.6",
 		"dotenv": "^10.0.0",
 		"electron": "14.1.0",
 		"electron-builder": "^22.14.13",
-		"electron-notarize": "^1.1.1",
-		"element-theme-chalk": "^2.15.6",
-		"element-ui": "^2.15.6",
+		"electron-notarize": "^1.2.1",
+		"element-theme-chalk": "^2.15.8",
+		"element-ui": "^2.15.8",
 		"eslint": "^7.32.0",
 		"eslint-config-airbnb-base": "^14.2.1",
-		"eslint-plugin-import": "^2.25.4",
+		"eslint-plugin-import": "^2.26.0",
 		"eslint-plugin-vue": "^7.16.0",
 		"fstream": "^1.0.12",
 		"laravel-mix": "^6.0.43",
@@ -257,7 +260,7 @@
 		"sass": "~1.32.13",
 		"sass-loader": "^12.6.0",
 		"vue": "2.6.14",
-		"vue-i18n": "^8.27.0",
+		"vue-i18n": "^8.27.1",
 		"vue-loader": "15.9.8",
 		"vue-router": "^3.5.3",
 		"vue-template-compiler": "2.6.14",
@@ -265,6 +268,6 @@
 		"vuex": "^3.6.2"
 	},
 	"optionalDependencies": {
-		"active-win": "^7.6.0"
+		"active-win": "^7.7.0"
 	}
 }

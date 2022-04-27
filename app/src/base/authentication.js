@@ -4,7 +4,6 @@ const api = require('./api');
 const Log = require('../utils/log');
 const keychain = require('../utils/keychain');
 const { UIError } = require('../utils/errors');
-const jwt = require('../utils/jwt');
 const db = require('../models');
 const OfflineUser = require('../controller/offline-user');
 const OfflineMode = require('./offline-mode');
@@ -212,35 +211,10 @@ module.exports.getToken = async () => {
     // Checking if token exists in system keychain
     if (token) {
 
-      // Checking token validity (assume token as expired, if it'll expire in 12 hours or less)
-      if (jwt.checkTimeValidity(token.token, (1000 * 60 * 12))) {
-
-        // Obtaininig hostname
-        const { hostname } = await keychain.getSavedCredentials();
-        await this.setHostname(hostname, true);
-        return token;
-
-      }
-
-      // Refreshing token
-      log.debug('Token is near to expire or already expired, refreshing..');
-
-      // Trying to get saved credentials (we need hostname)
+      // Obtaininig hostname
       const { hostname } = await keychain.getSavedCredentials();
-
-      // Forcefully setting hostname for API client
       await this.setHostname(hostname, true);
-
-      // Actually refreshing token
-      const newToken = await api.authentication.refresh();
-
-      log.debug('Token successfully refreshed');
-
-      // Save into keychain
-      await keychain.saveToken(newToken.token, newToken.type, new Date(newToken.expire));
-
-      // Return refreshed token
-      return newToken;
+      return token;
 
     }
 
@@ -297,6 +271,7 @@ module.exports.getCurrentUser = async () => {
     try {
 
       user = await api.authentication.me();
+
       await fetchCompanyIdentifier();
 
     } catch (err) {
@@ -309,6 +284,8 @@ module.exports.getCurrentUser = async () => {
         app.quit();
 
       }
+
+      console.log(err);
 
       log.warning('Failed to fetch user from API, seems like that we\'re offline');
 
