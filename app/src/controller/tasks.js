@@ -209,9 +209,9 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
 
   // Will be use that, when API will be fixed to receive IDs
   const currentUser = await auth.getCurrentUser();
-  const taskOptions = { 'users.id': ['=', [currentUser.id]] };
+  const taskOptions = { where: { 'users.id': ['=', [currentUser.id]] } };
   if (onlyActive)
-    taskOptions.active = 1;
+    taskOptions.where.active = 1;
 
   let actualTasks = null;
 

@@ -1,6 +1,6 @@
 {
 	"name": "cattr",
-	"version": "3.0.0-RC1",
+	"version": "3.0.0-RC2",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
 	"main": "app/src/app.js",
