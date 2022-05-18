@@ -23,7 +23,7 @@
 		"package-windows": "npx electron-builder -p never -w portable nsis appx",
 		"package-dev-windows": "npx cross-env AT_DEVMODE=meow AT_SENTRY=force npx electron-builder -p never -w portable nsis appx",
 		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -p never -m",
-		"package-mac-unsigned": "npx electron-builder -m",
+		"package-mac-unsigned": "npx electron-builder -m -p never",
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
 	},
 	"build": {
