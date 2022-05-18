@@ -7,7 +7,7 @@ build-linux:
   tags:
     - linux
   only:
-    - release
+    - tags
   image: node:fermium-slim
   artifacts:
     untracked: false
@@ -31,27 +31,28 @@ build-mac:
   tags:
     - macos
   only:
-    - release
+    - tags
   artifacts:
     untracked: false
     expire_in: 30 days
     paths:
       - "target/*.dmg"
       - "target/manifests/*.json"
-  script:
+  before_script:
+    - source ~/.zshrc
     - security unlock-keychain -p "$APPLE_CI_HOST_PASSWORD"
-
+  script:
     - npm ci
     - npm run build-production
 
-    - npm run package-mac
+    - npm run package-mac-unsigned
 
 build-windows:
   stage: build
   tags:
     - windows
   only:
-    - release
+    - tags
   artifacts:
     untracked: false
     expire_in: 30 days
@@ -70,8 +71,8 @@ deploy:
   tags:
     - docker
   only:
-    refs:
-      - tags
+    - tags
+  when: manual
   image: alpine:latest
   before_script:
     - apk add --no-cache openssh-client gnupg
