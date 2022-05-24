@@ -68,11 +68,12 @@ build-windows:
 
 deploy:
   stage: deploy
-  tags:
-    - docker
   only:
     - tags
   when: manual
+  environment:
+    name: production
+    url: https://dl.cattr.app
   image: alpine:latest
   before_script:
     - apk add --no-cache openssh-client gnupg
