@@ -17,14 +17,14 @@ build-linux:
       - "target/*.tar.gz"
       - "target/*.deb"
       - "target/manifests/*.json"
-  script:
+  before_script:
     - apt update
     - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
+    - yarn
+  script:
+    - yarn build-production
 
-    - npm ci
-    - npm run build-production
-
-    - npm run package-linux
+    - yarn package-linux
 
 build-mac:
   stage: build
@@ -41,11 +41,11 @@ build-mac:
   before_script:
     - source ~/.zshrc
     - security unlock-keychain -p "$APPLE_CI_HOST_PASSWORD"
+    - yarn
   script:
-    - npm ci
-    - npm run build-production
+    - yarn build-production
 
-    - npm run package-mac-unsigned
+    - yarn package-mac-unsigned
 
 build-windows:
   stage: build
@@ -60,11 +60,12 @@ build-windows:
       - "target/*.exe"
       - "target/*.appx"
       - "target/manifests/*.json"
+  before_script:
+    - yarn
   script:
-    - npm ci
-    - npm run build-production
+    - yarn build-production
 
-    - npm run package-windows
+    - yarn package-windows
 
 deploy:
   stage: deploy
