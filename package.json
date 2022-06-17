@@ -238,7 +238,7 @@
 		"debug": "^4.3.1",
 		"dompurify": "^2.2.8",
 		"dotenv": "^10.0.0",
-		"electron": "13.0.1",
+		"electron": "15.5.5",
 		"electron-builder": "^22.11.1",
 		"electron-notarize": "^1.0.0",
 		"element-theme-chalk": "^2.15.2",
