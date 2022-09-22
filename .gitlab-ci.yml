@@ -4,7 +4,7 @@ stages:
   - deploy
 
 variables:
-  PACKAGE_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/application/"
+  PACKAGE_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/binaries/"
 
 build-linux:
   stage: build
