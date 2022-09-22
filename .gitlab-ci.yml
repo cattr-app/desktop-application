@@ -24,7 +24,9 @@ build-linux:
   before_script:
     - apt update
     - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
+    - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
     - yarn
+    - yarn version $RELEASE_VERSION
   script:
     - yarn build-production
 
@@ -45,7 +47,9 @@ build-mac:
   before_script:
     - source ~/.zshrc
     - security unlock-keychain -p "$APPLE_CI_HOST_PASSWORD"
+    - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
     - yarn
+    - yarn version $RELEASE_VERSION
   script:
     - yarn build-production
 
@@ -65,7 +69,9 @@ build-windows:
       - "target/*.appx"
       - "target/latest*.yml"
   before_script:
+    - $RELEASE_VERSION=$CI_COMMIT_TAG -replace '^v', ''
     - yarn
+    - yarn version $RELEASE_VERSION
   script:
     - yarn build-production
 

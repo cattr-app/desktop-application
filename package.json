@@ -1,6 +1,6 @@
 {
 	"name": "cattr",
-	"version": "3.0.0-RC3",
+	"version": "dev",
 	"description": "Desktop client for Cattr",
 	"homepage": "https://cattr.app",
 	"main": "app/src/app.js",
@@ -272,5 +272,6 @@
 	"optionalDependencies": {
 		"active-win": "^7.7.2"
 	},
-	"packageManager": "yarn@3.2.1"
+	"packageManager": "yarn@3.2.1",
+	"stableVersion": "3.0.0-RC3"
 }
