@@ -91,8 +91,8 @@ release:
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
   script:
     - |
-      release-cli create --name "$CI_COMMIT_TAG" --tag-name $CI_COMMIT_TAG \
-        --assets-link "{\"name\":\"dmg\",\"filepath\":\"/dmg\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.dmg\", \"link_type\":\"package\""}" \
+      release-cli create --name $CI_COMMIT_TAG --tag-name $CI_COMMIT_TAG \
+        --assets-link "{\"name\":\"dmg\",\"filepath\":\"/dmg\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.dmg\", \"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"exe\",\"filepath\":\"/exe\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.exe\", \"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"setup\",\"filepath\":\"/setup\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr_Setup.exe\", \"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"appx\",\"filepath\":\"/appx\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.appx\", \"link_type\":\"package\"}" \
