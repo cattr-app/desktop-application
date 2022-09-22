@@ -3,6 +3,9 @@ stages:
   - upload
   - deploy
 
+variables:
+  PACKAGE_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/application/"
+
 build-linux:
   stage: build
   tags:
@@ -73,8 +76,29 @@ upload:
   only:
     - tags
   image: curlimages/curl:latest
+  before_script:
+    - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
   script:
-    - 'cd target && find . -maxdepth 1 -type f | while read -r line; do result=$(echo "${line}" | sed "s/ /_/g"); curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "${line}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/application/${CI_COMMIT_TAG}/${result}"; done'
+    - 'cd target && find . -maxdepth 1 -type f | while read -r line; do curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "${line}" "${PACKAGE_URL}/${RELEASE_VERSION}/${result}"; done'
+
+release:
+  stage: deploy
+  only:
+    - tags
+  when: manual
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  before_script:
+    - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
+  script:
+    - |
+      release-cli create --name "$CI_COMMIT_TAG" --tag-name $CI_COMMIT_TAG \
+        --assets-link "{\"name\":\"dmg\",\"filepath\":\"dmg\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.dmg\"}" \
+        --assets-link "{\"name\":\"exe\",\"filepath\":\"exe\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.exe\"}" \
+        --assets-link "{\"name\":\"appx\",\"filepath\":\"appx\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.appx\"}" \
+        --assets-link "{\"name\":\"tar\",\"filepath\":\"tar\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.tar.gz\"}" \
+        --assets-link "{\"name\":\"deb\",\"filepath\":\"deb\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.deb\"}" \
+        --assets-link "{\"name\":\"image\",\"filepath\":\"image\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.AppImage\"}"
+
 
 deploy:
   stage: deploy
