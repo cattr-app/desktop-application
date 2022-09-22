@@ -20,8 +20,7 @@ build-linux:
       - "target/*.AppImage"
       - "target/*.tar.gz"
       - "target/*.deb"
-      - "target/manifests/*.json"
-      - "target/*.yml"
+      - "target/latest-linux.yml"
   before_script:
     - apt update
     - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
@@ -42,8 +41,7 @@ build-mac:
     expire_in: 30 days
     paths:
       - "target/*.dmg"
-      - "target/manifests/*.json"
-      - "target/*.yml"
+      - "target/latest-mac.yml"
   before_script:
     - source ~/.zshrc
     - security unlock-keychain -p "$APPLE_CI_HOST_PASSWORD"
@@ -65,8 +63,7 @@ build-windows:
     paths:
       - "target/*.exe"
       - "target/*.appx"
-      - "target/manifests/*.json"
-      - "target/*.yml"
+      - "target/latest*.yml"
   before_script:
     - yarn
   script:
