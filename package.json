@@ -89,7 +89,7 @@
 		"nsis": {
 			"oneClick": false,
 			"perMachine": false,
-			"artifactName": "${productName}_setup.${ext}",
+			"artifactName": "${productName}_setup.${ext}"
 		},
 		"appx": {
 			"identityName": "AmazingcatLLC.Cattr",
