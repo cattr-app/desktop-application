@@ -26,6 +26,7 @@ build-linux:
     - apt install -y build-essential python3 pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
     - yarn
+    - npm config set git-tag-version false
     - npm version $RELEASE_VERSION
   script:
     - yarn build-production
@@ -49,6 +50,7 @@ build-mac:
     - security unlock-keychain -p "$APPLE_CI_HOST_PASSWORD"
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
     - yarn
+    - npm config set git-tag-version false
     - npm version $RELEASE_VERSION
   script:
     - yarn build-production
@@ -71,6 +73,7 @@ build-windows:
   before_script:
     - $RELEASE_VERSION=$CI_COMMIT_TAG -replace '^v', ''
     - yarn
+    - npm config set git-tag-version false
     - npm version $RELEASE_VERSION
   script:
     - yarn build-production
