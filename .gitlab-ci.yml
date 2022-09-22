@@ -103,11 +103,11 @@ release:
       release-cli create --name $CI_COMMIT_TAG --tag-name $CI_COMMIT_TAG \
         --assets-link "{\"name\":\"dmg\",\"filepath\":\"/dmg\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.dmg\", \"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"exe\",\"filepath\":\"/exe\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.exe\", \"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"setup\",\"filepath\":\"/setup\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr_Setup.exe\", \"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"nsis\",\"filepath\":\"/nsis\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr_Setup.exe\", \"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"appx\",\"filepath\":\"/appx\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.appx\", \"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"tar\",\"filepath\":\"/tar\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.tar.gz\", \"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"deb\",\"filepath\":\"/deb\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.deb\", \"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"image\",\"filepath\":\"/image\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.AppImage\", \"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"appimage\",\"filepath\":\"/appimage\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.AppImage\", \"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"windows-yml\",\"filepath\":\"/latest.yml\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/latest.yml\", \"link_type\":\"other\"}" \
         --assets-link "{\"name\":\"mac-yml\",\"filepath\":\"/latest-mac.yml\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/latest-mac.yml\", \"link_type\":\"other\"}" \
         --assets-link "{\"name\":\"linux-yml\",\"filepath\":\"/latest-linux.yml\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/latest-linux.yml\", \"link_type\":\"other\"}"
