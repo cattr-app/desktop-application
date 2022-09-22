@@ -90,6 +90,7 @@ release:
   before_script:
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
   script:
+    - echo "${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.dmg"
     - |
       release-cli create --name "$CI_COMMIT_TAG" --tag-name $CI_COMMIT_TAG \
         --assets-link "{\"name\":\"dmg\",\"filepath\":\"dmg\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.dmg\"}" \
