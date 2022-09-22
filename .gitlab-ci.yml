@@ -101,8 +101,10 @@ release:
         --assets-link "{\"name\":\"appx\",\"filepath\":\"/appx\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.appx\", \"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"tar\",\"filepath\":\"/tar\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.tar.gz\", \"link_type\":\"package\"}" \
         --assets-link "{\"name\":\"deb\",\"filepath\":\"/deb\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.deb\", \"link_type\":\"package\"}" \
-        --assets-link "{\"name\":\"image\",\"filepath\":\"/image\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.AppImage\", \"link_type\":\"package\"}"
-
+        --assets-link "{\"name\":\"image\",\"filepath\":\"/image\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.AppImage\", \"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"windows-yml\",\"filepath\":\"/latest.yml\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/latest.yml\", \"link_type\":\"other\"}" \
+        --assets-link "{\"name\":\"mac-yml\",\"filepath\":\"/latest-mac.yml\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/latest-mac.yml\", \"link_type\":\"other\"}" \
+        --assets-link "{\"name\":\"linux-yml\",\"filepath\":\"/latest-linux.yml\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/latest-linux.yml\", \"link_type\":\"other\"}"
 
 deploy:
   stage: deploy
