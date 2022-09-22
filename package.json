@@ -28,7 +28,7 @@
 	},
 	"build": {
 		"appId": "app.cattr",
-		"artifactName": "${productName}.${ext}",
+		"artifactName": "Cattr.${ext}",
 		"productName": "Cattr",
 		"protocols": [
 			{
@@ -89,7 +89,7 @@
 		"nsis": {
 			"oneClick": false,
 			"perMachine": false,
-			"artifactName": "${productName}_setup.${ext}"
+			"artifactName": "Cattr_Setup.${ext}"
 		},
 		"appx": {
 			"identityName": "AmazingcatLLC.Cattr",

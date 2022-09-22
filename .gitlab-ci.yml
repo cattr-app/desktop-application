@@ -79,7 +79,7 @@ upload:
   before_script:
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
   script:
-    - 'cd target && find . -maxdepth 1 -type f | while read -r line; do curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "${line}" "${PACKAGE_URL}/${RELEASE_VERSION}/${result}"; done'
+    - 'cd target && find . -maxdepth 1 -type f | while read -r line; do curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "${line}" "${PACKAGE_URL}${RELEASE_VERSION}/${result}"; done'
 
 release:
   stage: deploy
@@ -90,15 +90,15 @@ release:
   before_script:
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
   script:
-    - echo "${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.dmg"
     - |
       release-cli create --name "$CI_COMMIT_TAG" --tag-name $CI_COMMIT_TAG \
-        --assets-link "{\"name\":\"dmg\",\"filepath\":\"dmg\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.dmg\"}" \
-        --assets-link "{\"name\":\"exe\",\"filepath\":\"exe\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.exe\"}" \
-        --assets-link "{\"name\":\"appx\",\"filepath\":\"appx\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.appx\"}" \
-        --assets-link "{\"name\":\"tar\",\"filepath\":\"tar\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.tar.gz\"}" \
-        --assets-link "{\"name\":\"deb\",\"filepath\":\"deb\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.deb\"}" \
-        --assets-link "{\"name\":\"image\",\"filepath\":\"image\",\"url\":\"${PACKAGE_URL}/${RELEASE_VERSION}/Cattr.AppImage\"}"
+        --assets-link "{\"name\":\"dmg\",\"filepath\":\"dmg\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.dmg\"}" \
+        --assets-link "{\"name\":\"exe\",\"filepath\":\"exe\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.exe\"}" \
+        --assets-link "{\"name\":\"setup\",\"filepath\":\"exe\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr_Setup.exe\"}" \
+        --assets-link "{\"name\":\"appx\",\"filepath\":\"appx\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.appx\"}" \
+        --assets-link "{\"name\":\"tar\",\"filepath\":\"tar\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.tar.gz\"}" \
+        --assets-link "{\"name\":\"deb\",\"filepath\":\"deb\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.deb\"}" \
+        --assets-link "{\"name\":\"image\",\"filepath\":\"image\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/Cattr.AppImage\"}"
 
 
 deploy:
