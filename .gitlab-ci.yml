@@ -74,7 +74,7 @@ upload:
     - tags
   image: curlimages/curl:latest
   script:
-    - 'cd target && find . -maxdepth 1 -type f | while read -r line; do echo "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/application/${CI_COMMIT_TAG}/${line}"; curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "${line}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/application/${CI_COMMIT_TAG}/${line}"; done'
+    - 'cd target && find . -maxdepth 1 -type f | while read -r line; do result=$(echo "${line}" | sed "s/ /_/g"); echo "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/application/${CI_COMMIT_TAG}/${result}"; curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "${line}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/application/${CI_COMMIT_TAG}/${result}"; done'
 
 deploy:
   stage: deploy
