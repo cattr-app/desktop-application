@@ -28,6 +28,7 @@
 	},
 	"build": {
 		"appId": "app.cattr",
+    "artifactName": "${productName}.${ext}",
 		"productName": "Cattr",
 		"protocols": [
 			{
