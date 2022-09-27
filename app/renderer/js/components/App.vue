@@ -166,6 +166,13 @@ export default {
 
     }
 
+    this.$ipc.serve('misc/update-not-synced-amount', () => {
+
+      this.updateNotSyncedAmount();
+
+    });
+    this.updateNotSyncedAmount();
+
   },
 
   methods: {
@@ -178,6 +185,28 @@ export default {
     minimizeWindow() {
 
       this.$ipc.emit('window/controls-minimize', {});
+
+    },
+
+    async updateNotSyncedAmount() {
+
+      try {
+
+        // Fetch intervals from main process
+        const req = await this.$ipc.request('interval/not-synced-amount', {});
+
+        if (req.code !== 200)
+          throw new Error(req.body.message);
+
+        const { amount } = req.body;
+
+        this.$store.commit('notSyncedAmount', { amount });
+
+      } catch (err) {
+
+        this.$message({ type: 'error', message: `${this.$t('Error')}: ${err}` });
+
+      }
 
     },
   },

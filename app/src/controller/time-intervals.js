@@ -44,6 +44,13 @@ module.exports.reduceSyncedIntervalQueue = async () => {
 module.exports.fetchIntervalsQueue = async () => database.Interval.findAll({ include: database.Task });
 
 /**
+ * Returns amount of unsynced intervals
+ * @async
+ * @returns {Promise.<integer>}
+ */
+module.exports.fetchNotSyncedIntervalsAmount = async () => database.Interval.count({ where: { synced: false } });
+
+/**
  * Puts interval in the queue
  * @async
  * @param {Object} interval   Interval (API-formatted) to put into queue

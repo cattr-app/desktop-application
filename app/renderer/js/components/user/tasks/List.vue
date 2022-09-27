@@ -3,6 +3,7 @@
     ref="taskList"
     class="tasks"
   >
+    <div>{{ $t("Not synced intervals") }}: {{ notSyncedAmount }}</div>
     <template v-if="filteredTasks.length > 0">
       <draggable
         class="dragArea"
@@ -116,6 +117,16 @@ export default {
         return this.getPinnedTasks(this.tasks);
 
       }
+
+    },
+
+    /**
+     * Returns amount of not synced intervals
+     * @returns {Integer}
+     */
+    notSyncedAmount() {
+
+      return this.$store.getters.notSyncedAmount;
 
     },
   },
