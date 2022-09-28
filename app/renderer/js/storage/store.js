@@ -22,6 +22,7 @@ export default {
     noActivityTimeLeft: null,
     isOfflineModeEnabled: false,
     currentPositionY: 0,
+    notSyncedAmount: 0,
   },
 
   getters: {
@@ -40,6 +41,7 @@ export default {
     noActivityTimeLeft: s => s.noActivityTimeLeft,
     isOffline: s => s.isOfflineModeEnabled,
     currentPositionY: s => s.currentPositionY,
+    notSyncedAmount: s => s.notSyncedAmount,
   },
 
   mutations: {
@@ -180,6 +182,12 @@ export default {
     addHighlight(state, payload) {
 
       state.highlights.push(payload);
+
+    },
+
+    notSyncedAmount(state, payload) {
+
+      state.notSyncedAmount = payload.amount;
 
     },
   },

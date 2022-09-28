@@ -117,12 +117,19 @@ module.exports = router => {
 
     router.emit('tracking/interval-removed', { interval: res });
     router.emit('tracking/activity-proof-result-not-accepted', { totalTicks: res.duration });
+    router.emit('misc/update-not-synced-amount', {});
 
   });
   TaskTracker.on('started', taskId => router.emit('tracking/event-started', { task: taskId }));
   TaskTracker.on('switched', taskId => router.emit('tracking/event-started', { task: taskId }));
   TaskTracker.on('stopped', () => router.emit('tracking/event-stopped', {}));
-  TaskTracker.on('interval-removed', res => router.emit('tracking/interval-removed', { interval: res }));
+  TaskTracker.on('interval-pushed', () => router.emit('misc/update-not-synced-amount', {}));
+  TaskTracker.on('interval-removed', res => {
+
+    router.emit('tracking/interval-removed', { interval: res });
+    router.emit('misc/update-not-synced-amount', {});
+
+  });
   TaskTracker.on('screenshot-capture-failed', () => router.emit('misc/ui-notification', { type: 'error', message: 'Error during screenshot capture' }));
 
 };

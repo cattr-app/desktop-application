@@ -60,6 +60,24 @@ module.exports = router => {
 
   });
 
+  /* Not synced intervals */
+  router.serve('interval/not-synced-amount', async req => {
+
+    try {
+
+      const amount = (await Interval.fetchNotSyncedIntervalsAmount());
+
+      return req.send(200, { amount });
+
+    } catch (err) {
+
+      log.error('ERTINT02', 'Error occured during not synced intervals amount fetch', err);
+      return req.send(500, { message: 'Error occured during not synced intervals amount fetch' });
+
+    }
+
+  });
+
   log.debug('Loaded');
 
 };

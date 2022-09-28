@@ -3,6 +3,12 @@
     ref="taskList"
     class="tasks"
   >
+    <div
+      v-if="notSyncedAmount > 0"
+      class="not-synced-intervals"
+    >
+      {{ $t("Not synced intervals") }}: <span class="not-synced-intervals__amount">{{ notSyncedAmount }}</span>
+    </div>
     <template v-if="filteredTasks.length > 0">
       <draggable
         class="dragArea"
@@ -116,6 +122,16 @@ export default {
         return this.getPinnedTasks(this.tasks);
 
       }
+
+    },
+
+    /**
+     * Returns amount of not synced intervals
+     * @returns {Integer}
+     */
+    notSyncedAmount() {
+
+      return this.$store.getters.notSyncedAmount;
 
     },
   },
@@ -370,7 +386,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../../../scss/imports/variables";
+
 .tasks {
+  .not-synced-intervals{
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+    border-bottom: $--border-base;
+    cursor: default;
+    &__amount{
+      color: $--color-primary;
+    }
+  }
+
   .no-tasks {
     font-size: 1.1em;
     margin-top: 1.5em;

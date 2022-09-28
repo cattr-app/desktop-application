@@ -85,6 +85,8 @@
     "Description": "Описание",
     "Project": "Проект",
     "Error occured during report export": "Произошла ошибка при получении дневного отчета",
+    "Error occured during not synced intervals amount fetch": "Произошла ошибка при получении несинхронизированных интервалов",
+    "Not synced intervals": "Несинхронизированных интервалов",
     "Internal projects only": "Только внутренние проекты",
     "The 3:30 PM daily retrospective with Engineering team": "Встреча с инженерной командой в 15:30",
     "Retrospective": "Ретроспектива",
