@@ -7,7 +7,7 @@
       v-if="notSyncedAmount > 0"
       class="not-synced-intervals"
     >
-      {{ $t("Not synced intervals") }}: {{ notSyncedAmount }}
+      {{ $t("Not synced intervals") }}: <span class="not-synced-intervals__amount">{{ notSyncedAmount }}</span>
     </div>
     <template v-if="filteredTasks.length > 0">
       <draggable
@@ -390,8 +390,13 @@ export default {
 
 .tasks {
   .not-synced-intervals{
-    padding: 1em;
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
     border-bottom: $--border-base;
+    cursor: default;
+    &__amount{
+      color: $--color-primary;
+    }
   }
 
   .no-tasks {
