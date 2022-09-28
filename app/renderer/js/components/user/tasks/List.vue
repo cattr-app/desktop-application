@@ -3,7 +3,12 @@
     ref="taskList"
     class="tasks"
   >
-    <div>{{ $t("Not synced intervals") }}: {{ notSyncedAmount }}</div>
+    <div
+      v-if="notSyncedAmount > 0"
+      class="not-synced-intervals"
+    >
+      {{ $t("Not synced intervals") }}: {{ notSyncedAmount }}
+    </div>
     <template v-if="filteredTasks.length > 0">
       <draggable
         class="dragArea"
@@ -381,7 +386,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../../../scss/imports/variables";
+
 .tasks {
+  .not-synced-intervals{
+    padding: 1em;
+    border-bottom: $--border-base;
+  }
+
   .no-tasks {
     font-size: 1.1em;
     margin-top: 1.5em;
