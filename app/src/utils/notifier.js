@@ -28,7 +28,10 @@ const removeTimeInterval = async interval => {
   try {
 
     // Request for delete
-    await timeIntervalController.removeInterval(interval.remote.id, { remoteIdentifier: true });
+    if (interval.remote._isBackedUp)
+      await timeIntervalController.removeInterval(interval.remote.dataValues.id, { remoteIdentifier: false });
+    else
+      await timeIntervalController.removeInterval(interval.remote.id, { remoteIdentifier: true });
 
     // Emitting event
     TaskTracker.emit('interval-removed', interval);
