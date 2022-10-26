@@ -237,7 +237,6 @@ module.exports.destroyInterval = async intervalId => {
   try {
 
     // Delete request on server
-    console.log('destroyInterval intervalId:', intervalId);
     await api.intervals.remove(Number(intervalId));
 
     // Log changes
