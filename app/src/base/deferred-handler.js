@@ -2,6 +2,7 @@ const IntervalsController = require('../controller/time-intervals');
 const TimeIntervalModel = require('../models').db.models.Interval;
 const Log = require('../utils/log');
 const OfflineMode = require('./offline-mode');
+const TaskTracker = require('./task-tracker');
 
 const log = new Log('DeferredHandler');
 
@@ -70,11 +71,17 @@ const deferredIntervalsPush = async () => {
       else
         res = await IntervalsController.pushTimeInterval(preparedInterval, rawInterval.screenshot);
 
-      log.debug(`Deferred interval (${res.id}) has been pushed`);
+      log.debug(`Deferred interval (${res.response.data.id}) has been pushed`);
 
       // Update interval status
       rawInterval.synced = true;
+      rawInterval.remoteId = res.response.data.id;
       await rawInterval.save();
+
+      // Will trigger 'Not Synced Intervals' count
+      TaskTracker.emit('interval-pushed', {
+        deferred: true
+      });
 
       // Remove old intervals from queue
       await IntervalsController.reduceSyncedIntervalQueue();
