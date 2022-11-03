@@ -632,7 +632,11 @@ class TaskTracker extends EventEmitter {
 
         // Push interval in Recent Queue if it is already backed up
         if (typeof pushedInterval === 'object' && !pushedInterval._isBackedUp)
-          await IntervalsController.pushSyncedIntervalInQueue(interval, intervalScreenshot, pushedInterval.id);
+          await IntervalsController.pushSyncedIntervalInQueue(
+            interval,
+            intervalScreenshot,
+            pushedInterval.response.data.id
+          );
 
         // Notifies user
         this.emit('interval-pushed', {

@@ -201,6 +201,7 @@ module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
     log.debug('Interval was synced');
 
     // Trigger connection restore in OfflineMode
+    // OPTIMIZE: Can trigger deferredIntervalsPush and intervals will be send for second time
     OfflineMode.restoreWithCheck();
 
     return pushedInterval;

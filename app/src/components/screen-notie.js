@@ -13,6 +13,7 @@ tracker.on('interval-pushed', data => {
     osIntegration.isApplicationClosingNow
     || !osIntegration.window
     || !userPreferences.get('showScreenshotNotification')
+    || data.deferred === true
   )
     return;
 

@@ -6,7 +6,7 @@
 	"main": "app/src/app.js",
 	"scripts": {
 		"lint": "npx eslint .",
-		"postinstall": "electron-builder install-app-deps",
+		"postinstall": "electron-builder install-app-deps && electron-rebuild",
 		"start": "npx electron ./app/src/app.js",
 		"dev": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron .",
 		"no-scr": "npx cross-env AT_MOCK_SCR=yes node_modules/.bin/electron .",
@@ -246,6 +246,7 @@
 		"electron": "14.2.9",
 		"electron-builder": "^22.14.13",
 		"electron-notarize": "^1.2.1",
+		"electron-rebuild": "^3.2.9",
 		"element-theme-chalk": "^2.15.10",
 		"element-ui": "^2.15.10",
 		"eslint": "^7.32.0",
