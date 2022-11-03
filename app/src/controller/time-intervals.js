@@ -247,6 +247,11 @@ module.exports.destroyInterval = async intervalId => {
 
   } catch (error) {
 
+    if (error.type === 'action.interval_already_deleted') {
+      log.debug(`Interval (${intervalId}) was already deleted`);
+      return true;
+    }
+
     log.error('Error during interval destroy', error);
     throw error;
 
