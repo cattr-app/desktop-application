@@ -192,11 +192,11 @@ module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
   try {
 
     // Push interval to the backend
-    let res = null;
+    let pushedInterval = null;
     if (intervalScreenshot)
-      res = await api.intervals.createWithScreenshot(actualInterval, intervalScreenshot);
+      pushedInterval = await api.intervals.createWithScreenshot(actualInterval, intervalScreenshot);
     else
-      res = await api.intervals.create(actualInterval);
+      pushedInterval = await api.intervals.create(actualInterval);
 
     log.debug('Interval was synced');
 
@@ -204,7 +204,8 @@ module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
     // OPTIMIZE: Can trigger deferredIntervalsPush and intervals will be send for second time
     OfflineMode.restoreWithCheck();
 
-    return res;
+    return pushedInterval;
+
   } catch (error) {
 
     // Do not backup deferred intervals
