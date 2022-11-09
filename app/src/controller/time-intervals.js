@@ -219,6 +219,9 @@ module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
       log.warning('Backing up time interval request due and triggering the offline mode');
       return module.exports.backupInterval({ ...interval }, intervalScreenshot);
 
+    } else if (error.isApiError) {
+      log.warning('Backing up time interval request');
+      module.exports.backupInterval({ ...interval }, intervalScreenshot);
     }
 
     log.error('Error during interval & screenshot push', error);
