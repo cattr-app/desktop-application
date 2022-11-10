@@ -1338,7 +1338,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/get@npm:^1.0.1":
+"@electron/get@npm:^1.13.0":
   version: 1.14.1
   resolution: "@electron/get@npm:1.14.1"
   dependencies:
@@ -2146,10 +2146,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.6.2":
-  version: 14.18.18
-  resolution: "@types/node@npm:14.18.18"
-  checksum: a165225cd2603f6e62af8407449e4a4407305e03b41c1adf6b186fdf546e1a03c8214217659b5b36c556947c0c06234993ac880d4db6378136a7a810d47e0742
+"@types/node@npm:^16.11.26":
+  version: 16.18.3
+  resolution: "@types/node@npm:16.18.3"
+  checksum: 6b8ba2ea5d842f7986e366cb9184c54d273d492784dc62e08fd5afeae938d9b61aec6e4222d2541cd18f9b1412ba361bbcb3f4204fb003608af80a2a6af959f9
   languageName: node
   linkType: hard
 
@@ -3633,7 +3633,7 @@ __metadata:
     debug: ^4.3.4
     dompurify: ^2.4.0
     dotenv: ^10.0.0
-    electron: 14.2.9
+    electron: 18.3.7
     electron-builder: ^22.14.13
     electron-hotkey: 0.0.1-alpha.1
     electron-notarize: ^1.2.1
@@ -5017,16 +5017,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:14.2.9":
-  version: 14.2.9
-  resolution: "electron@npm:14.2.9"
+"electron@npm:18.3.7":
+  version: 18.3.7
+  resolution: "electron@npm:18.3.7"
   dependencies:
-    "@electron/get": ^1.0.1
-    "@types/node": ^14.6.2
+    "@electron/get": ^1.13.0
+    "@types/node": ^16.11.26
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: 90d36583c4e6ad8dfd6e4259343895627fe9ff80cbb5ce2e1c5936a144f7f4afbcab6eb13cb5160788cbaf7f8a5135485119fc1d295c1c952b9816b8d87e0091
+  checksum: 365a82082926ccf062e9dcc7d997e43988c9d2a1b1bf9ea1e5c3f00d0ec05c9e45d3382cbfa51673a50e0f0127cabc3c4eb5ced0bd797ea2eebe36f1a27e0ecb
   languageName: node
   linkType: hard
 

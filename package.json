@@ -243,7 +243,7 @@
 		"debug": "^4.3.4",
 		"dompurify": "^2.4.0",
 		"dotenv": "^10.0.0",
-		"electron": "14.2.9",
+		"electron": "18.3.7",
 		"electron-builder": "^22.14.13",
 		"electron-notarize": "^1.2.1",
 		"electron-rebuild": "^3.2.9",
