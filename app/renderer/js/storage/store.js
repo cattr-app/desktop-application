@@ -166,9 +166,20 @@ export default {
     tickDecrement(state, payload) {
 
       const task = state.tasks.find(t => t.id === payload.task);
-      if (task.TrackedTime)
+
+      if (task.TrackedTime != null) {
         task.TrackedTime -= payload.duration;
+
+        if (task.TrackedTime < 0) {
+          task.TrackedTime = 0;
+        }
+      }
+
       state.totalTime -= payload.duration;
+
+      if (state.totalTime < 0) {
+        state.totalTime = 0;
+      }
 
     },
 
