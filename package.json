@@ -229,7 +229,7 @@
 		"keytar": "^7.9.0",
 		"nanoid": "^3.3.4",
 		"semver": "^7.3.7",
-		"sequelize": "^6.23.0",
+		"sequelize": "^6.29.0",
 		"sqlite3": "^5.1.1",
 		"umzug": "^2.3.0",
 		"uuid": "^8.3.2"
