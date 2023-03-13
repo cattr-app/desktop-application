@@ -3658,7 +3658,7 @@ __metadata:
     sass-loader: ^12.6.0
     semver: ^7.3.7
     sequelize: ^6.23.0
-    sqlite3: ^5.1.1
+    sqlite3: ^5.1.5
     umzug: ^2.3.0
     uuid: ^8.3.2
     vue: 2.7.10
@@ -10680,9 +10680,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sqlite3@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "sqlite3@npm:5.1.1"
+"sqlite3@npm:^5.1.5":
+  version: 5.1.5
+  resolution: "sqlite3@npm:5.1.5"
   dependencies:
     "@mapbox/node-pre-gyp": ^1.0.0
     node-addon-api: ^4.2.0
@@ -10696,7 +10696,7 @@ __metadata:
   peerDependenciesMeta:
     node-gyp:
       optional: true
-  checksum: aaedb724b3b3df8c5a5f2df0b1691b8d0c19a93407c792796ef736f173198c28fdd31ddb414e7bd52d82717233abb183fc161ab515b081d6f640c92ce84d3b7a
+  checksum: b7df68c8d4a16cd1d8d42e34035973c2e4cff33e0b917ff8830fa21c84e3bc0d16beaf51589a4a45df9c52e30bf0224122e6c67d0f17ff1d776be738d8706b02
   languageName: node
   linkType: hard
 
