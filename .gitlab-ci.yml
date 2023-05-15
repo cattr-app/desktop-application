@@ -37,6 +37,7 @@ build-mac:
   stage: build
   tags:
     - macos
+  image: node:fermium-slim
   only:
     - tags
   artifacts:
