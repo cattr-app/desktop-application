@@ -14,7 +14,6 @@ module.exports.isEnabled = Boolean(config.sentry.enabled);
 if (module.exports.isEnabled) {
 
   init({
-
     dsn: config.sentry.dsn,
     release: config.sentry.release,
     beforeSend(event) {
@@ -26,6 +25,11 @@ if (module.exports.isEnabled) {
 
     },
 
+    integrations: [
+      new Sentry.BrowserTracing(),
+    ],
+
+    tracesSampleRate: 1.0,
   });
 
 }
