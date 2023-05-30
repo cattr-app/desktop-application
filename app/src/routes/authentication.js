@@ -65,8 +65,8 @@ module.exports = router => {
 
       // Pass UIErrors directly to renderer
       if (error instanceof UIError) {
-
-        request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
         return;
 
       }
@@ -90,8 +90,8 @@ module.exports = router => {
 
       // Return UIErrors
       if (error instanceof UIError) {
-
-        request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
         return;
 
       }
@@ -123,8 +123,8 @@ module.exports = router => {
 
       // Return UIErrors
       if (error instanceof UIError) {
-
-        request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
         return;
 
       }
@@ -153,7 +153,8 @@ module.exports = router => {
 
       // Return UIErrors
       if (error instanceof UIError)
-        return request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
 
 
       // Wrap and log all other kinds of errors
@@ -189,7 +190,8 @@ module.exports = router => {
 
       // Return UIErrors
       if (error instanceof UIError)
-        return request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
 
 
       // Wrap and log all other kinds of errors

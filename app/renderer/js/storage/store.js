@@ -335,9 +335,11 @@ export default {
 
         if (res.code === 500) {
 
-          const err = new Error('Internal Server Error');
+          const err = new Error();
+          err.id = res.body.id;
           err.success = false;
-          err.error = 'Internal Server Error';
+          err.message = res.body.message;
+          err.error = res.body.error;
           throw err;
 
         }
@@ -388,6 +390,7 @@ export default {
           err.id = res.body.id;
           err.success = false;
           err.message = res.body.message;
+          err.error = res.body.error;
           throw err;
 
         }

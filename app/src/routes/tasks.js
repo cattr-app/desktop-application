@@ -61,7 +61,8 @@ module.exports = router => {
 
       // Pass UIErrors directly to renderer
       if (error instanceof UIError)
-        return request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
 
       // It'll be extremely weird if real errors will occur there. We should log them.
       log.error('Operating error occured during the task creation', error);
@@ -97,7 +98,8 @@ module.exports = router => {
 
       // Pass UIErrors directly to renderer
       if (error instanceof UIError)
-        return request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
 
       // It'll be extremely weird if real errors will occur there. We should log them.
       log.error('Operating error occured during the task sync', error);
@@ -130,7 +132,8 @@ module.exports = router => {
 
       // Pass UIErrors directly to renderer
       if (error instanceof UIError)
-        return request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
 
       // It'll be extremely weird if real errors will occur there. We should log them.
       log.error('Operating error occured during the task sync', error);

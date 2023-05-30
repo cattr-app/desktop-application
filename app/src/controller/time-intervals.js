@@ -224,6 +224,9 @@ module.exports.pushTimeInterval = async (interval, intervalScreenshot) => {
       module.exports.backupInterval({ ...interval }, intervalScreenshot);
     }
 
+    error.context = actualInterval;
+    const crypto = require("crypto");
+    error.context.client_trace_id = crypto.randomUUID();
     log.error('Error during interval & screenshot push', error);
     throw error;
 
@@ -251,7 +254,7 @@ module.exports.destroyInterval = async intervalId => {
 
   } catch (error) {
 
-    if (error.type === 'interval_already_deleted') {
+    if (error.code === 'interval_already_deleted') {
       log.debug(`Interval (${intervalId}) already deleted`);
       return true;
     }

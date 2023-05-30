@@ -9,8 +9,9 @@ class UIError extends Error {
    * @param {String}  code     Error code
    * @param {String}  message  Error description for humans
    * @param {String}  errorId  Error identifier for T-900s
+   * @param {Error|null}   error    Error instance
    */
-  constructor(code, message, errorId) {
+  constructor(code, message, errorId, error = null) {
 
     // Use behavior from parent Error class
     super(message);
@@ -22,6 +23,7 @@ class UIError extends Error {
     this.name = this.constructor.name;
     this.code = code;
     this.errorId = errorId;
+    this.error = error;
 
   }
 

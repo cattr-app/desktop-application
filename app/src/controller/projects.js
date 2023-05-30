@@ -61,6 +61,9 @@ module.exports.syncProjects = async () => {
       log.warning('Connectivity error detected, triggering offline mode');
       OfflineMode.trigger();
 
+    } else if (err instanceof api.ApiError) {
+      log.warning('ApiError error detected, triggering offline mode');
+      OfflineMode.trigger();
     }
 
     log.warning(`Intercepting projects listing fetch, due to error: ${err}`);

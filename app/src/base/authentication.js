@@ -144,7 +144,7 @@ module.exports.authenticate = async (email, password) => {
 
       // Log it
       log.error('Request error occured during authentication', error);
-      throw new UIError(500, 'Request to server was failed', 'EAUTH500');
+      throw new UIError(500, 'Request to server was failed', 'EAUTH500', error);
 
     }
 
@@ -152,13 +152,13 @@ module.exports.authenticate = async (email, password) => {
     switch (error.statusCode) {
 
       case 401:
-        throw new UIError(400, 'Incorrect credentials given', 'EAUTH000');
+        throw new UIError(400, 'Incorrect credentials given', 'EAUTH000', error);
       case 403:
-        throw new UIError(403, 'Invalid credentials given', 'EAUTH001');
+        throw new UIError(403, 'Invalid credentials given', 'EAUTH001', error);
       default:
         log.error(`EAUTH506-${error.statusCode}`, 'Unspecified status code received from server during authentication', true);
         Log.captureApiError('Unknown status code received during authentication request', error);
-        throw new UIError(500, 'Request to server was failed', 'EAUTH500');
+        throw new UIError(500, 'Request to server was failed', 'EAUTH500', error);
 
     }
 
@@ -182,7 +182,7 @@ module.exports.authenticate = async (email, password) => {
   } catch (error) {
 
     log.error('Error occured during saving token into system keychain', error);
-    throw new UIError(500, 'Internal error occured', 'EAUTH500');
+    throw new UIError(500, 'Internal error occured', 'EAUTH500', error);
 
   }
 
@@ -247,7 +247,7 @@ module.exports.getToken = async () => {
 
     // Catch other errors
     log.error('Error occurred during token getting', error);
-    throw new UIError(500, 'Unhandled system error occured', 'EAUTH502');
+    throw new UIError(500, 'Unhandled system error occured', 'EAUTH502', error);
 
   }
 
@@ -277,7 +277,7 @@ module.exports.getCurrentUser = async () => {
     } catch (err) {
 
       // Perform logout operation if user is disabled or removed
-      if (err.isApiError && err.type === 'authorization.user_disabled') {
+      if (err.isApiError && err.code === 'authorization.user_disabled') {
 
         log.warning('Current user is disabled or removed from server, logging out...');
         await module.exports.logout();
@@ -322,7 +322,7 @@ module.exports.getCurrentUser = async () => {
 
     // Handle other errors
     log.error('Error occured during current user getting', error);
-    throw new UIError(500, 'Unhandled system error occured', 'EAUTH504');
+    throw new UIError(500, 'Unhandled system error occured', 'EAUTH504', error);
 
   }
 
@@ -398,7 +398,7 @@ module.exports.userAuthentication = async (email, password, save = true) => {
 
     // Otherwise, log this issue and return internal error
     log.error('Error occured during user authentication', error);
-    throw new UIError(500, 'Internal error occured during user authentication', 'EAUTH501');
+    throw new UIError(500, 'Internal error occured during user authentication', 'EAUTH501', error);
 
   }
 
@@ -489,7 +489,7 @@ module.exports.logout = async () => {
 
     // Handle real errors
     log.error('Error occured during logout', error);
-    throw new UIError(500, 'Unhandled system error occured', 'EAUTH503');
+    throw new UIError(500, 'Unhandled system error occured', 'EAUTH503', error);
 
   }
 

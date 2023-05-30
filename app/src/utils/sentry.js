@@ -24,12 +24,6 @@ if (module.exports.isEnabled) {
       return null;
 
     },
-
-    integrations: [
-      new Sentry.BrowserTracing(),
-    ],
-
-    tracesSampleRate: 1.0,
   });
 
 }

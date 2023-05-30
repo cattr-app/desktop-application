@@ -682,7 +682,7 @@ class TaskTracker extends EventEmitter {
 
       // Handle errors
       log.error('Error occured during the interval submit', error);
-      throw new UIError(500, `Unhandled system error occured: ${error}`, 'EAUTH502');
+      throw new UIError(500, `Unhandled system error occured: ${error}`, 'EAUTH502', error);
 
     }
 

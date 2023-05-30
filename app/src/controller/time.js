@@ -141,7 +141,7 @@ module.exports.syncTasksTime = async () => {
 
     // Handle operating errors
     log.error('Error ocurred during synchronisation of worked time', error);
-    throw new UIError(500, 'Unhandled system error occured', 'ECTM501');
+    throw new UIError(500, 'Unhandled system error occured', 'ECTM501', error);
 
   }
 
@@ -176,7 +176,7 @@ module.exports.getUserTotalTimeForToday = async userId => {
 
     // Handle operating errors
     log.error('Error ocurred during synchronisation of today total time', error);
-    throw new UIError(500, 'Unhandled system error occured', 'ECTM502');
+    throw new UIError(500, 'Unhandled system error occured', 'ECTM502', error);
 
   }
 
@@ -272,7 +272,7 @@ module.exports.saveTrackedTime = async (taskId, time, action = 'append') => {
 
     // Handle operating errors
     log.error('Error occured during pushing saved tracked time', error);
-    throw new UIError(500, 'Unhandled system error occured', 'ECTM503');
+    throw new UIError(500, 'Unhandled system error occured', 'ECTM503', error);
 
   }
 
