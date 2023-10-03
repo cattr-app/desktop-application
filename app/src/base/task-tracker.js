@@ -268,7 +268,7 @@ class TaskTracker extends EventEmitter {
       // Handle inactivity, if system idle time is over the limit for this account
       if (currentIdleTime > this.inactivityTimeLimit) {
 
-        // Dispatch corresponing event
+        // Dispatch corresponding event
         this.emit('inactivity-detected');
 
         // Trigger inactivity detection routine
@@ -531,7 +531,7 @@ class TaskTracker extends EventEmitter {
    */
   async captureCurrentInterval(ticksOverride, startAtRaw, endAtRaw) {
 
-    // Fail if timer is stopped, or current task canno't be obtained
+    // Fail if timer is stopped, or current task cannot be obtained
     if (!this.active || !this.currentTask)
       throw new UIError(500, 'Rejected interval capture due to stopped tracker');
 
