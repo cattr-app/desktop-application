@@ -15,14 +15,11 @@ module.exports = router => {
     try {
 
       // Trying the exact URL provided first
-      if (await auth.setHostname(request.packet.body.hostname))
-        return request.send(200, {});
-
-      return request.send(404, {});
+      return request.send(200, await auth.setHostname(request.packet.body.hostname));
 
     } catch (error) {
 
-      return request.send(400, {});
+      return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
 
     }
 

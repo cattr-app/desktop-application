@@ -354,31 +354,41 @@ export default {
 
       this.loading = true;
       const ipcRoute = 'auth/check-hostname';
-      const hostValidity = await this.$ipc.request(ipcRoute, { hostname: this.formData.hostname });
-      if (hostValidity.code === 200) {
+      const res = await this.$ipc.request(ipcRoute, { hostname: this.formData.hostname });
+
+      if (res.code === 200) {
 
         this.loading = false;
         return true;
 
       }
-      let error = '';
-      switch (hostValidity.code) {
+      const error = res.body;
 
-        case 400:
-          error = this.$t('Incorrect hostname, please, check your input');
-          break;
-        case 404:
-          error = this.$t('Cattr is not found on this hostname');
-          break;
-        case 500:
-          error = this.$t('Error on the remote server side');
-          break;
-        default:
-          error = this.$t('Unknown error occured');
-          break;
+      const h = this.$createElement;
+      const messageContainer = h("div", null, [
+        h("p", null, error.message ? this.$t(error.message) : "Unknown error occured"),
+      ]);
 
+      if (error.error?.isApiError && error.error.trace_id) {
+        messageContainer.children.push(
+            h("p", null, [
+              h("b", null, "Backend traceId"),
+              h("span", null, `: ${error.error.trace_id}`),
+            ])
+        );
       }
-      this.$alert(error, this.$t('Login failed'), {
+
+      if (error.error?.context?.client_trace_id) {
+        messageContainer.children.push(
+            h('p', null, [
+              h('b', null, 'Client traceId'),
+              h('span', null, `: ${error.error.context.client_trace_id}`)
+            ])
+        );
+      }
+
+      // Show error message
+      this.$alert(messageContainer, this.$t('Login failed'), {
         confirmButtonText: this.$t('OK'),
         callback: () => {},
       });

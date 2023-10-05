@@ -415,7 +415,42 @@ module.exports.setHostname = async (hostname, force = false) => {
   if (typeof hostname !== 'string')
     throw new UIError(400, 'Incorrect hostname given', 'EAUTH001');
 
-  return api.setBaseUrl(hostname, force);
+
+  try {
+
+    return await api.setBaseUrl(hostname, force);
+
+  } catch (error) {
+
+    if (error.isNetworkError) {
+
+      // Log it
+      log.error('Incorrect hostname, please, check your input', error);
+      throw new UIError(500, 'Incorrect hostname, please, check your input', 'EAUTH500', error);
+
+    }
+
+    if (error.isApiError && error.statusCode === 500) {
+
+      // Log it
+      log.error('Server error occured', error);
+      throw new UIError(500, error.message, 'EAUTH500', error);
+
+    }
+
+    if (error.isApiError && error.statusCode === 404) {
+
+      // Log it
+      log.error('Cattr is not found on this hostname', error);
+      throw new UIError(404, 'Cattr is not found on this hostname', 'EAUTH404', error);
+
+    }
+
+    // Catch other errors
+    log.error('Unknown error occured', error);
+    throw new UIError(500, 'Unknown error occured', 'EAUTH502', error);
+  }
+
 
 };
 
