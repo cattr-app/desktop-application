@@ -174,7 +174,46 @@ export default {
         async resumeTracking() {
 
             if (!this.$store.getters.task || this.$store.getters.trackStatus)
-                await this.$store.dispatch('stopTrack', {$ipc: this.$ipc});
+                await this.$store.dispatch('stopTrack', {$ipc: this.$ipc})
+                    .catch(error => {
+
+                    // Stop tracking
+                    this.trackButtonLocked = false;
+
+                    const h = this.$createElement;
+                    const messageContainer = h('div', null, [
+                        h('p', null, error.message ? this.$t(error.message) : "Unknown error occured"),
+                    ]);
+
+                    if (error.error?.isApiError && error.error.trace_id) {
+                        messageContainer.children.push(
+                            h('p', null, [
+                                h('b', null, 'Backend traceId'),
+                                h('span', null, `: ${error.error.trace_id}`)
+                            ])
+                        );
+                    }
+
+                    if (error.error?.context?.client_trace_id) {
+                        messageContainer.children.push(
+                            h('p', null, [
+                                h('b', null, 'Client traceId'),
+                                h('span', null, `: ${error.error.context.client_trace_id}`)
+                            ])
+                        );
+                    }
+
+                    // Show error message
+                    this.$alert(
+                        messageContainer,
+                        `${this.$t('Tracking error')} ${error.id || ''}`,
+                        {
+                            confirmButtonText: 'OK', callback: () => {
+                            }
+                        },
+                    );
+
+                });
             else
                 await this.$store.dispatch('startTrack', {taskId: this.$store.getters.task, $ipc: this.$ipc});
 
