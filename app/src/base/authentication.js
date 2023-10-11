@@ -513,6 +513,9 @@ module.exports.logout = async () => {
       throw error;
 
     // Handle real errors
+    const crypto = require("crypto");
+    error.context = {};
+    error.context.client_trace_id = crypto.randomUUID();
     log.error('Error occured during logout', error);
     throw new UIError(500, 'Unhandled system error occured', 'EAUTH503', error);
 
