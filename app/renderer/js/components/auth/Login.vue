@@ -111,9 +111,6 @@ export default {
       hostnameValid: true,
       hostnameError: '',
 
-      ucValid: true,
-      ucError: '',
-
       breakLoading: false,
 
       loading: false,
@@ -291,9 +288,33 @@ export default {
 
       } else {
 
-        this.ucError = this.$t('Invalid email or password');
-        this.ucValid = false;
-        this.$alert(this.ucError, this.$t('Login failed'), {
+        const error = auth.body;
+
+        const h = this.$createElement;
+        const messageContainer = h("div", null, [
+          h("p", null, error.message ? this.$t(error.message) : "Unknown error occured"),
+        ]);
+
+        if (error.error?.isApiError && error.error.trace_id) {
+          messageContainer.children.push(
+              h("p", null, [
+                h("b", null, "Backend traceId"),
+                h("span", null, `: ${error.error.trace_id}`),
+              ])
+          );
+        }
+
+        if (error.error?.context?.client_trace_id) {
+          messageContainer.children.push(
+              h('p', null, [
+                h('b', null, 'Client traceId'),
+                h('span', null, `: ${error.error.context.client_trace_id}`)
+              ])
+          );
+        }
+
+        // Show error message
+        this.$alert(messageContainer, this.$t('Login failed'), {
           confirmButtonText: this.$t('OK'),
           callback: () => {},
         });

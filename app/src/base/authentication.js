@@ -148,19 +148,9 @@ module.exports.authenticate = async (email, password) => {
 
     }
 
-    // Throw different errors according to the status codes in response
-    switch (error.statusCode) {
-
-      case 401:
-        throw new UIError(400, 'Incorrect credentials given', 'EAUTH000', error);
-      case 403:
-        throw new UIError(403, 'Invalid credentials given', 'EAUTH001', error);
-      default:
-        log.error(`EAUTH506-${error.statusCode}`, 'Unspecified status code received from server during authentication', true);
-        Log.captureApiError('Unknown status code received during authentication request', error);
-        throw new UIError(500, 'Request to server was failed', 'EAUTH500', error);
-
-    }
+      log.error('Internal Server Error', error);
+      Log.captureApiError('Unknown status code received during authentication request', error);
+      throw new UIError(500, error.message, 'EAUTH500', error);
 
   }
 
