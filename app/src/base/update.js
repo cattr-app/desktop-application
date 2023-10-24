@@ -50,16 +50,18 @@ class Update extends EventEmitter {
     try {
 
       // Retrieve manifest, then check its structure
-      const manifestReq = await axios.get(`${configuration.updateNotification.manifestBaseUrl}/release-${platform}.json`);
-      if (manifestReq.status !== 200 || !manifestReq.data?.version)
+      const manifestReq = await axios.get(configuration.updateNotification.manifestBaseUrl);
+      if (manifestReq.status !== 200 || !manifestReq.data?.name)
         return null;
 
+      const manifestVersion = manifestReq.data.name.replace('v', '');
+
       // Filer incorrect, older, or current version
-      if (!semver.valid(manifestReq.data.version) || semver.lte(manifestReq.data.version, configuration.packageVersion))
+      if (configuration.packageVersion === 'dev' || !semver.valid(manifestVersion) || semver.lte(manifestVersion, configuration.packageVersion))
         return null;
 
       const updateData = {
-        version: manifestReq.data.version,
+        version: manifestVersion,
         current: configuration.packageVersion,
         downloadsPageUrl: configuration.updateNotification.downloadsPageUrl,
       };
