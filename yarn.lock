@@ -3627,7 +3627,7 @@ __metadata:
     postcss: ^8.4.31
     sass: ~1.32.13
     sass-loader: ^12.6.0
-    semver: ^7.3.7
+    semver: ^7.5.2
     sequelize: ^6.23.0
     sqlite3: ^5.1.1
     umzug: ^2.3.0
@@ -10105,6 +10105,17 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 2fa3e877568cd6ce769c75c211beaed1f9fce80b28338cadd9d0b6c40f2e2862bafd62c19a6cff42f3d54292b7c623277bcab8816a2b5521cf15210d43e75232
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.5.2":
+  version: 7.5.4
+  resolution: "semver@npm:7.5.4"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 12d8ad952fa353b0995bf180cdac205a4068b759a140e5d3c608317098b3575ac2f1e09182206bf2eb26120e1c0ed8fb92c48c592f6099680de56bb071423ca3
   languageName: node
   linkType: hard
 
