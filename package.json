@@ -227,6 +227,7 @@
 		"electron-hotkey": "0.0.1-alpha.1",
 		"is-plain-obj": "^4.1.0",
 		"keytar": "^7.9.0",
+		"msgpackr": "^1.9.9",
 		"nanoid": "^3.3.4",
 		"semver": "^7.3.7",
 		"sequelize": "^6.23.0",
