@@ -59,8 +59,9 @@ build-mac:
 
 build-windows:
   stage: build
+  image: electronuserland/builder:14-wine
   tags:
-    - windows
+    - docker
   only:
     - tags
   artifacts:
@@ -71,13 +72,12 @@ build-windows:
       - "target/*.appx"
       - "target/latest*.yml"
   before_script:
-    - $RELEASE_VERSION=$CI_COMMIT_TAG -replace '^v', ''
+    - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
     - yarn
     - npm config set git-tag-version false
     - npm version $RELEASE_VERSION
   script:
     - yarn build-production
-
     - yarn package-windows
 
 upload:
