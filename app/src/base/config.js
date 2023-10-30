@@ -139,7 +139,7 @@ configuration.updateNotification = {
    * Base URL to retrieve releases manifest
    * @type {String}
    */
-  manifestBaseUrl: 'https://dl.cattr.app/manifests/',
+  manifestBaseUrl: 'https://git.amazingcat.net/api/v4/projects/353/releases/permalink/latest',
 
   /**
    * URL to downloads page

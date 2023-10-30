@@ -20,8 +20,8 @@
 		"build-release": "npx cross-env NODE_ENV=production MAKE_RELEASE=yes node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
 		"package-linux": "npx electron-builder -p never -l appimage deb tar.gz",
 		"package-dev-linux": "npx cross-env AT_DEVMODE=meow AT_SENTRY=force npx electron-builder -p never -l appimage deb tar.gz",
-		"package-windows": "npx electron-builder -p never -w portable nsis appx",
-		"package-dev-windows": "npx cross-env AT_DEVMODE=meow AT_SENTRY=force npx electron-builder -p never -w portable nsis appx",
+		"package-windows": "npx electron-builder -p never -w portable nsis",
+		"package-dev-windows": "npx cross-env AT_DEVMODE=meow AT_SENTRY=force npx electron-builder -p never -w portable nsis",
 		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -p never -m",
 		"package-mac-unsigned": "npx electron-builder -m -p never",
 		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
@@ -230,7 +230,7 @@
 		"nanoid": "^3.3.4",
 		"semver": "^7.3.7",
 		"sequelize": "^6.23.0",
-		"sqlite3": "^5.1.1",
+		"sqlite3": "^5.1.5",
 		"umzug": "^2.3.0",
 		"uuid": "^8.3.2"
 	},
@@ -259,7 +259,7 @@
 		"mini-css-extract-plugin": "^2.6.1",
 		"minimist": "^1.2.6",
 		"node-abi": "^2.30.1",
-		"postcss": "^8.4.16",
+		"postcss": "^8.4.31",
 		"sass": "~1.32.13",
 		"sass-loader": "^12.6.0",
 		"vue": "2.7.10",

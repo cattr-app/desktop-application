@@ -59,8 +59,9 @@ build-mac:
 
 build-windows:
   stage: build
+  image: electronuserland/builder:14-wine
   tags:
-    - windows
+    - docker
   only:
     - tags
   artifacts:
@@ -71,13 +72,12 @@ build-windows:
       - "target/*.appx"
       - "target/latest*.yml"
   before_script:
-    - $RELEASE_VERSION=$CI_COMMIT_TAG -replace '^v', ''
+    - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
     - yarn
     - npm config set git-tag-version false
     - npm version $RELEASE_VERSION
   script:
     - yarn build-production
-
     - yarn package-windows
 
 upload:
@@ -111,41 +111,3 @@ release:
         --assets-link "{\"name\":\"windows-yml\",\"filepath\":\"/latest.yml\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/latest.yml\", \"link_type\":\"other\"}" \
         --assets-link "{\"name\":\"mac-yml\",\"filepath\":\"/latest-mac.yml\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/latest-mac.yml\", \"link_type\":\"other\"}" \
         --assets-link "{\"name\":\"linux-yml\",\"filepath\":\"/latest-linux.yml\",\"url\":\"${PACKAGE_URL}${RELEASE_VERSION}/latest-linux.yml\", \"link_type\":\"other\"}"
-
-deploy:
-  stage: deploy
-  only:
-    - tags
-  when: manual
-  environment:
-    name: production
-    url: https://dl.cattr.app
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache openssh-client gnupg
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - eval $(ssh-agent -s)
-    - echo "$CI_SSH_KEY" | base64 -d | ssh-add
-    - gpg-agent --daemon
-    - echo -e "$DEB_SIGNING_KEY" | base64 -d |  gpg --import
-    - RELEASE_VERSION=`(echo $CI_COMMIT_TAG | sed 's/^v//')`
-  script:
-    - ssh cattr-deploy@dl.cattr.app mkdir -p "/srv/dl/desktop/$RELEASE_VERSION"
-    - cd target
-    - scp *.dmg "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
-    - scp *.exe "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
-    - scp *.tar.gz "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
-    - scp *.AppImage "cattr-deploy@dl.cattr.app:/srv/dl/desktop/$RELEASE_VERSION/"
-    - scp *.deb "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/amd64/"
-    - cd manifests
-    - scp * cattr-deploy@dl.cattr.app:/srv/dl/manifests/
-  after_script:
-    - ssh cattr-deploy@dl.cattr.app "cd /srv/dl/packages/deb && apt-ftparchive --arch amd64 packages amd64 > Packages"
-    - ssh cattr-deploy@dl.cattr.app "cd /srv/dl/packages/deb && apt-ftparchive release . > Release"
-    - scp "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/Release" .
-    - gpg -abs -o Release.gpg Release
-    - gpg --clearsign -o InRelease Release
-    - scp Release.gpg "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/"
-    - scp InRelease "cattr-deploy@dl.cattr.app:/srv/dl/packages/deb/"
