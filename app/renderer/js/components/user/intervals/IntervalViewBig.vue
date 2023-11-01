@@ -86,11 +86,18 @@ export default {
      */
     dateFormatted() {
 
-      const endAtDate = new Date(this.interval.endAt);
-      const [, month, date, year] = endAtDate.toDateString().split(' ');
-      const time = endAtDate.toTimeString().split(' ')[0];
-      return `${month} ${date}, ${year} — ${time}`;
+      const startAtDate = new Date(this.interval.startAt);
+      const [, startMonth, startDate, startYear] = startAtDate.toDateString().split(' ');
+      const startTime = startAtDate.toTimeString().split(' ')[0];
 
+      const endAtDate = new Date(this.interval.endAt);
+      const [, endMonth, endDate, endYear] = endAtDate.toDateString().split(' ');
+      const endTime = endAtDate.toTimeString().split(' ')[0];
+
+      if (startAtDate.getDate() === endAtDate.getDate()) {
+        return `${startMonth} ${startDate}, ${startYear}: ${startTime} — ${endTime}`;
+      }
+      return `${startMonth} ${startDate}, ${startYear}: ${startTime} — ${endMonth} ${endDate}, ${endYear}: ${endTime}`;
     },
 
     /**
