@@ -12,6 +12,7 @@
 import Loader from './Loader.vue';
 import Message from './Message.vue';
 import captureScreen from '../utils/screenshot';
+import { debounce } from "lodash";
 
 export default {
   name: 'App',
@@ -188,7 +189,7 @@ export default {
 
     },
 
-    async updateNotSyncedAmount() {
+    updateNotSyncedAmount: debounce(async function () {
 
       try {
 
@@ -208,7 +209,7 @@ export default {
 
       }
 
-    },
+    }, 2000),
   },
 };
 </script>
