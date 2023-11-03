@@ -44,11 +44,30 @@ module.exports.reduceSyncedIntervalQueue = async () => {
 module.exports.fetchIntervalsQueue = async () => database.Interval.findAll({ include: database.Task });
 
 /**
- * Returns amount of unsynced intervals
+ * Returns amount of not synced intervals
  * @async
  * @returns {Promise.<integer>}
  */
 module.exports.fetchNotSyncedIntervalsAmount = async () => database.Interval.count({ where: { synced: false } });
+
+/**
+ * Returns not synced intervals
+ * @async
+ * @returns {Promise.<Interval[]>}
+ */
+module.exports.fetchNotSyncedIntervals = async () => database.Interval.findAll({
+  where: { synced: false } ,
+  attributes: [
+    ['id', 'screenshot_id'],
+    ['taskId', 'task_id'],
+    ['userId', 'user_id'],
+    ['startAt', 'start_at'],
+    ['endAt', 'end_at'],
+    ['systemActivity', 'activity_fill'],
+    ['mouseActivity', 'mouse_fill'],
+    ['keyboardActivity', 'keyboard_fill']
+  ]
+});
 
 /**
  * Puts interval in the queue

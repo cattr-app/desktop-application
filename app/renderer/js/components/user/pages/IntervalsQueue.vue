@@ -54,30 +54,30 @@ export default {
   async mounted() {
 
     /* Fetch latest intervals */
-    (async () => {
+    await (async () => {
 
-      // Show loader
-      this.$store.dispatch('showLoader');
+        // Show loader
+        await this.$store.dispatch('showLoader');
 
-      try {
+        try {
 
-        // Fetch intervals from main process
-        const req = await this.$ipc.request('interval/get-intervals-queue', {});
-        if (req.code !== 200)
-          throw new Error(req.body.message);
+            // Fetch intervals from main process
+            const req = await this.$ipc.request('interval/get-intervals-queue', {});
+            if (req.code !== 200)
+                throw new Error(req.body.message);
 
-        // Fullfill internal buffers
-        req.body.forEach(interval => this.intervals.push(interval));
-        this.isIntervalFetchFinished = true;
+            // Fulfill internal buffers
+            req.body.forEach(interval => this.intervals.push(interval));
+            this.isIntervalFetchFinished = true;
 
-      } catch (err) {
+        } catch (err) {
 
-        this.$message({ type: 'error', message: `${this.$t('Error')}: ${err}` });
+            this.$message({type: 'error', message: `${this.$t('Error')}: ${err}`});
 
-      }
+        }
 
-      // Hide loader
-      this.$store.dispatch('hideLoader');
+        // Hide loader
+        await this.$store.dispatch('hideLoader');
 
     })();
 
