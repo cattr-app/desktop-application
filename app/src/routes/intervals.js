@@ -84,7 +84,7 @@ module.exports = router => {
 
     try {
 
-      const intervals = (await Interval.fetchNotSyncedIntervalыs())
+      const intervals = (await Interval.fetchNotSyncedIntervals())
         .map(interval => ({...interval.dataValues}));
 
       return req.send(200, pack(intervals));
