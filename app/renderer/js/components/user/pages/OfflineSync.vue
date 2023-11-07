@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import {pack} from "msgpackr";
+
 export default {
   name: 'OfflineSync',
   data() {
@@ -50,7 +52,9 @@ export default {
       const res = await this.$ipc.request('interval/export-deferred', {});
       if (res.code === 200) {
           try {
-              const blob = new Blob(res.body);
+              const packedData = pack(res.body);
+              const blob = new Blob([packedData]);
+
               const aElement = document.createElement('a');
               aElement.setAttribute('download', 'Intervals.cattr');
               const href = URL.createObjectURL(blob);

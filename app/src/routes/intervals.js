@@ -1,7 +1,6 @@
 const Logger = require('../utils/log');
 const Interval = require('../controller/time-intervals');
 const TaskTracker = require('../base/task-tracker');
-const {pack} = require("msgpackr");
 
 const log = new Logger('Router:Intervals');
 
@@ -87,7 +86,7 @@ module.exports = router => {
       const intervals = (await Interval.fetchNotSyncedIntervals())
         .map(interval => ({...interval.dataValues}));
 
-      return req.send(200, pack(intervals));
+      return req.send(200, intervals);
 
     } catch (error) {
 
