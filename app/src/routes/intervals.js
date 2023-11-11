@@ -84,7 +84,11 @@ module.exports = router => {
     try {
 
       const intervals = (await Interval.fetchNotSyncedIntervals())
-        .map(interval => ({...interval.dataValues}));
+        .map(interval => ({
+          ...interval.dataValues,
+          start_at: new Date(interval.dataValues.start_at).toISOString(),
+          end_at: new Date(interval.dataValues.end_at).toISOString()
+        }));
 
       return req.send(200, intervals);
 
