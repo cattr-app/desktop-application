@@ -1,9 +1,10 @@
 const Logger = require('../utils/log');
 const Tasks = require('../controller/tasks');
-const { UIError } = require('../utils/errors');
+const {UIError} = require('../utils/errors');
 const Time = require('../controller/time');
 const UserPreferences = require('../base/user-preferences');
 const TaskTracker = require('../base/task-tracker');
+const auth = require("../base/authentication");
 
 const log = new Logger('Router:Tasks');
 log.debug('Loaded');
@@ -55,18 +56,22 @@ module.exports = router => {
       // Starting sync routine
       log.debug('Task creation initiated from frontend');
       const createdTask = await Tasks.createTask(task);
-      return request.send(200, { task: createdTask });
+      return request.send(200, {task: createdTask});
 
     } catch (error) {
 
       // Pass UIErrors directly to renderer
       if (error instanceof UIError)
         // {error: error.error} means we are passing error that initially triggered UIError
-        return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
+        return request.send(error.code, {
+          message: error.message,
+          id: error.errorId,
+          error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error))
+        });
 
       // It'll be extremely weird if real errors will occur there. We should log them.
       log.error('Operating error occured during the task creation', error);
-      request.send(500, { message: 'Internal error occured', id: 'ERTT500' });
+      request.send(500, {message: 'Internal error occured', id: 'ERTT500'});
 
       return false;
 
@@ -79,12 +84,29 @@ module.exports = router => {
 
     try {
 
+      const currentUser = await auth.getCurrentUser();
+
+      if (request.packet.body?.offlineImport && currentUser?.id) {
+        if (typeof request.packet.body.offlineImport.id !== 'number'
+          || !Array.isArray(request.packet.body.offlineImport.tasks)) {
+          throw new UIError(400, 'Wrong format', 'ERTS400');
+        }
+        if (request.packet.body.offlineImport.id !== currentUser.id) {
+          throw new UIError(400, 'Unable to import data from another user', 'ERTS401');
+        }
+      }
+
       // Starting sync routine
       log.debug('Tasks sync initiated by renderer');
 
-      await Tasks.syncTasks(false, false, !UserPreferences.get('showInactiveTasks'));
+      await Tasks.syncTasks(
+        false,
+        false,
+        !UserPreferences.get('showInactiveTasks'),
+        request.packet.body?.offlineImport?.tasks
+      );
       await Time.syncTasksTime();
-      let { tasks, highlights } = await Tasks.getTasksList(true, !UserPreferences.get('showInactiveTasks'));
+      let {tasks, highlights} = await Tasks.getTasksList(true, !UserPreferences.get('showInactiveTasks'));
 
       // Purify sequelize output
       tasks = purifyInstances(tasks);
@@ -92,18 +114,22 @@ module.exports = router => {
 
       // Returning response
       log.debug('Tasks successfully synced');
-      return request.send(200, { tasks, highlights });
+      return request.send(200, {tasks, highlights});
 
     } catch (error) {
 
       // Pass UIErrors directly to renderer
       if (error instanceof UIError)
         // {error: error.error} means we are passing error that initially triggered UIError
-        return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
+        return request.send(error.code, {
+          message: error.message,
+          id: error.errorId,
+          error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error))
+        });
 
       // It'll be extremely weird if real errors will occur there. We should log them.
       log.error('Operating error occured during the task sync', error);
-      request.send(500, { message: 'Internal error occured', id: 'ERTT500' });
+      request.send(500, {message: 'Internal error occured', id: 'ERTT500'});
 
       return false;
 
@@ -118,7 +144,7 @@ module.exports = router => {
 
       // Starting sync routine
       log.debug('Local tasks fetch initiated by renderer');
-      let { tasks, highlights } = await Tasks.getTasksList(true, !UserPreferences.get('showInactiveTasks'));
+      let {tasks, highlights} = await Tasks.getTasksList(true, !UserPreferences.get('showInactiveTasks'));
 
       // Purify sequelize output
       tasks = purifyInstances(tasks);
@@ -126,18 +152,22 @@ module.exports = router => {
 
       // Returning response
       log.debug('Tasks successfully fetched from local databasse');
-      return request.send(200, { tasks, highlights });
+      return request.send(200, {tasks, highlights});
 
     } catch (error) {
 
       // Pass UIErrors directly to renderer
       if (error instanceof UIError)
         // {error: error.error} means we are passing error that initially triggered UIError
-        return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
+        return request.send(error.code, {
+          message: error.message,
+          id: error.errorId,
+          error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error))
+        });
 
       // It'll be extremely weird if real errors will occur there. We should log them.
       log.error('Operating error occured during the task sync', error);
-      request.send(500, { message: 'Internal error occured', id: 'ERTT501' });
+      request.send(500, {message: 'Internal error occured', id: 'ERTT501'});
 
       return false;
 
@@ -147,14 +177,14 @@ module.exports = router => {
 
   router.serve('tasks/pinner', async request => {
 
-    const { id, pinOrder } = request.packet.body;
+    const {id, pinOrder} = request.packet.body;
     await Tasks.taskPinner(id, pinOrder);
 
   });
 
   router.serve('tasks/pinOrder/update', async request => {
 
-    const { id, pinOrder } = request.packet.body;
+    const {id, pinOrder} = request.packet.body;
     await Tasks.updatePinOrder(id, pinOrder);
 
   });

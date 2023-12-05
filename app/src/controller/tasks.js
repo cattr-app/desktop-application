@@ -1,12 +1,12 @@
 const EventEmitter = require('events');
 const api = require('../base/api');
-const { models } = require('../models').db;
+const {models} = require('../models').db;
 const storage = require('../models');
 const projectController = require('./projects');
 const auth = require('../base/authentication');
 const Log = require('../utils/log');
 const OfflineMode = require('../base/offline-mode');
-const { UIError } = require('../utils/errors');
+const {UIError} = require('../utils/errors');
 
 const log = new Log('Controller:Tasks');
 const taskEmitter = new EventEmitter();
@@ -54,15 +54,15 @@ const buildTaskFetchOptions = (onlyActive = true) => {
 
     // Include related project, and today's track if it's exists
     include: [
-      { model: models.Track, required: false, where: storage.db.sequelize.and({ day: today() }) },
-      { model: models.Project },
+      {model: models.Track, required: false, where: storage.db.sequelize.and({day: today()})},
+      {model: models.Project},
     ],
 
   };
 
   // Select only active projects if it's requested
   if (onlyActive)
-    conditions.where = { status: '1' };
+    conditions.where = {status: '1'};
 
   return conditions;
 
@@ -91,14 +91,14 @@ const rebuildProjectsRelations = async () => {
       if (!assignedProjectId)
         return undefined;
 
-      return { id: task.id, projectId: assignedProjectId };
+      return {id: task.id, projectId: assignedProjectId};
 
     })
 
     .filter(t => typeof t !== 'undefined');
 
   // Use bulkCreate as something like bulkUpdate
-  await models.Task.bulkCreate(tasks, { updateOnDuplicate: ['projectId'] });
+  await models.Task.bulkCreate(tasks, {updateOnDuplicate: ['projectId']});
 
   // Commit all changes
   log.debug('Task-to-Projects mappings successfully updated');
@@ -164,7 +164,7 @@ module.exports.getTasksList = async (highlight = false, onlyActive = true) => {
   if (tracks.length === 0) {
 
     taskEmitter.emit('pulled', tasks);
-    return { tasks, highlights: [] };
+    return {tasks, highlights: []};
 
   }
 
@@ -185,7 +185,7 @@ module.exports.getTasksList = async (highlight = false, onlyActive = true) => {
   }, []);
 
   taskEmitter.emit('pulled', tasks);
-  return { tasks, highlights: tracks };
+  return {tasks, highlights: tracks};
 
 };
 
@@ -195,12 +195,18 @@ module.exports.getTasksList = async (highlight = false, onlyActive = true) => {
  * @param  {Boolean}                         [fetch=true]       Should we return tasks?
  * @param  {Boolean}                         [highlight=false]  Should we set "highlight" flag for latest tasks?
  * @param  {Boolean}                         [onlyActive=true]  Should we ask server to return only active tasks?
+ * @param {Object[]} offlineTasks
  * @return {Promise<Array<Object>>|Boolean>}                    Synced tasks list (or boolean, if fetch=false)
  */
-module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = true) => {
+module.exports.syncTasks = async (
+  fetch = true,
+  highlight = false,
+  onlyActive = true,
+  offlineTasks = null
+) => {
 
   // Check offline mode status
-  if (OfflineMode.enabled) {
+  if (OfflineMode.enabled && offlineTasks == null) {
 
     log.warning('Intercepting tasks sync request due to offline mode');
     return module.exports.getTasksList(highlight, onlyActive);
@@ -209,7 +215,7 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
 
   // Will be use that, when API will be fixed to receive IDs
   const currentUser = await auth.getCurrentUser();
-  const taskOptions = { where: { 'users.id': ['=', [currentUser.id]] } };
+  const taskOptions = {where: {'users.id': ['=', [currentUser.id]]}};
   if (onlyActive)
     taskOptions.where.active = 1;
 
@@ -217,8 +223,12 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
 
   try {
 
-    actualTasks = await api.tasks.list(taskOptions);
-    OfflineMode.restoreWithCheck();
+    if (offlineTasks == null) {
+      actualTasks = await api.tasks.list(taskOptions);
+      OfflineMode.restoreWithCheck();
+    } else {
+      actualTasks = offlineTasks;
+    }
 
   } catch (err) {
 
@@ -303,7 +313,7 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
 
   // Removing deleted tasks
   if (toDelete.length > 0)
-    await models.Task.destroy({ where: { externalId: toDelete } });
+    await models.Task.destroy({where: {externalId: toDelete}});
 
   // Return database content, if there are nothing to update
   if (Object.keys(toUpdate).length === 0) {
@@ -319,7 +329,7 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
   // Creating something like transaction, but much more weird
   const results = Object
     .values(toUpdate)
-    .map(task => models.Task.update(task, { where: { externalId: task.externalId } }));
+    .map(task => models.Task.update(task, {where: {externalId: task.externalId}}));
 
   // Run transaction
   await Promise.all(results);
@@ -374,7 +384,7 @@ module.exports.updatePinOrder = async (taskId, pinOrder) => {
 
 module.exports.createTask = async task => {
 
-  const { name, projectId, description } = task;
+  const {name, projectId, description} = task;
   const project = await projectController.getProjectByInternalId(projectId[0]);
   const projectExternalId = project.externalId;
   const user = await auth.getCurrentUser();
@@ -394,7 +404,7 @@ module.exports.createTask = async task => {
   try {
 
     // Request the task creation, then format this task into unified model
-    const { res: createdTask } = await api.tasks.create(taskToCreate);
+    const {res: createdTask} = await api.tasks.create(taskToCreate);
 
     if (!project)
       throw new UIError(500, 'Selected project is not found', 'ETSK450');

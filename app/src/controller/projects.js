@@ -8,10 +8,10 @@ const log = new Log('Projects');
 const projectEmitter = new EventEmitter();
 
 /**
-* Formats projects for local storage
-* @param   {Object}  projects            Object of project objects received from server
-* @return  {Array}   formattedProjects   Array of formatted projects
-*/
+ * Formats projects for local storage
+ * @param   {Object}  projects            Object of project objects received from server
+ * @return  {Array}   formattedProjects   Array of formatted projects
+ */
 function formatProjects(projects) {
 
   const formatted = [];
@@ -34,12 +34,13 @@ function formatProjects(projects) {
 
 /**
  * Sync local DB with remote storage
+ * @param {Object[]} offlineProjects
  * @return {Promise<Promise<Model<any, any>[]>>} syncedProjects Synced (actualized) projects from local storage
  */
-module.exports.syncProjects = async () => {
+module.exports.syncProjects = async (offlineProjects = null) => {
 
   // Handle offline launch case
-  if (OfflineMode.enabled) {
+  if (OfflineMode.enabled && offlineProjects == null) {
 
     log.warning('Intercepting projects sync request due to offline mode');
     return database.Project.findAll();
@@ -51,8 +52,12 @@ module.exports.syncProjects = async () => {
 
   try {
 
-    actualProjects = await api.projects.list(projectOptions);
-    OfflineMode.restoreWithCheck();
+    if (offlineProjects == null) {
+      actualProjects = await api.projects.list(projectOptions);
+      OfflineMode.restoreWithCheck();
+    } else {
+      actualProjects = offlineProjects;
+    }
 
   } catch (err) {
 
@@ -132,7 +137,7 @@ module.exports.syncProjects = async () => {
 
   // .. or should we remove existing entities?
   if (toDelete.length > 0)
-    await database.Project.destroy({ where: { externalId: toDelete } });
+    await database.Project.destroy({where: {externalId: toDelete}});
 
   // Return all current entries if there are nothing to update
   if (Object.keys(toUpdate).length === 0)
@@ -141,7 +146,7 @@ module.exports.syncProjects = async () => {
   // Performing update routine
   const results = Object
     .values(toUpdate)
-    .map(project => database.Project.update(project, { where: { externalId: project.externalId } }));
+    .map(project => database.Project.update(project, {where: {externalId: project.externalId}}));
 
   await Promise.all(results);
   return database.Project.findAll();
