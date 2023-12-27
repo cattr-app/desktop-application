@@ -62,7 +62,7 @@ class EventCounter {
     if (this.intervalDuration === 0 || this.activeSeconds.keyboard === 0)
       return 0;
 
-    return Math.ceil(this.activeSeconds.keyboard / (this.intervalDuration / 100));
+    return Math.round(this.activeSeconds.keyboard / (this.intervalDuration / 100));
 
   }
 
@@ -76,7 +76,7 @@ class EventCounter {
     if (this.intervalDuration === 0 || this.activeSeconds.mouse === 0)
       return 0;
 
-    return Math.ceil(this.activeSeconds.mouse / (this.intervalDuration / 100));
+    return Math.round(this.activeSeconds.mouse / (this.intervalDuration / 100));
 
   }
 
@@ -90,7 +90,7 @@ class EventCounter {
     if (this.intervalDuration === 0 || this.activeSeconds.system === 0)
       return 0;
 
-    return Math.ceil(this.activeSeconds.system / (this.intervalDuration / 100));
+    return Math.round(this.activeSeconds.system / (this.intervalDuration / 100));
 
   }
 
