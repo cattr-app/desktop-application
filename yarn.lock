@@ -3628,7 +3628,7 @@ __metadata:
     is-plain-obj: ^4.1.0
     keytar: ^7.9.0
     laravel-mix: ^6.0.49
-    marked: ^2.1.3
+    marked: ^11.1.1
     mini-css-extract-plugin: ^2.6.1
     minimist: ^1.2.6
     nanoid: ^3.3.4
@@ -7620,12 +7620,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "marked@npm:2.1.3"
+"marked@npm:^11.1.1":
+  version: 11.1.1
+  resolution: "marked@npm:11.1.1"
   bin:
-    marked: bin/marked
-  checksum: 21a5ecd4941bc760aba21dfd97185853ec3b464cf707ad971e3ddb3aeb2f44d0deeb36b0889932afdb6f734975a994d92f18815dd0fabadbd902bdaff997cc5b
+    marked: bin/marked.js
+  checksum: e30e16bf1d2c6627fff4369ffef73a1fbec629c5d18be76fc1f9c36f3df96499845bb7785f73313d06082b4562307e4f314f35eaa24ac737c176234b4bf24982
   languageName: node
   linkType: hard
 
