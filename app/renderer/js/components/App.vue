@@ -174,6 +174,13 @@ export default {
     });
     this.updateNotSyncedAmount();
 
+    this.$ipc.serve('misc/set-offline-sync-encryption-key', () => {
+
+      this.fetchOfflineSyncEncryptionKey();
+
+    });
+    this.fetchOfflineSyncEncryptionKey();
+
   },
 
   methods: {
@@ -209,6 +216,12 @@ export default {
 
       }
 
+    }, 2000),
+
+    fetchOfflineSyncEncryptionKey: debounce(async function () {
+      if (this.authenticated) {
+        await this.$ipc.request('offline-sync/get-public-key', {});
+      }
     }, 2000),
   },
 };

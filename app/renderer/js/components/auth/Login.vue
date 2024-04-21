@@ -285,6 +285,7 @@ export default {
         const totalTime = await this.$ipc.request('time/total', {});
         this.$store.dispatch('totalTimeSync', totalTime.body);
         this.$router.push({ name: 'user.tasks' });
+        await this.$ipc.request('offline-sync/get-public-key', {});
 
       } else {
 
