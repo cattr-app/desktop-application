@@ -38,7 +38,24 @@
         </el-button>
         <br>
         <small class="section__description">{{
-            $t("Don't forget to stop tracking before exporting intervals.")
+            $t("Don't forget to stop tracking before exporting.")
+          }}</small>
+
+      </el-row>
+      <el-row class="section">
+        <h3 class="section__heading">{{ $t("Screenshots") }}</h3>
+        <p class="section__heading">{{ $t("You've %% not synced intervals.").replaceAll('%%', notSyncedAmount) }}</p>
+        <el-button
+            size="small"
+            type="primary"
+            :disabled="notSyncedAmount === 0"
+            @click="exportScreenshots"
+        >
+          {{ $t('Export screenshots') }}
+        </el-button>
+        <br>
+        <small class="section__description">{{
+            $t("Don't forget to stop tracking before exporting.")
           }}</small>
 
       </el-row>
@@ -244,6 +261,33 @@ export default {
         await this.triggerErrorAlert(error, this.$t('Intervals export error'));
       }
 
+    },
+    async exportScreenshots(){
+      this.$store.dispatch('showLoader');
+      this.exportInProgress = true;
+      const screenshotsArchiveRes = await this.$ipc.request('interval/export-deferred-screenshots', {});
+      if (screenshotsArchiveRes.code === 200) {
+        try {
+            const aElement = document.createElement('a');
+            aElement.setAttribute('download', 'Screenshots.cattr');
+            const href = URL.createObjectURL(new Blob([screenshotsArchiveRes.body]));
+            aElement.href = href;
+            aElement.setAttribute('target', '_blank');
+            aElement.click();
+            URL.revokeObjectURL(href);
+
+            this.$store.dispatch('hideLoader');
+        } catch (error) {
+          this.$store.dispatch('hideLoader');
+          await this.triggerErrorAlert(error, this.$t('Screenshots export error'));
+        }
+      } else {
+        this.$store.dispatch('hideLoader');
+        return await this.triggerErrorAlert({
+          error: screenshotsArchiveRes.body.error,
+          message: screenshotsArchiveRes.body.message
+        }, this.$t('Intervals export error'));
+      }
     }
   },
 };

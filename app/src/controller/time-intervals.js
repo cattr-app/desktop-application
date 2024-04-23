@@ -70,6 +70,20 @@ module.exports.fetchNotSyncedIntervals = async () => database.Interval.findAll({
 });
 
 /**
+ * Returns not synced screenshots
+ * @async
+ * @returns {Promise.<Interval[]>}
+ */
+module.exports.fetchNotSyncedScreenshots = async () => database.Interval.findAll({
+  where: { synced: false } ,
+  attributes: [
+    ['id', 'screenshot_id'],
+    ['userId', 'user_id'],
+    ['screenshot', 'screenshot']
+  ]
+});
+
+/**
  * Puts interval in the queue
  * @async
  * @param {Object} interval   Interval (API-formatted) to put into queue

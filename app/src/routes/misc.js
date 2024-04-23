@@ -36,6 +36,9 @@ module.exports = router => {
   router.serve('misc/unacknowledged-tracking-features', async req => {
 
     const features = await trackingFeatures.retrieveUnacknowledged();
+    return req.send(200, {features});
+
+  });
 
   router.serve('offline-sync/get-public-key', async req => {
     const key = await Property.findOne({where: {key: 'offline-sync_public-key'}});
