@@ -6,6 +6,8 @@ const trackingFeatures = require('../controller/tracking-features');
 const {Property} = require('../models').db.models;
 const api = require('../base/api');
 const OfflineMode = require('../base/offline-mode');
+const TrackingFeatures = require('../controller/tracking-features');
+const auth = require("../base/authentication");
 
 const log = new Logger('Router:Miscellaneous');
 log.debug('Loaded');
@@ -30,6 +32,19 @@ module.exports = router => {
     const version = await update.retrieveUpdate();
     return req.send(200, version || { version: null });
 
+  });
+
+  router.serve('misc/get-tracking-features', async req => {
+    const features = await trackingFeatures.getCurrentFeatures();
+    return req.send(200, {features});
+  })
+
+  TrackingFeatures.on('features-changed', features => {
+    router.emit('misc/features-changed', features);
+  })
+  router.serve('misc/update-tracking-features', async req => {
+    await auth.getCurrentUser(true);
+    return req.send(200, {});
   });
 
   // Handle unacknowledged tracking features poll request

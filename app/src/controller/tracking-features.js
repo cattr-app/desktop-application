@@ -3,6 +3,7 @@ const { Property } = require('../models').db.models;
 const Log = require('../utils/log');
 
 const log = new Log('TrackingFeatures');
+const ScreenshotsState = require("../constants/ScreenshotsState");
 
 class TrackingFeatures extends EventEmitter {
 
@@ -24,8 +25,11 @@ class TrackingFeatures extends EventEmitter {
 
     }
 
-    if (user.screenshotsEnabled)
+    if (user.screenshotsState === ScreenshotsState.REQUIRED || user.screenshotsState === ScreenshotsState.OPTIONAL) {
       features.push('DESKTOP_SCREENSHOTS');
+    } else {
+      features.push('DESKTOP_SCREENSHOTS_DISABLED');
+    }
 
     return features;
 

@@ -23,7 +23,8 @@ function formatProjects(projects) {
       name: project.name,
       description: project.description,
       source: project.source,
-      updatedAt: project.updated_at,
+      updatedAt: project.updatedAt,
+      screenshotsState: project.screenshotsState,
     });
 
   });
@@ -107,8 +108,8 @@ module.exports.syncProjects = async (offlineProjects = null) => {
       if (String(localProject.externalId) !== String(actualProject.externalId))
         return;
 
-      // Checking differnce in last update time between local and remote entries
-      if (Date.parse(localProject.updatedAt) < Date.parse(actualProject.updatedAt))
+      // Checking differnce in last update time or screenshots state between local and remote entries
+      if (Date.parse(localProject.updatedAt) < Date.parse(actualProject.updatedAt) || localProject.screenshotsState !== actualProject.screenshotsState) {}
         toUpdate[actualProject.externalId] = actualProject;
 
       // Set the "found" flag
