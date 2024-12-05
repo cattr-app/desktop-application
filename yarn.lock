@@ -1304,13 +1304,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cattr/node@npm:^4.0.0-RC4":
-  version: 4.0.0-RC4
-  resolution: "@cattr/node@npm:4.0.0-RC4::__archiveUrl=https%3A%2F%2Fgit.amazingcat.net%2Fapi%2Fv4%2Fprojects%2F359%2Fpackages%2Fnpm%2F%40cattr%2Fnode%2F-%2F%40cattr%2Fnode-4.0.0-RC4.tgz"
+"@cattr/node@npm:^4.0.0-RC5":
+  version: 4.0.0-RC5
+  resolution: "@cattr/node@npm:4.0.0-RC5::__archiveUrl=https%3A%2F%2Fgit.amazingcat.net%2Fapi%2Fv4%2Fprojects%2F359%2Fpackages%2Fnpm%2F%40cattr%2Fnode%2F-%2F%40cattr%2Fnode-4.0.0-RC5.tgz"
   dependencies:
     axios: ^0.27.2
     form-data: ^4.0.0
-  checksum: 9b90af477c13ff6c0a10146926313ebe71b3af395abd309cfc88f243d04834bf5b8537a4fadb308345b7680f3c2d5604d1bf4e62dcae6f6a7499a3394d5c01c6
+  checksum: 2cc69f620b3b8b3f0be3bc7acfa4c2e43fc2e94c2b435074f1675d3c02d2210ef188a6d4d3f95173c7faeaaa1d3d12585530fb678aaa899f85d5acc5379a564e
   languageName: node
   linkType: hard
 
