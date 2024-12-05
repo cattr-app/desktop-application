@@ -169,23 +169,76 @@ export default {
     async logout() {
 
       this.loggingOutInProgress = true;
-      await this.$store.dispatch('stopTrack', { $ipc: this.$ipc });
+      this.$store
+          .dispatch('stopTrack', { $ipc: this.$ipc })
+          .catch(error => {
+            const h = this.$createElement;
+            const messageContainer = h('div', null, [
+              h('p', null, error.message || 'Unknown error occured')
+            ]);
+
+            if (error.error?.isApiError && error.error.trace_id) {
+              messageContainer.children.push(
+                  h('p', null, [
+                    h('b', null, 'Backend traceId'),
+                    h('span', null, `: ${error.error.trace_id}`)
+                  ])
+              );
+            }
+
+            if (error.error?.context?.client_trace_id) {
+              messageContainer.children.push(
+                  h('p', null, [
+                    h('b', null, 'Client traceId'),
+                    h('span', null, `: ${error.error.context.client_trace_id}`)
+                  ])
+              );
+            }
+
+            // Show error message
+            this.$alert(
+                messageContainer,
+                `${this.$t('Tracking error')} ${error.id || ''}`,
+                {
+                  confirmButtonText: 'OK', callback: () => {
+                  }
+                },
+            );
+
+          });
       const req = await this.$ipc.request('auth/logout', {});
       if (req.code === 200)
         this.$store.dispatch('logout', this.$ipc);
       else {
 
-        const htmlError = `
-                        <div class="error-message">
-                            <div class="text">
-                                <p>${this.$t('Something went wrong')}</p>
-                                <code>${req.body.message}</code>
-                            </div>
-                        </div>
-                    `;
-        this.$alert(htmlError, this.$t('Logout error'), {
-          dangerouslyUseHTMLString: true,
-          confirmButtonText: `${this.$t('OK')}`,
+        const error = req.body;
+
+        const h = this.$createElement;
+        const messageContainer = h("div", null, [
+          h("p", null, error.message ? this.$t(error.message) : "Unknown error occured"),
+        ]);
+
+        if (error.error?.isApiError && error.error.trace_id) {
+          messageContainer.children.push(
+              h("p", null, [
+                h("b", null, "Backend traceId"),
+                h("span", null, `: ${error.error.trace_id}`),
+              ])
+          );
+        }
+
+        if (error.error?.context?.client_trace_id) {
+          messageContainer.children.push(
+              h('p', null, [
+                h('b', null, 'Client traceId'),
+                h('span', null, `: ${error.error.context.client_trace_id}`)
+              ])
+          );
+        }
+
+        // Show error message
+        this.$alert(messageContainer, this.$t('Logout error'), {
+          confirmButtonText: this.$t('OK'),
           callback: () => {},
         });
 

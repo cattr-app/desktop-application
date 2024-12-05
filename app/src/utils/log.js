@@ -10,6 +10,7 @@ const chalk = require('chalk');
 const config = require('../base/config');
 
 const { Sentry: { Sentry } } = require('./sentry');
+const ApiError = require("@cattr/node/src/errors/api");
 
 // Checkings logs directory availability
 if (!fs.existsSync(config.logger.directory))
@@ -142,19 +143,28 @@ class Logger {
       // Handle API errors
       if (error.isApiError) {
 
-        // Obtaining stack trace to logger call
-        const stack = new Error(null).stack.split('\n').splice(2).join('\n');
+        // Obtaining stack trace to logger call - Need to research if this even beneficial
+        const stack = error instanceof ApiError ? error.stack
+          : new Error(null).stack
+            .split('\n')
+            .splice(2)
+            .join('\n');
+
+        const errorContext = JSON.stringify({
+          backend_trace_id: error?.trace_id || null,
+          ...error.context
+        }, null, 2);
 
         // Suppress submission of validation errors to Sentry
         if (error.message !== 'Validation error')
           this.constructor.captureApiError(message, error);
 
         // Log error into stderr
-        console.error(`${chalk.red('[E]')} ${chalk.dim(`[${Logger._getFormattedDateTime()}]`)} ${chalk.green(`[${this.moduleName}]`)} ${chalk.red(`(API${error.statusCode}) ${message}: ${error}\n<BEGIN STACK TRACE>\n${stack}\n<END STACK TRACE>`)}`);
+        console.error(`${chalk.red('[E]')} ${chalk.dim(`[${Logger._getFormattedDateTime()}]`)} ${chalk.green(`[${this.moduleName}]`)} ${chalk.red(`(API${error.statusCode}) ${message}: ${error}\n<BEGIN CONTEXT>\n${errorContext}\n<END CONTEXT>\n<BEGIN STACK TRACE>\n${stack}\n<END STACK TRACE>`)}`);
 
         // Pipe into file
         if (logStream.writable)
-          logStream.write(`[E] [${Logger._getFormattedDateTime()}] [${this.moduleName}] (API${error.statusCode}) ${message}: ${error}\n<BEGIN STACK TRACE>\n${stack}\n<END STACK TRACE>\n`);
+          logStream.write(`[E] [${Logger._getFormattedDateTime()}] [${this.moduleName}] (API${error.statusCode}) ${message}: ${error}\n<BEGIN CONTEXT>\n${errorContext}\n<END CONTEXT>\n<BEGIN STACK TRACE>\n${stack}\n<END STACK TRACE>\n`);
         return;
 
       }
@@ -162,12 +172,14 @@ class Logger {
       // Catch operational error
       if (error instanceof Error) {
 
+        const errorContext = error.isNetworkError || error.context ? `\n<BEGIN CONTEXT>\n${JSON.stringify(error.context, null, 2)}\n<END CONTEXT>` : '';
+
         // Log error into stderr
-        console.error(`${chalk.red('[E]')} ${chalk.dim(`[${Logger._getFormattedDateTime()}]`)} ${chalk.green(`[${this.moduleName}]`)} ${chalk.red(`(500) ${message}: ${error.message}\n<BEGIN STACK TRACE>\n${error.stack}\n<END STACK TRACE>`)}`);
+        console.error(`${chalk.red('[E]')} ${chalk.dim(`[${Logger._getFormattedDateTime()}]`)} ${chalk.green(`[${this.moduleName}]`)} ${chalk.red(`(500) ${message}: ${error.message}${errorContext}\n<BEGIN STACK TRACE>\n${error.stack}\n<END STACK TRACE>`)}`);
 
         // Pipe into file
         if (logStream.writable)
-          logStream.write(`[E] [${Logger._getFormattedDateTime()}] [${this.moduleName}] (500) ${message}: ${error.message}\n<BEGIN STACK TRACE>\n${error.stack}\n<END STACK TRACE>\n`);
+          logStream.write(`[E] [${Logger._getFormattedDateTime()}] [${this.moduleName}] (500) ${message}: ${error.message}${errorContext}\n<BEGIN STACK TRACE>\n${error.stack}\n<END STACK TRACE>\n`);
 
       } else {
 

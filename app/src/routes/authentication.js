@@ -15,14 +15,11 @@ module.exports = router => {
     try {
 
       // Trying the exact URL provided first
-      if (await auth.setHostname(request.packet.body.hostname))
-        return request.send(200, {});
-
-      return request.send(404, {});
+      return request.send(200, await auth.setHostname(request.packet.body.hostname));
 
     } catch (error) {
 
-      return request.send(400, {});
+      return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
 
     }
 
@@ -65,8 +62,8 @@ module.exports = router => {
 
       // Pass UIErrors directly to renderer
       if (error instanceof UIError) {
-
-        request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
         return;
 
       }
@@ -90,8 +87,8 @@ module.exports = router => {
 
       // Return UIErrors
       if (error instanceof UIError) {
-
-        request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
         return;
 
       }
@@ -123,8 +120,8 @@ module.exports = router => {
 
       // Return UIErrors
       if (error instanceof UIError) {
-
-        request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
         return;
 
       }
@@ -153,7 +150,8 @@ module.exports = router => {
 
       // Return UIErrors
       if (error instanceof UIError)
-        return request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
 
 
       // Wrap and log all other kinds of errors
@@ -189,7 +187,8 @@ module.exports = router => {
 
       // Return UIErrors
       if (error instanceof UIError)
-        return request.send(error.code, { message: error.message, id: error.errorId });
+        // {error: error.error} means we are passing error that initially triggered UIError
+        return request.send(error.code, { message: error.message, id: error.errorId, error: error.error == null ? error.error : JSON.parse(JSON.stringify(error.error)) });
 
 
       // Wrap and log all other kinds of errors

@@ -227,6 +227,9 @@ module.exports.syncTasks = async (fetch = true, highlight = false, onlyActive = 
       log.warning('Connectivity error detected, triggering offline mode');
       OfflineMode.trigger();
 
+    } else if (err instanceof api.ApiError) {
+      log.warning('ApiError error detected, triggering offline mode');
+      OfflineMode.trigger();
     }
 
     log.warning(`Intercepting tasks listing fetch, due to error: ${err}`);
@@ -346,7 +349,7 @@ module.exports.taskPinner = async (taskId, pinOrder = 0) => {
 
   } catch (err) {
 
-    throw new UIError(500, 'Cannot pin task', 'ETSK500');
+    throw new UIError(500, 'Cannot pin task', 'ETSK500', err);
 
   }
 
@@ -363,7 +366,7 @@ module.exports.updatePinOrder = async (taskId, pinOrder) => {
 
   } catch (error) {
 
-    throw new UIError(510, 'Cannot change task pin order', 'ETSK510');
+    throw new UIError(510, 'Cannot change task pin order', 'ETSK510', error);
 
   }
 
@@ -417,9 +420,9 @@ module.exports.createTask = async task => {
 
       // Not authorized for this action
       if (err.status === 403)
-        throw new UIError(403, 'Task create is not allowed for this account', 'ETSK403');
+        throw new UIError(403, 'Task create is not allowed for this account', 'ETSK403', err);
 
-      throw new UIError(555, 'Cannot create task due to the network or server error', 'ETSK555');
+      throw new UIError(555, 'Cannot create task due to the network or server error', 'ETSK555', err);
 
     }
 
