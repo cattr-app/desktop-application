@@ -124,10 +124,16 @@
     "Unable to import data from another user": "Нельзя импортировать задачи другого пользователя",
     "only .cattr files are accepted": "принимаются только файлы .cattr",
     "Intervals": "Интервалы",
+    "Screenshots": "Скриншоты",
     "You've %% not synced intervals.": "У Вас %% несинхронизированных интервалов.",
+    "You've %% not synced screenshots.": "У Вас %% несинхронизированных скриншотов.",
     "Export intervals": "Экспортировать интервалы",
-    "Don't forget to stop tracking before exporting intervals.": "Не забудьте остановить трекинг перед экспортом.",
+    "Don't forget to stop tracking before exporting.": "Не забудьте остановить трекинг перед экспортом.",
     "Intervals export error": "Ошибка экспорта интервалов",
+    "Screenshots export error": "Ошибка экспорта скриншотов",
+    "Unable to import encryption key": "Ошибка импорта ключа шифрования",
+    "In order to export intervals, Cattr client app needs to fetch encryption keys from the server first.": "Чтобы экспортировать интервалы, клиентскому приложению Кэттр сначала нужно получить ключ шифрования с сервера.",
+    "Error occurred during offline-sync encryption key fetching": "Ошибка во время получения ключа шифрования для оффлайн синхронизации",
     "Prove your activity": "Вы ещё работаете?",
     "Synced to server": "Синхронизирован с сервером",
     "Not synced yet": "Не синхронизирован с сервером",
@@ -160,11 +166,11 @@
     "Share error reports": "Отчеты об ошибках",
     "Share error reports with Developers": "Делиться отчетами с разработчиками",
     "Do not share error reports": "Не отправлять отчеты об ошибках",
-    "Cattr set up to track these types of activity:": "Cattr будет собирать следующие данные об активности:",
+    "Cattr tracking settings were updated:": "Настройки отслеживания Cattr были обновлены:",
     "Tracking active window title": "Отслеживание активного приложения",
     "Capturing desktop screenshots": "Запись скриншотов рабочего стола",
+    "Capturing desktop screenshots is disabled (except specific projects)": "Запись скриншотов рабочего стола отключена (кроме определенных проектов)",
     "Reach your company administrator for more info.": "Если у вас есть вопросы, свяжитесь с администратором компании.",
-    "Tracking features": "Отслеживание активности",
-    "Cattr settings was updated. Now we tracking these types of activity:": "Настройки учетной записи были изменены. Теперь мы отслеживаем следующие виды активности:"
+    "Tracking features": "Отслеживание активности"
   }
 }

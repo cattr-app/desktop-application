@@ -1,7 +1,7 @@
 const Logger = require('../utils/log');
 const Interval = require('../controller/time-intervals');
 const TaskTracker = require('../base/task-tracker');
-
+const {zip} = require("fflate");
 const log = new Logger('Router:Intervals');
 
 module.exports = router => {
@@ -78,6 +78,24 @@ module.exports = router => {
 
   });
 
+  /* Get not synced intervals amount */
+  router.serve('interval/not-synced-screenshots-amount', async req => {
+
+    try {
+
+      const amount = (await Interval.fetchNotSyncedScreenshotsAmount());
+
+      return req.send(200, {amount});
+
+    } catch (err) {
+
+      log.error('ERTINT02', 'Error occurred during not synced screenshots amount fetch', err);
+      return req.send(500, {message: 'Error occurred during not synced screenshots amount fetch'});
+
+    }
+
+  });
+
   /* Get not synced intervals */
   router.serve('interval/export-deferred', async req => {
 
@@ -94,6 +112,53 @@ module.exports = router => {
 
     } catch (error) {
 
+      error.context = {};
+      const crypto = require("crypto");
+      error.context.client_trace_id = crypto.randomUUID();
+
+      log.error('ERTINT03', 'Error occurred during not synced intervals fetch', error);
+      return req.send(500, {
+          message: 'Error occurred during not synced intervals fetch',
+          error: JSON.parse(JSON.stringify(error)),
+        }
+      );
+
+    }
+
+  });
+
+  /* Get not synced intervals */
+  router.serve('interval/export-deferred-screenshots', async req => {
+
+    try {
+      const screenshots = (await Interval.fetchNotSyncedScreenshots())
+        .reduce((acc, {dataValues}) => {
+          const el = dataValues;
+          const key = `${el.user_id}_${el.screenshot_id}`
+          acc[key] = el.screenshot;
+          return acc;
+        }, {});
+
+      zip(screenshots, {
+        level: 1,
+        mtime: new Date()
+      }, async (error, data) => {
+        // Save the ZIP file
+        if (error) {
+          error.context = {};
+          const crypto = require("crypto");
+          error.context.client_trace_id = crypto.randomUUID();
+
+          log.error('ERTINT03', 'Screenshots zipping error', error);
+          return req.send(500, {
+              message: 'Screenshots zipping error',
+              error: JSON.parse(JSON.stringify(error)),
+            }
+          );
+        }
+        return req.send(200, data);
+      })
+    } catch (error) {
       error.context = {};
       const crypto = require("crypto");
       error.context.client_trace_id = crypto.randomUUID();
