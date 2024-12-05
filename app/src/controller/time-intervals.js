@@ -3,8 +3,10 @@
 
 const api = require('../base/api');
 const database = require('../models').db.models;
+const sequelize = require('../models').db.sequelize;
 const Log = require('../utils/log');
 const OfflineMode = require('../base/offline-mode');
+const {Op} = require("sequelize");
 
 const log = new Log('Controller:Time-Intervals');
 
@@ -44,11 +46,65 @@ module.exports.reduceSyncedIntervalQueue = async () => {
 module.exports.fetchIntervalsQueue = async () => database.Interval.findAll({ include: database.Task });
 
 /**
- * Returns amount of unsynced intervals
+ * Returns amount of not synced intervals
  * @async
  * @returns {Promise.<integer>}
  */
 module.exports.fetchNotSyncedIntervalsAmount = async () => database.Interval.count({ where: { synced: false } });
+
+/**
+ * Returns amount of not synced screenshots
+ * @async
+ * @returns {Promise.<integer>}
+ */
+module.exports.fetchNotSyncedScreenshotsAmount = async () => database.Interval.count({
+  where: {
+    synced: false,
+    screenshot: {
+      [Op.not]: null,
+    }
+  }
+});
+
+
+/**
+ * Returns not synced intervals
+ * @async
+ * @returns {Promise.<Interval[]>}
+ */
+module.exports.fetchNotSyncedIntervals = async () => database.Interval.findAll({
+  where: { synced: false } ,
+  attributes: [
+    ['id', 'screenshot_id'],
+    ['taskId', 'task_id'],
+    ['userId', 'user_id'],
+    ['startAt', 'start_at'],
+    ['endAt', 'end_at'],
+    ['systemActivity', 'activity_fill'],
+    ['mouseActivity', 'mouse_fill'],
+    ['keyboardActivity', 'keyboard_fill'],
+    [sequelize.literal(`(CASE WHEN screenshot is NULL THEN NULL ELSE 1 END)`), 'has_screenshot']
+  ]
+});
+
+/**
+ * Returns not synced screenshots
+ * @async
+ * @returns {Promise.<Interval[]>}
+ */
+module.exports.fetchNotSyncedScreenshots = async () => database.Interval.findAll({
+  where: {
+    synced: false,
+    screenshot: {
+      [Op.not]: null,
+    },
+  },
+  attributes: [
+    ['id', 'screenshot_id'],
+    ['userId', 'user_id'],
+    ['screenshot', 'screenshot']
+  ]
+});
 
 /**
  * Puts interval in the queue

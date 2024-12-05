@@ -123,7 +123,12 @@ module.exports = router => {
   });
   TaskTracker.on('started', taskId => router.emit('tracking/event-started', { task: taskId }));
   TaskTracker.on('switched', taskId => router.emit('tracking/event-started', { task: taskId }));
-  TaskTracker.on('stopped', () => router.emit('tracking/event-stopped', {}));
+  TaskTracker.on('stopped', () => {
+
+    router.emit('tracking/event-stopped', {});
+    router.emit('misc/update-not-synced-amount', {});
+
+  });
   TaskTracker.on('interval-pushed', () => router.emit('misc/update-not-synced-amount', {}));
   TaskTracker.on('interval-removed', res => {
 

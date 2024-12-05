@@ -10,9 +10,16 @@
     <el-button
       v-if="!searchFieldActive && $route.path === '/user/tasks'"
       type="secondary"
+      icon="el-icon-upload"
+      circle
+      @click="goTo('/user/offline-sync')"
+    />
+    <el-button
+      v-if="!searchFieldActive && $route.path === '/user/tasks'"
+      type="secondary"
       circle
       :disabled="syncInProgress || isTrackerLoading"
-      @click="syncTasks"
+      @click="sync"
     >
       <i
         class="el-icon-refresh"
@@ -49,7 +56,7 @@ import { clipboard } from 'electron';
 
 export default {
 
-  name: 'SearchBar',
+  name: 'ControlBar',
   props: {
     isTrackerLoading: Boolean,
   },
@@ -127,7 +134,9 @@ export default {
 
     },
 
-    async syncTasks() {
+    async sync() {
+      // TODO:
+      //  [ ] send deferred here?
 
       this.syncInProgress = true;
       await this.$ipc.request('projects/sync', {});
@@ -135,6 +144,7 @@ export default {
       const totalTime = await this.$ipc.request('time/total', {});
       this.$store.dispatch('totalTimeSync', totalTime.body);
       this.$store.dispatch('syncTasks', tasks.body);
+      await this.$ipc.request('misc/update-tracking-features', {});
       this.syncInProgress = false;
 
     },

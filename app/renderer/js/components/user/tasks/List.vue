@@ -26,6 +26,7 @@
             :pin-order="task.pinOrder !== null ? task.pinOrder : false"
             :class="{ drag: task.pinOrder !== null }"
             :task="task"
+            :tracking-features="trackingFeatures"
             :style="{ 'z-index': index }"
             @load-task-position="loadTaskPosition($event)"
           />
@@ -134,57 +135,12 @@ export default {
       return this.$store.getters.notSyncedAmount;
 
     },
-  },
 
-  async mounted() {
+    trackingFeatures() {
 
-    /* Trigger new tracking features check */
-    try {
+      return this.$store.getters.trackingFeatures;
 
-      const updateRequest = await this.$ipc.request(
-        'misc/unacknowledged-tracking-features',
-        {},
-      );
-      if (updateRequest.body.features) {
-
-        let content = `<p>${this.$t(
-          'Cattr settings was updated. Now we tracking these types of activity:',
-        )}</p><ol>`;
-        updateRequest.body.features.forEach(f => {
-
-          switch (f) {
-
-            case 'APP_MONITORING':
-              content += `<li>${this.$t('Tracking active window title')}</li>`;
-              break;
-
-            case 'DESKTOP_SCREENSHOTS':
-              content += `<li>${this.$t(
-                'Capturing desktop screenshots',
-              )}</li>`;
-              break;
-
-            default:
-              content += `<li>${f}</li>`;
-              break;
-
-          }
-
-        });
-        content += `</ol><p>${this.$t(
-          'Reach your company administrator for more info.',
-        )}</p>`;
-        await this.$alert(content, this.$t('Tracking features'), {
-          dangerouslyUseHTMLString: true,
-          confirmButtonText: 'OK',
-        });
-
-      }
-
-    } catch (_) {
-      // Do nothing
-    }
-
+    },
   },
 
   methods: {

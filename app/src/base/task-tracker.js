@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events');
 const { powerMonitor } = require('electron');
 const Log = require('../utils/log');
-const { Task } = require('../models').db.models;
+const { Task, Project } = require('../models').db.models;
 const { Ticker } = require('../utils/ticker');
 const { UIError } = require('../utils/errors');
 const OfflineMode = require('./offline-mode');
@@ -14,6 +14,7 @@ const heartbeatMonitor = require('../utils/heartbeat-monitor');
 const IntervalsController = require('../controller/time-intervals');
 const trackingFeature = require('../controller/tracking-features');
 const activeWindow = require('./active-window');
+const ScreenshotsState = require('../constants/ScreenshotsState')
 
 const log = new Log('TaskTracker');
 
@@ -385,7 +386,7 @@ class TaskTracker extends EventEmitter {
     } else {
 
       // Getting task by defined UUID
-      const task = await Task.findByPk(taskId);
+      const task = await Task.findByPk(taskId, {include: {model: Project}});
       if (!task)
         throw new UIError(500, `Tracker start request rejected due to inability to find a task with id: ${taskId}`);
 
@@ -608,8 +609,13 @@ class TaskTracker extends EventEmitter {
 
       // Creating screenshot, if screenshot capture enabled for this user account
       let intervalScreenshot = null;
-      if (currentTrackingFeatures.includes('DESKTOP_SCREENSHOTS')) {
-
+      const mustCapture = this.currentTask?.Project?.screenshotsState === ScreenshotsState.REQUIRED
+      const optionalCapture = this.currentTask?.Project?.screenshotsState === ScreenshotsState.OPTIONAL
+      if (
+        mustCapture
+        || (optionalCapture && currentTrackingFeatures.includes('DESKTOP_SCREENSHOTS'))
+        || (this.currentTask?.Project == null && currentTrackingFeatures.includes('DESKTOP_SCREENSHOTS'))
+      ) {
         try {
 
           // Capture screenshot in the soft-fail manner

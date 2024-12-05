@@ -247,12 +247,12 @@ module.exports.getToken = async () => {
  * Returns current user parameters
  * @return {Object|null} Returns user object if success, null otherwise
  */
-module.exports.getCurrentUser = async () => {
+module.exports.getCurrentUser = async (force = false) => {
 
   try {
 
     // Checking if current user exists in buffer
-    if (_currentUser && _currentUser.id !== 'undefined')
+    if (_currentUser && _currentUser.id !== 'undefined' && force === false)
       return _currentUser;
 
     let user = null;

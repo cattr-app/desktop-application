@@ -4,6 +4,7 @@ const Log = require('../utils/log');
 const Tracker = require('./task-tracker');
 const userPreferences = require('./user-preferences');
 const authentication = require('./authentication');
+const ScreenshotsState = require("../constants/ScreenshotsState");
 
 const log = new Log('OSIntegration');
 
@@ -280,7 +281,7 @@ class OSIntegration extends EventEmitter {
       const user = await authentication.getCurrentUser();
 
       // Do not verify display capture access if screenshot capture is disabled for this user
-      if (!user.screenshotsEnabled)
+      if (user.screenshotsState === ScreenshotsState.FORBIDDEN)
         return { available: true };
 
       // Check is screenshot capture access is granted

@@ -179,49 +179,6 @@ export default {
 
   methods: {
 
-    /**
-     * Displays a notification with the list of enabled tracking features
-     * @param {null|string[]} features List of features from the backend
-     * @returns {Promise.<>}
-     */
-    async displayTrackingFeatures(features) {
-
-      let content = `<p>${this.$t('Cattr set up to track these types of activity:')}</p><ol>`;
-      features.forEach(f => {
-
-        switch (f) {
-
-          case 'APP_MONITORING':
-            content += `<li>${this.$t('Tracking active window title')}</li>`;
-            break;
-
-          case 'DESKTOP_SCREENSHOTS':
-            content += `<li>${this.$t('Capturing desktop screenshots')}</li>`;
-            break;
-
-          default:
-            content += `<li>${f}</li>`;
-            break;
-
-        }
-
-      });
-      content += `</ol><p>${this.$t('Reach your company administrator for more info.')}</p>`;
-      try {
-
-        await this.$alert(content, this.$t('Tracking features'), {
-          dangerouslyUseHTMLString: true,
-          confirmButtonText: 'OK',
-        });
-
-      } catch (_) {
-
-        // Ignore cancel action
-
-      }
-
-    },
-
     async promptForSSO(ssoParams) {
 
       const url = new URL(ssoParams.baseUrl);
@@ -242,7 +199,6 @@ export default {
           // Success
           if (authRequest.code === 200) {
 
-            await this.displayTrackingFeatures(authRequest.body.features);
             await this.$ipc.request('projects/sync', {});
             const tasks = await this.$ipc.request('tasks/sync', {});
             this.$store.dispatch('syncTasks', tasks.body);
@@ -277,7 +233,6 @@ export default {
 
       if (auth.code === 200) {
 
-        await this.displayTrackingFeatures(auth.body.features);
         await this.$store.dispatch('authenticate');
         await this.$ipc.request('projects/sync', {});
         const tasks = await this.$ipc.request('tasks/sync', {});
@@ -285,6 +240,7 @@ export default {
         const totalTime = await this.$ipc.request('time/total', {});
         this.$store.dispatch('totalTimeSync', totalTime.body);
         this.$router.push({ name: 'user.tasks' });
+        await this.$ipc.request('offline-sync/get-public-key', {});
 
       } else {
 

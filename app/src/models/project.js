@@ -23,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
     // Project source (like "internal" or "gitlab" / "jira" / "trello")
     source: DataTypes.STRING,
 
+    screenshotsState: DataTypes.TINYINT,
+
   }, { timestamps: true, paranoid: true });
 
   // Define relations

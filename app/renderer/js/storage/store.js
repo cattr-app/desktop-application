@@ -23,6 +23,8 @@ export default {
     isOfflineModeEnabled: false,
     currentPositionY: 0,
     notSyncedAmount: 0,
+    notSyncedScreenshotsAmount: 0,
+    trackingFeatures: [],
   },
 
   getters: {
@@ -42,6 +44,8 @@ export default {
     isOffline: s => s.isOfflineModeEnabled,
     currentPositionY: s => s.currentPositionY,
     notSyncedAmount: s => s.notSyncedAmount,
+    notSyncedScreenshotsAmount: s => s.notSyncedScreenshotsAmount,
+    trackingFeatures: s => s.trackingFeatures,
   },
 
   mutations: {
@@ -201,9 +205,27 @@ export default {
       state.notSyncedAmount = payload.amount;
 
     },
+
+    notSyncedScreenshotsAmount(state, payload) {
+
+      state.notSyncedScreenshotsAmount = payload.amount;
+
+    },
+
+    setTrackingFeatures(state, payload) {
+
+      state.trackingFeatures = payload;
+
+    }
   },
 
   actions: {
+
+    setTrackingFeatures(context, payload) {
+
+      context.commit('setTrackingFeatures', payload);
+
+    },
 
     setOfflineMode(context, payload) {
 
