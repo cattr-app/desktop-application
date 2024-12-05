@@ -170,9 +170,11 @@ export default {
     this.$ipc.serve('misc/update-not-synced-amount', () => {
 
       this.updateNotSyncedAmount();
+      this.updateNotSyncedScreenshotsAmount();
 
     });
     this.updateNotSyncedAmount();
+    this.updateNotSyncedScreenshotsAmount();
 
     this.$ipc.serve('misc/set-offline-sync-encryption-key', () => {
 
@@ -181,6 +183,12 @@ export default {
     });
     this.fetchOfflineSyncEncryptionKey();
 
+    this.$ipc.serve('misc/features-changed', async req => {
+      this.displayTrackingFeatures(req.packet.body)
+      this.updateTrackingFeatures(req.packet.body)
+    });
+
+    this.updateTrackingFeatures();
   },
 
   methods: {
@@ -195,6 +203,29 @@ export default {
       this.$ipc.emit('window/controls-minimize', {});
 
     },
+
+    updateTrackingFeatures: debounce(async function(features = null) {
+      if (features != null){
+        this.$store.commit('setTrackingFeatures', features)
+        return;
+      }
+
+      try {
+        const req = await this.$ipc.request('misc/get-tracking-features', {});
+
+        if (req.code !== 200)
+          throw new Error(req.body.message);
+
+        features  = req.body.features;
+        this.$store.commit('setTrackingFeatures', features);
+
+      } catch (err) {
+
+        this.$message({ type: 'error', message: `${this.$t('Error')}: ${err}` });
+
+      }
+
+    }, 200),
 
     updateNotSyncedAmount: debounce(async function () {
 
@@ -218,11 +249,74 @@ export default {
 
     }, 2000),
 
+    updateNotSyncedScreenshotsAmount: debounce(async function () {
+
+      try {
+
+        // Fetch intervals from main process
+        const req = await this.$ipc.request('interval/not-synced-screenshots-amount', {});
+
+        if (req.code !== 200)
+          throw new Error(req.body.message);
+
+        const { amount } = req.body;
+
+        this.$store.commit('notSyncedScreenshotsAmount', { amount });
+
+      } catch (err) {
+
+        this.$message({ type: 'error', message: `${this.$t('Error')}: ${err}` });
+
+      }
+
+    }, 2000),
+
     fetchOfflineSyncEncryptionKey: debounce(async function () {
       if (this.authenticated) {
         await this.$ipc.request('offline-sync/get-public-key', {});
       }
     }, 2000),
+
+    displayTrackingFeatures: debounce(async function (features, updated = false) {
+
+      let content = `<p>${this.$t(
+          'Cattr tracking settings were updated:'
+      )}</p><ol>`;
+      features.forEach(f => {
+
+        switch (f) {
+
+          case 'APP_MONITORING':
+            content += `<li>${this.$t('Tracking active window title')}</li>`;
+            break;
+
+          case 'DESKTOP_SCREENSHOTS':
+            content += `<li>${this.$t(
+                'Capturing desktop screenshots',
+            )}</li>`;
+            break;
+
+          case 'DESKTOP_SCREENSHOTS_DISABLED':
+            content += `<li>${this.$t(
+                'Capturing desktop screenshots is disabled (except specific projects)',
+            )}</li>`;
+            break;
+
+          default:
+            content += `<li>${f}</li>`;
+            break;
+
+        }
+
+      });
+      content += `</ol><p>${this.$t(
+          'Reach your company administrator for more info.',
+      )}</p>`;
+      await this.$alert(content, this.$t('Tracking features'), {
+        dangerouslyUseHTMLString: true,
+        confirmButtonText: 'OK',
+      });
+    }, 300)
   },
 };
 </script>

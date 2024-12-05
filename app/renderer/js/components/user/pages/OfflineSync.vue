@@ -44,11 +44,11 @@
       </el-row>
       <el-row class="section">
         <h3 class="section__heading">{{ $t("Screenshots") }}</h3>
-        <p class="section__heading">{{ $t("You've %% not synced intervals.").replaceAll('%%', notSyncedAmount) }}</p>
+        <p class="section__heading">{{ $t("You've %% not synced screenshots.").replaceAll('%%', notSyncedScreenshotsAmount) }}</p>
         <el-button
             size="small"
             type="primary"
-            :disabled="notSyncedAmount === 0"
+            :disabled="notSyncedScreenshotsAmount === 0"
             @click="exportScreenshots"
         >
           {{ $t('Export screenshots') }}
@@ -98,6 +98,16 @@ export default {
       return this.$store.getters.notSyncedAmount;
 
     },
+
+    /**
+     * Returns amount of not synced screenshots
+     * @returns {Integer}
+     */
+    notSyncedScreenshotsAmount() {
+
+      return this.$store.getters.notSyncedScreenshotsAmount;
+
+    },
   },
 
   methods: {
@@ -130,9 +140,9 @@ export default {
       if (projectsRes.code !== 200) {
         return await this.triggerErrorAlert(projectsRes.body, this.$t('Import error'));
       }
-      const tasksRes = await this.$ipc.request('tasks/sync', { offlineImport:  projectsAndTasks});
+      const tasksRes = await this.$ipc.request('tasks/sync', {offlineImport: projectsAndTasks});
       if (tasksRes.code !== 200) {
-          await this.triggerErrorAlert(tasksRes.body, this.$t('Import error'));
+        await this.triggerErrorAlert(tasksRes.body, this.$t('Import error'));
       }
       await this.$store.dispatch('syncProjects', projectsRes.body);
       await this.$store.dispatch('syncTasks', tasksRes.body);

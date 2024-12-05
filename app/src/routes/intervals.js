@@ -78,6 +78,24 @@ module.exports = router => {
 
   });
 
+  /* Get not synced intervals amount */
+  router.serve('interval/not-synced-screenshots-amount', async req => {
+
+    try {
+
+      const amount = (await Interval.fetchNotSyncedScreenshotsAmount());
+
+      return req.send(200, {amount});
+
+    } catch (err) {
+
+      log.error('ERTINT02', 'Error occurred during not synced screenshots amount fetch', err);
+      return req.send(500, {message: 'Error occurred during not synced screenshots amount fetch'});
+
+    }
+
+  });
+
   /* Get not synced intervals */
   router.serve('interval/export-deferred', async req => {
 

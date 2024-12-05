@@ -18,7 +18,7 @@
                     class="project-name clickable"
                     @click="openProject"
             >
-                {{ projectName }}
+                <i class="el-icon-camera" :class="screenshotIconClass"></i> {{ projectName }}
             </p>
         </el-col>
         <el-col
@@ -53,6 +53,7 @@
 
 <script>
 import {formatSeconds} from '../../../helpers/time-format.helper';
+import ScreenshotsState from '../../../../../src/constants/ScreenshotsState'
 
 export default {
     name: 'Task',
@@ -62,6 +63,10 @@ export default {
             required: true,
             type: Object,
         },
+      trackingFeatures: {
+        required: true,
+        type: Array,
+      },
     },
 
     data() {
@@ -112,6 +117,21 @@ export default {
 
             return this.$router.history.current.name === 'user.project';
 
+        },
+
+        screenshotIconClass() {
+          if (this.task?.Project?.screenshotsState === ScreenshotsState.REQUIRED)
+            return 'el-icon-camera__active';
+
+          if (this.task?.Project?.screenshotsState === ScreenshotsState.FORBIDDEN)
+            return 'el-icon-camera__disabled';
+
+          // At this point Project has ScreenshotsState.OPTIONAL falling back to user's setting
+          if (this.trackingFeatures.includes('DESKTOP_SCREENSHOTS_DISABLED')) {
+            return 'el-icon-camera__disabled';
+          }
+
+          return 'el-icon-camera__active';
         },
 
         projectName() {
@@ -367,6 +387,14 @@ export default {
     .project-name {
       font-size: $--font-size-small;
       color: $--color-text-regular;
+      .el-icon-camera{
+        &__active{
+          color: $--color-success;
+        }
+        &__disabled{
+          color: $--color-danger;
+        }
+      }
     }
   }
 }

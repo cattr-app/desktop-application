@@ -126,6 +126,7 @@
     "Intervals": "Интервалы",
     "Screenshots": "Скриншоты",
     "You've %% not synced intervals.": "У Вас %% несинхронизированных интервалов.",
+    "You've %% not synced screenshots.": "У Вас %% несинхронизированных скриншотов.",
     "Export intervals": "Экспортировать интервалы",
     "Don't forget to stop tracking before exporting.": "Не забудьте остановить трекинг перед экспортом.",
     "Intervals export error": "Ошибка экспорта интервалов",
@@ -165,11 +166,11 @@
     "Share error reports": "Отчеты об ошибках",
     "Share error reports with Developers": "Делиться отчетами с разработчиками",
     "Do not share error reports": "Не отправлять отчеты об ошибках",
-    "Cattr set up to track these types of activity:": "Cattr будет собирать следующие данные об активности:",
+    "Cattr tracking settings were updated:": "Настройки отслеживания Cattr были обновлены:",
     "Tracking active window title": "Отслеживание активного приложения",
     "Capturing desktop screenshots": "Запись скриншотов рабочего стола",
+    "Capturing desktop screenshots is disabled (except specific projects)": "Запись скриншотов рабочего стола отключена (кроме определенных проектов)",
     "Reach your company administrator for more info.": "Если у вас есть вопросы, свяжитесь с администратором компании.",
-    "Tracking features": "Отслеживание активности",
-    "Cattr settings was updated. Now we tracking these types of activity:": "Настройки учетной записи были изменены. Теперь мы отслеживаем следующие виды активности:"
+    "Tracking features": "Отслеживание активности"
   }
 }
