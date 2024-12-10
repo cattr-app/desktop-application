@@ -3,7 +3,7 @@ Cattr Desktop App
 Electron desktop application for Cattr  
 
 Minimum system requirements to build the app
-- MacOS: Ventura 13.0  
+- MacOS: Monterey 12.3.1  
 - Windows: 22H2 10.0.19045, 11.0.22621
 - Debian: bullseye+kde 11
 - Ubuntu: LTS 22.04
@@ -11,7 +11,10 @@ Minimum system requirements to build the app
 - Astra linux: orel 2.12
 - CPU: amd64
 
-For build to work, you need to have following dependencies:
+### For build to work, you need to have following dependencies:
+#### MacOS
+You need to install xcode from [official website](https://developer.apple.com/xcode/)
+
 #### Linux (apt based)
 ```bash
 apt-get update
