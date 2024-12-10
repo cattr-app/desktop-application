@@ -32,7 +32,7 @@ yarn -v # 3.2.1
 1. Clone this repository
 2. Install dependencies via `yarn`
 3. Specify version in `package.json` file, for example `"version": "v1.0.0"`,
-4. Run webpack via `yarn build-development` for development verion
+4. Run webpack via `yarn build-development` for development version
 5. When build completes, run `yarn dev` to launch client in development mode
 
 ## Development mode
@@ -42,7 +42,7 @@ Development installation uses different keychain service name and application fo
 1. Clone this repository
 2. Specify version in `package.json` file, for example `"version": "v1.0.0"`,
 3. Build application in production mode via `yarn build-production`
-4. Build executable for your favourite platform (output directory is /target).
+4. Build executable for your favourite platform (output directory is `/target`).
 
 
 How to build executable?
