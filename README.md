@@ -5,21 +5,17 @@ Electron desktop application for Cattr
 For build to work, you need to have following dependencies:
 #### Linux (apt based)
 ```bash
-apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    cmake \
-    curl \
-    python3
+apt-get update
+apt-get install -y build-essential git cmake curl python3
 ```
 ##### Installl nodejs 14.19.0  
 Easiest way to do so is by using nvm, here is the [official guid on how to install it](https://github.com/nvm-sh/nvm?tab=readme-ov-file#install--update-script).  
 
 Now we can use it to install nodejs.  
 ```bash
-nvm install 14.19.0 \
-    && nvm use 14.19.0 \
-    && npm install -g yarn
+nvm install 14.19.0
+nvm use 14.19.0
+npm install -g yarn
 ```
 
 You can verify the installation like so:
