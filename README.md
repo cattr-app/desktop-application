@@ -15,6 +15,9 @@ Now we can use it to install nodejs.
 ```bash
 nvm install 14.19.0
 nvm use 14.19.0
+```
+Install yarn
+```bash
 npm install -g yarn
 ```
 
@@ -37,12 +40,9 @@ Development installation uses different keychain service name and application fo
 
 ## Build production version
 1. Clone this repository
-2. Ensure that all necessary dependencies are installed
-    #### Linux
-        sd
-3. Specify version in `package.json` file, for example `"version": "v1.0.0"`,
-4. Build application in production mode via `yarn build-production`
-5. Build executable for your favourite platform (output directory is /target).
+2. Specify version in `package.json` file, for example `"version": "v1.0.0"`,
+3. Build application in production mode via `yarn build-production`
+4. Build executable for your favourite platform (output directory is /target).
 
 
 How to build executable?
