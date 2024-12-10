@@ -31,7 +31,7 @@ yarn -v # 3.2.1
 ## Launch development version
 1. Clone this repository
 2. Install dependencies via `yarn`
-3. Specify version in `package.json` file, for exaple `"version": "v1.0.0"`,
+3. Specify version in `package.json` file, for example `"version": "v1.0.0"`,
 4. Run webpack via `yarn build-development` for development verion
 5. When build completes, run `yarn dev` to launch client in development mode
 
