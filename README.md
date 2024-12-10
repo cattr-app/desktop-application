@@ -1,12 +1,21 @@
-Cattr Desktop App
+Cattr Desktop App  
 ==========
-Electron desktop application for Cattr
+Electron desktop application for Cattr  
+
+Minimum system requirements to build the app
+- MacOS: Ventura 13.0  
+- Windows: 22H2 10.0.19045, 11.0.22621
+- Debian: bullseye+kde 11
+- Ubuntu: LTS 22.04
+- Alt linux: kworkstation 10
+- Astra linux: orel 2.12
+- CPU: amd64
 
 For build to work, you need to have following dependencies:
 #### Linux (apt based)
 ```bash
 apt-get update
-apt-get install -y build-essential git cmake curl python3
+apt-get install -y git build-essential git cmake curl python3
 ```
 ##### Installl nodejs 14.19.0  
 Easiest way to do so is by using nvm, here is the [official guide on how to install it](https://github.com/nvm-sh/nvm?tab=readme-ov-file#install--update-script).  
