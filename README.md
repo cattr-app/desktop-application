@@ -54,6 +54,8 @@ npm install -g yarn
 ##### Install python3
 Download and install [from official website.](https://www.python.org/downloads/)  
 Don't forget to check `Add python.exe to PATH`, or add it manually later.
+##### Install Visual Studio
+In order to build successfully of Windows, [download and install Visual Studio](https://visualstudio.microsoft.com/downloads/)
 
 ## Launch development version
 1. Clone this repository
