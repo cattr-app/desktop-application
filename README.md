@@ -20,7 +20,7 @@ You need to install xcode from [official website](https://developer.apple.com/xc
 apt-get update
 apt-get install -y git cmake curl python3 build-essential pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
 ```
-##### Installl nodejs 14.19.0  
+##### Installl nodejs 14.19.0 (MacOS & Linux)  
 Easiest way to do so is by using nvm, here is the [official guide on how to install it](https://github.com/nvm-sh/nvm?tab=readme-ov-file#install--update-script).  
 
 Now we can use it to install nodejs.  
