@@ -47,23 +47,22 @@ yarn -v # 3.2.1
 For Docker to work in Windows you may need to enable virtualization in BIOS and [install WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install). The installation process is described in details [in the Docker user manual](https://docs.docker.com/desktop/setup/install/windows-install/).
 
 
-## Launch development version
+## Launch development version (Linux & MacOS only)
 1. Clone this repository and open it's directory
-2. (Windows only) run in PowerShell `docker run -it -v ${PWD}:/project electronuserland/builder:14-wine` next commands should be executed inside running container.
-3. Install dependencies via `yarn`
-4. Specify version, for example `v1.0.0"`
+2. Install dependencies via `yarn`
+3. Specify version, for example `v1.0.0"`
 ```bash
 npm config set git-tag-version false
 npm version v1.0.0
 ```
-5. Run webpack via `yarn build-development` for development version
-6. When build completes, run `yarn dev` to launch client in development mode
+4. Run webpack via `yarn build-development` for development version
+5. When build completes, run `yarn dev` to launch client in development mode
 
 ## Development mode
 Development installation uses different keychain service name and application folder path (with "-develop" suffix).
 
 ## Build production version
-1. Clone this repository and open it's directory
+1. Clone this repository and open its directory
 2. (Windows only) run in PowerShell `docker run -it -v ${PWD}:/project electronuserland/builder:14-wine` next commands should be executed inside running container.
 3. Install dependencies via `yarn`
 4. Specify version, for example `v1.0.0"`
