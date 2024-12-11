@@ -55,7 +55,9 @@ npm install -g yarn
 Download and install [from official website.](https://www.python.org/downloads/)  
 Don't forget to check `Add python.exe to PATH`, or add it manually later.
 ##### Install Visual Studio
-In order to build successfully of Windows, [download and install Visual Studio](https://visualstudio.microsoft.com/downloads/)
+In order to build successfully of Windows, [download and install Visual Studio](https://visualstudio.microsoft.com/downloads/)  
+And install following dependency.
+![Desktop development with C++](vs-dep.png)
 
 ## Launch development version
 1. Clone this repository
