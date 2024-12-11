@@ -65,7 +65,7 @@ Development installation uses different keychain service name and application fo
 1. Clone this repository and open its directory
 2. (Windows only) run in PowerShell `docker run -it -v ${PWD}:/project electronuserland/builder:14-wine` next commands should be executed inside running container.
 3. Install dependencies via `yarn`
-4. Specify version, for example `v1.0.0"`
+4. Specify version, for example `v1.0.0`
 ```bash
 npm config set git-tag-version false
 npm version v1.0.0
