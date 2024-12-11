@@ -39,6 +39,21 @@ node -v # v14.19.0
 yarn -v # 3.2.1
 ```
 
+#### Windows
+##### Installl nodejs 14.19.0
+Easiest way to do so is by using nvm for windows, here is the [official guide on how to install it](https://github.com/coreybutler/nvm-windows?tab=readme-ov-file#install-nvm-windows). 
+Now we can use it to install nodejs.  
+```bash
+nvm install 14.19.0
+nvm use 14.19.0
+```
+Install yarn
+```bash
+npm install -g yarn
+```
+##### Install python3
+Download and install [from official website.](https://www.python.org/downloads/)  
+Don't forget to check `Add python.exe to PATH`, or add it manually later.
 
 ## Launch development version
 1. Clone this repository
