@@ -1,14 +1,18 @@
 name: Build release artifacts
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
+  artifact-metadata: write
 
 jobs:
-  build-and-upload:
+  build-and-attest:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     # electron-builder launches a separate `npm rebuild` while packaging.
@@ -23,26 +27,29 @@ jobs:
           - name: Linux
             os: ubuntu-latest
             package-command: package-linux
-            assets: target/*.AppImage target/*.deb target/*.tar.gz
+            attestation-subject-path: |
+              target/*.AppImage
+              target/*.deb
+              target/*.tar.gz
           - name: Windows
             # Node 14's bundled node-gyp cannot detect newer Visual Studio.
             # windows-2022 provides VS 2022 for the project node-gyp below.
             os: windows-2022
             package-command: package-windows
-            assets: target/*.exe
+            attestation-subject-path: target/*.exe
           - name: macOS
             # macos-13 is no longer available as a standard hosted image.
             # Use the current Intel image so the release remains compatible
             # with existing x64 macOS installations. The build is unsigned.
             os: macos-15-intel
             package-command: package-mac-unsigned
-            assets: target/*.dmg
+            attestation-subject-path: target/*.dmg
 
     steps:
       - name: Check out the release tag
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ github.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
@@ -63,7 +70,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - run: npm --no-git-tag-version version ${{ github.event.release.tag_name }}
+      - run: npm --no-git-tag-version version ${{ github.ref_name }}
 
       - name: Build application
         run: npm run build-release
@@ -71,9 +78,48 @@ jobs:
       - name: Package application
         run: npm run ${{ matrix.package-command }}
 
-      - name: Upload binaries to the release
+      - name: Attest build provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: ${{ matrix.attestation-subject-path }}
+
+      - name: Upload release assets for publishing
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets-${{ matrix.name }}
+          path: ${{ matrix.attestation-subject-path }}
+          if-no-files-found: error
+          retention-days: 1
+
+  publish-release:
+    name: Publish release
+    needs: build-and-attest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download release assets
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-assets-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create draft release with all assets
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ github.ref_name }}
         shell: bash
-        run: gh release upload "$RELEASE_TAG" ${{ matrix.assets }} --clobber
+        run: |
+          shopt -s nullglob
+          assets=(release-assets/*)
+          if (( ${#assets[@]} == 0 )); then
+            echo 'No release assets were downloaded.' >&2
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" --draft --generate-notes "${assets[@]}"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: gh release edit "$RELEASE_TAG" --draft=false
