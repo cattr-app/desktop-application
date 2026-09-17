@@ -20,8 +20,8 @@ jobs:
             package-command: package-linux
             assets: target/*.AppImage target/*.deb target/*.tar.gz
           - name: Windows
-            # node-gyp 8 used by the Node 14 toolchain cannot detect VS 18
-            # on windows-latest. windows-2022 supplies supported VS 2022.
+            # Node 14's bundled node-gyp cannot detect newer Visual Studio.
+            # windows-2022 provides VS 2022 for the project node-gyp below.
             os: windows-2022
             package-command: package-windows
             assets: target/*.exe
@@ -58,9 +58,12 @@ jobs:
       - name: Install dependencies
         env:
           npm_config_python: python
+          # npm bundled with Node 14 invokes node-gyp 5, which cannot detect
+          # VS 2022. Use the project dependency node-gyp 8.4.1 instead.
+          npm_config_node_gyp: ${{ github.workspace }}/node_modules/node-gyp/bin/node-gyp.js
         run: npm ci
 
-      - run: npm --no-git-tag-version version from-git
+      - run: npm --no-git-tag-version version ${{ github.event.release.tag_name }}
 
       - name: Build application
         run: npm run build-release
