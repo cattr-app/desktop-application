@@ -12,8 +12,30 @@ permissions:
   artifact-metadata: write
 
 jobs:
+  create-draft-release:
+    name: Create draft release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create or resume draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          if is_draft=$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq '.isDraft' 2>/dev/null); then
+            if [[ "$is_draft" != 'true' ]]; then
+              echo "Release $RELEASE_TAG is already published and cannot be changed." >&2
+              exit 1
+            fi
+            echo "Draft release $RELEASE_TAG already exists; resuming asset upload."
+          else
+            gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft --generate-notes
+          fi
+
   build-and-attest:
     name: ${{ matrix.name }}
+    needs: create-draft-release
     runs-on: ${{ matrix.os }}
     # electron-builder launches a separate `npm rebuild` while packaging.
     # These settings must therefore apply to every step, not only `npm ci`.
@@ -83,39 +105,6 @@ jobs:
         with:
           subject-path: ${{ matrix.attestation-subject-path }}
 
-      - name: Upload release assets for publishing
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-assets-${{ matrix.name }}
-          path: ${{ matrix.attestation-subject-path }}
-          if-no-files-found: error
-          retention-days: 1
-
-  publish-release:
-    name: Publish release
-    needs: build-and-attest
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download release assets
-        uses: actions/download-artifact@v4
-        with:
-          pattern: release-assets-*
-          path: release-assets
-          merge-multiple: true
-
-      - name: Create draft release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.ref_name }}
-        shell: bash
-        run: |
-          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "Draft release $RELEASE_TAG already exists; resuming asset upload."
-          else
-            gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft --generate-notes
-          fi
-
       - name: Upload release assets to draft
         env:
           GH_TOKEN: ${{ github.token }}
@@ -123,17 +112,29 @@ jobs:
         shell: bash
         run: |
           shopt -s nullglob
-          assets=(release-assets/*)
+          assets=(${{ matrix.attestation-subject-path }})
           if (( ${#assets[@]} == 0 )); then
-            echo 'No release assets were downloaded.' >&2
+            echo 'No release assets were found.' >&2
             exit 1
           fi
           for asset in "${assets[@]}"; do
             echo "Uploading ${asset}..."
-            gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber "$asset"
+            gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber "$asset" &
+            upload_pid=$!
+            while kill -0 "$upload_pid" 2>/dev/null; do
+              echo "$(date -u +%FT%TZ) Upload in progress: ${asset}"
+              sleep 30
+            done
+            wait "$upload_pid"
             echo "Uploaded ${asset}."
           done
 
+  publish-release:
+    name: Publish release
+    needs: build-and-attest
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
