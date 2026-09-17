@@ -11,6 +11,11 @@ jobs:
   build-and-upload:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+    # electron-builder launches a separate `npm rebuild` while packaging.
+    # These settings must therefore apply to every step, not only `npm ci`.
+    env:
+      npm_config_python: python
+      npm_config_node_gyp: ${{ github.workspace }}/node_modules/node-gyp/bin/node-gyp.js
     strategy:
       fail-fast: false
       matrix:
@@ -56,11 +61,6 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        env:
-          npm_config_python: python
-          # npm bundled with Node 14 invokes node-gyp 5, which cannot detect
-          # VS 2022. Use the project dependency node-gyp 8.4.1 instead.
-          npm_config_node_gyp: ${{ github.workspace }}/node_modules/node-gyp/bin/node-gyp.js
         run: npm ci
 
       - run: npm --no-git-tag-version version ${{ github.event.release.tag_name }}
