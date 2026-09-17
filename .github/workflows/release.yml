@@ -20,7 +20,9 @@ jobs:
             package-command: package-linux
             assets: target/*.AppImage target/*.deb target/*.tar.gz
           - name: Windows
-            os: windows-latest
+            # node-gyp 8 used by the Node 14 toolchain cannot detect VS 18
+            # on windows-latest. windows-2022 supplies supported VS 2022.
+            os: windows-2022
             package-command: package-windows
             assets: target/*.exe
           - name: macOS
@@ -49,7 +51,9 @@ jobs:
       - name: Set up Python for node-gyp
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          # Node 14 ships npm/node-gyp 5, which uses Python's removed `rU`
+          # file mode and therefore is incompatible with Python 3.11+.
+          python-version: '3.10'
 
       - name: Install dependencies
         env:
