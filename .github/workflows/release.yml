@@ -24,9 +24,10 @@ jobs:
             package-command: package-windows
             assets: target/*.exe
           - name: macOS
-            # Electron 14 supports Intel macOS builds. This intentionally uses
-            # the unsigned packaging script, so no Apple credentials are needed.
-            os: macos-13
+            # macos-13 is no longer available as a standard hosted image.
+            # Use the current Intel image so the release remains compatible
+            # with existing x64 macOS installations. The build is unsigned.
+            os: macos-15-intel
             package-command: package-mac-unsigned
             assets: target/*.dmg
 
