@@ -104,7 +104,19 @@ jobs:
           path: release-assets
           merge-multiple: true
 
-      - name: Create draft release with all assets
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Draft release $RELEASE_TAG already exists; resuming asset upload."
+          else
+            gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft --generate-notes
+          fi
+
+      - name: Upload release assets to draft
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
@@ -116,7 +128,11 @@ jobs:
             echo 'No release assets were downloaded.' >&2
             exit 1
           fi
-          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft --generate-notes "${assets[@]}"
+          for asset in "${assets[@]}"; do
+            echo "Uploading ${asset}..."
+            gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber "$asset"
+            echo "Uploaded ${asset}."
+          done
 
       - name: Publish release
         env:
