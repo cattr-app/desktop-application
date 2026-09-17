@@ -116,10 +116,10 @@ jobs:
             echo 'No release assets were downloaded.' >&2
             exit 1
           fi
-          gh release create "$RELEASE_TAG" --draft --generate-notes "${assets[@]}"
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft --generate-notes "${assets[@]}"
 
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
-        run: gh release edit "$RELEASE_TAG" --draft=false
+        run: gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft=false
