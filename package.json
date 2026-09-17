@@ -95,9 +95,16 @@
     "webpack-cli": "^4.10.0"
   },
   "optionalDependencies": {
+    "@msgpackr-extract/msgpackr-extract-darwin-arm64": "3.0.4",
+    "@msgpackr-extract/msgpackr-extract-darwin-x64": "3.0.4",
+    "@msgpackr-extract/msgpackr-extract-linux-arm": "3.0.4",
+    "@msgpackr-extract/msgpackr-extract-linux-arm64": "3.0.4",
+    "@msgpackr-extract/msgpackr-extract-linux-x64": "3.0.4",
     "active-win": "^7.7.2",
     "dmg-license": "^1.0.11",
-    "fsevents": "~2.3.2"
+    "ffi-napi": "^4.0.3",
+    "fsevents": "~2.3.2",
+    "ref-wchar-napi": "^1.0.3"
   },
   "engines": {
     "node": "~14.21"
