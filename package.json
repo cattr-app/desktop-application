@@ -96,7 +96,8 @@
   },
   "optionalDependencies": {
     "active-win": "^7.7.2",
-    "dmg-license": "^1.0.11"
+    "dmg-license": "^1.0.11",
+    "fsevents": "~2.3.2"
   },
   "engines": {
     "node": "~14.21"
