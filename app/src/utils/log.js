@@ -10,7 +10,7 @@ const chalk = require('chalk');
 const config = require('../base/config');
 
 const { Sentry: { Sentry } } = require('./sentry');
-const ApiError = require("@cattr/node/src/errors/api");
+const ApiError = require("@amazingcat/node-cattr/src/errors/api");
 
 // Checkings logs directory availability
 if (!fs.existsSync(config.logger.directory))

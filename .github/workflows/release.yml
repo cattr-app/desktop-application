@@ -1,0 +1,59 @@
+name: Build release artifacts
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-upload:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-latest
+            package-command: package-linux
+            assets: target/*.AppImage target/*.deb target/*.tar.gz
+          - name: Windows
+            os: windows-latest
+            package-command: package-windows
+            assets: target/*.exe
+          - name: macOS
+            # Electron 14 supports Intel macOS builds. This intentionally uses
+            # the unsigned packaging script, so no Apple credentials are needed.
+            os: macos-13
+            package-command: package-mac-unsigned
+            assets: target/*.dmg
+
+    steps:
+      - name: Check out the release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.21.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build-release
+
+      - name: Package application
+        run: npm run ${{ matrix.package-command }}
+
+      - name: Upload binaries to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: gh release upload "$RELEASE_TAG" ${{ matrix.assets }} --clobber

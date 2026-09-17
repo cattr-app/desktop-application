@@ -1,4 +1,4 @@
-const Cattr = require('@cattr/node');
+const Cattr = require('@amazingcat/node-cattr');
 const keychain = require('../utils/keychain');
 
 const api = new Cattr();

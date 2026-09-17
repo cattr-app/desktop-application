@@ -1,0 +1,101 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:vue/recommended",
+    "airbnb-base"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "vue"
+  ],
+  "settings": {
+    "import/core-modules": [
+      "electron",
+      "Vue"
+    ],
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".vue"
+        ]
+      }
+    }
+  },
+  "rules": {
+    "max-len": [
+      "warn",
+      {
+        "code": 120,
+        "ignoreTemplateLiterals": true,
+        "ignoreStrings": true
+      }
+    ],
+    "nonblock-statement-body-position": [
+      "warn",
+      "below"
+    ],
+    "operator-linebreak": [
+      "warn",
+      "before"
+    ],
+    "arrow-parens": [
+      "warn",
+      "as-needed"
+    ],
+    "arrow-body-style": [
+      "warn",
+      "as-needed"
+    ],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 2,
+        "maxEOF": 1
+      }
+    ],
+    "max-statements-per-line": [
+      "error",
+      {
+        "max": 2
+      }
+    ],
+    "padded-blocks": [
+      "error",
+      "always"
+    ],
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ],
+    "array-bracket-spacing": [
+      "error",
+      "never"
+    ],
+    "curly": [
+      "error",
+      "multi-or-nest"
+    ],
+    "no-underscore-dangle": [
+      "off"
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ]
+  }
+}

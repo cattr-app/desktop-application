@@ -1,281 +1,117 @@
 {
-	"name": "cattr",
-	"version": "dev",
-	"description": "Desktop client for Cattr",
-	"homepage": "https://cattr.app",
-	"main": "app/src/app.js",
-	"scripts": {
-		"lint": "npx eslint .",
-		"postinstall": "electron-builder install-app-deps && electron-rebuild",
-		"start": "npx electron ./app/src/app.js",
-		"dev": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron .",
-		"no-scr": "npx cross-env AT_MOCK_SCR=yes node_modules/.bin/electron .",
-		"dev-no-scr": "npx cross-env AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
-		"dev-no-scr-no-devtools": "npx cross-env DISABLE_DEVTOOLS=y AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
-		"dev-vue": "npx cross-env AT_DEVMODE=meow REMOTE_DEVTOOLS_ENABLE=true node_modules/.bin/electron .",
-		"dev-win": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron.cmd .",
-		"build-watch": "npm run build-development -- --watch",
-		"build-development": "npx cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
-		"build-production": "npx cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
-		"build-release": "npx cross-env NODE_ENV=production MAKE_RELEASE=yes node_modules/webpack/bin/webpack.js --progress --config=./node_modules/laravel-mix/setup/webpack.config.js",
-		"package-linux": "npx electron-builder -p never -l appimage deb tar.gz",
-		"package-dev-linux": "npx cross-env AT_DEVMODE=meow AT_SENTRY=force npx electron-builder -p never -l appimage deb tar.gz",
-		"package-windows": "npx electron-builder -p never -w portable nsis",
-		"package-dev-windows": "npx cross-env AT_DEVMODE=meow AT_SENTRY=force npx electron-builder -p never -w portable nsis",
-		"package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -p never -m",
-		"package-mac-unsigned": "npx electron-builder -m -p never",
-		"clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
-	},
-	"build": {
-		"appId": "app.cattr",
-		"artifactName": "Cattr.${ext}",
-		"productName": "Cattr",
-		"protocols": [
-			{
-				"name": "Cattr SSO protocol",
-				"schemes": [
-					"cattr"
-				]
-			}
-		],
-		"afterSign": "tools/macos-notarization.js",
-		"afterAllArtifactBuild": "tools/artifact-manifest.js",
-		"asar": "true",
-		"directories": {
-			"buildResources": "resources",
-			"output": "target"
-		},
-		"files": [
-			"app/**",
-			"!app/renderer",
-			"build/**"
-		],
-		"mac": {
-			"target": "dmg",
-			"category": "public.app-category.productivity",
-			"hardenedRuntime": true,
-			"gatekeeperAssess": false,
-			"extendInfo": {
-				"NSAppleEventsUsageDescription": "Please allow access to script browser applications to detect the current URL when triggering instant lookup.",
-				"NSUserNotificationAlertStyle": "alert",
-				"CFBundleURLTypes": [
-					{
-						"CFBundleTypeRole": "Viewer",
-						"CFBundleURLName": "app.cattr.sso",
-						"CFBundleURLSchemes": [
-							"cattr"
-						]
-					}
-				]
-			}
-		},
-		"linux": {
-			"icon": "./resources/icons",
-			"synopsis": "Desktop time tracking application",
-			"target": "AppImage",
-			"category": "Office",
-			"desktop": {
-				"Name": "Cattr",
-				"Terminal": "false",
-				"Type": "Application",
-				"Keywords": "time;tracker;cattr;tracking;",
-				"MimeType": "x-scheme-handler/cattr;"
-			}
-		},
-		"win": {
-			"publisherName": "amazingcat LLC",
-			"icon": "icon.ico"
-		},
-		"nsis": {
-			"oneClick": false,
-			"perMachine": false,
-			"artifactName": "Cattr_Setup.${ext}"
-		},
-		"appx": {
-			"identityName": "AmazingcatLLC.Cattr",
-			"displayName": "Cattr",
-			"publisher": "CN=3CE10A6B-6A65-461A-A33A-E6AD2673F412",
-			"publisherDisplayName": "amazingcat LLC",
-			"languages": [
-				"en-US",
-				"ru-RU"
-			]
-		}
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/cattr-app/desktop-application"
-	},
-	"author": {
-		"name": "amazingcat LLC",
-		"email": "team@amazingcat.net"
-	},
-	"license": "SSPL-1.0",
-	"eslintConfig": {
-		"env": {
-			"browser": true,
-			"node": true
-		},
-		"extends": [
-			"eslint:recommended",
-			"plugin:vue/recommended",
-			"airbnb-base"
-		],
-		"globals": {
-			"Atomics": "readonly",
-			"SharedArrayBuffer": "readonly"
-		},
-		"parserOptions": {
-			"ecmaVersion": 2021,
-			"sourceType": "module"
-		},
-		"plugins": [
-			"vue"
-		],
-		"settings": {
-			"import/core-modules": [
-				"electron",
-				"Vue"
-			],
-			"import/resolver": {
-				"node": {
-					"extensions": [
-						".js",
-						".jsx",
-						".vue"
-					]
-				}
-			}
-		},
-		"rules": {
-			"max-len": [
-				"warn",
-				{
-					"code": 120,
-					"ignoreTemplateLiterals": true,
-					"ignoreStrings": true
-				}
-			],
-			"nonblock-statement-body-position": [
-				"warn",
-				"below"
-			],
-			"operator-linebreak": [
-				"warn",
-				"before"
-			],
-			"arrow-parens": [
-				"warn",
-				"as-needed"
-			],
-			"arrow-body-style": [
-				"warn",
-				"as-needed"
-			],
-			"no-multiple-empty-lines": [
-				"error",
-				{
-					"max": 2,
-					"maxEOF": 1
-				}
-			],
-			"max-statements-per-line": [
-				"error",
-				{
-					"max": 2
-				}
-			],
-			"padded-blocks": [
-				"error",
-				"always"
-			],
-			"object-curly-spacing": [
-				"error",
-				"always"
-			],
-			"array-bracket-spacing": [
-				"error",
-				"never"
-			],
-			"curly": [
-				"error",
-				"multi-or-nest"
-			],
-			"no-underscore-dangle": [
-				"off"
-			],
-			"import/no-extraneous-dependencies": [
-				"error",
-				{
-					"devDependencies": true
-				}
-			]
-		}
-	},
-	"eslintIgnore": [
-		"node_modules",
-		"build",
-		"target",
-		"resources"
-	],
-	"dependencies": {
-		"@amazingcat/electron-ipc-router": "1.3.2",
-		"@cattr/node": "^4.0.0-RC5",
-		"@sentry/electron": "^2.5.4",
-		"axios": "^0.27.2",
-		"chalk": "^4.1.2",
-		"electron-hotkey": "0.0.1-alpha.1",
-		"fflate": "^0.8.1",
-		"is-plain-obj": "^4.1.0",
-		"keytar": "^7.9.0",
-		"lodash": "^4.17.21",
-		"msgpackr": "^1.10.1",
-		"nanoid": "^3.3.4",
-		"semver": "^7.3.7",
-		"sequelize": "^6.37.3",
-		"sqlite3": "^5.1.5",
-		"umzug": "^2.3.0",
-		"uuid": "^8.3.2"
-	},
-	"devDependencies": {
-		"@babel/runtime": "^7.19.0",
-		"@sentry/browser": "^6.19.7",
-		"@sentry/integrations": "^6.19.7",
-		"@sentry/webpack-plugin": "^1.19.0",
-		"cross-env": "^7.0.3",
-		"debug": "^4.3.4",
-		"dompurify": "^2.4.0",
-		"dotenv": "^10.0.0",
-		"electron": "14.2.9",
-		"electron-builder": "^23.6.0",
-		"electron-notarize": "^1.2.1",
-		"electron-rebuild": "^3.2.9",
-		"element-theme-chalk": "^2.15.10",
-		"element-ui": "^2.15.10",
-		"eslint": "^7.32.0",
-		"eslint-config-airbnb-base": "^14.2.1",
-		"eslint-plugin-import": "^2.26.0",
-		"eslint-plugin-vue": "^7.20.0",
-		"fstream": "^1.0.12",
-		"laravel-mix": "^6.0.49",
-		"marked": "^2.1.3",
-		"mini-css-extract-plugin": "^2.6.1",
-		"minimist": "^1.2.6",
-		"node-abi": "^2.30.1",
-		"postcss": "^8.4.31",
-		"sass": "~1.32.13",
-		"sass-loader": "^12.6.0",
-		"vue": "2.7.10",
-		"vue-i18n": "^8.27.2",
-		"vue-loader": "15.10.0",
-		"vue-router": "^3.6.5",
-		"vue-template-compiler": "2.7.10",
-		"vuedraggable": "^2.24.3",
-		"vuex": "^3.6.2"
-	},
-	"optionalDependencies": {
-		"active-win": "^7.7.2"
-	},
-	"packageManager": "yarn@3.2.1",
-	"stableVersion": "3.0.0-RC3"
+  "name": "cattr",
+  "version": "0.0.0",
+  "description": "Desktop client for Cattr",
+  "homepage": "https://cattr.app",
+  "main": "app/src/app.js",
+  "scripts": {
+    "lint": "npx eslint .",
+    "postinstall": "electron-builder install-app-deps && electron-rebuild",
+    "start": "npx electron ./app/src/app.js",
+    "dev": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron .",
+    "no-scr": "npx cross-env AT_MOCK_SCR=yes node_modules/.bin/electron .",
+    "dev-no-scr": "npx cross-env AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
+    "dev-no-scr-no-devtools": "npx cross-env DISABLE_DEVTOOLS=y AT_DEVMODE=meow AT_MOCK_SCR=yes node_modules/.bin/electron .",
+    "dev-vue": "npx cross-env AT_DEVMODE=meow REMOTE_DEVTOOLS_ENABLE=true node_modules/.bin/electron .",
+    "dev-win": "npx cross-env AT_DEVMODE=meow node_modules/.bin/electron.cmd .",
+    "build-watch": "npm run build-development -- --watch",
+    "build-development": "cross-env NODE_ENV=development webpack --progress --config=./webpack.config.js",
+    "build-production": "cross-env NODE_ENV=production webpack --progress --config=./webpack.config.js",
+    "build-release": "cross-env NODE_ENV=production MAKE_RELEASE=yes webpack --progress --config=./webpack.config.js",
+    "package-linux": "npx electron-builder -p never -l appimage deb tar.gz",
+    "package-dev-linux": "npx cross-env AT_DEVMODE=meow AT_SENTRY=force npx electron-builder -p never -l appimage deb tar.gz",
+    "package-windows": "npx electron-builder -p never -w portable nsis",
+    "package-dev-windows": "npx cross-env AT_DEVMODE=meow AT_SENTRY=force npx electron-builder -p never -w portable nsis",
+    "package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -p never -m",
+    "package-mac-unsigned": "npx electron-builder -m -p never",
+    "clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
+  },
+  "repository": "github:cattr-app/desktop-application",
+  "author": {
+    "name": "amazingcat LLC",
+    "email": "team@amazingcat.net"
+  },
+  "license": "SSPL-1.0",
+  "dependencies": {
+    "@amazingcat/electron-ipc-router": "^1.3.3",
+    "@amazingcat/node-cattr": "^4.1.0",
+    "@sentry/electron": "^2.5.4",
+    "axios": "^0.27.2",
+    "chalk": "^4.1.2",
+    "electron-hotkey": "0.0.1-alpha.1",
+    "fflate": "^0.8.1",
+    "is-plain-obj": "^4.1.0",
+    "keytar": "^7.9.0",
+    "lodash": "^4.17.21",
+    "msgpackr": "^1.10.1",
+    "nanoid": "^3.3.4",
+    "semver": "^7.3.7",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.6",
+    "umzug": "^2.3.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/runtime": "^7.19.0",
+    "@sentry/browser": "^6.19.7",
+    "@sentry/integrations": "^6.19.7",
+    "@sentry/webpack-plugin": "^1.19.0",
+    "autoprefixer": "^10.6.1",
+    "babel-loader": "^8.4.1",
+    "cross-env": "^7.0.3",
+    "css-loader": "^5.2.7",
+    "debug": "^4.3.4",
+    "dompurify": "^2.4.0",
+    "dotenv": "^10.0.0",
+    "electron": "14.2.9",
+    "electron-builder": "^23.6.0",
+    "electron-notarize": "^1.2.1",
+    "electron-rebuild": "^3.2.9",
+    "element-theme-chalk": "^2.15.10",
+    "element-ui": "^2.15.10",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-vue": "^7.20.0",
+    "fstream": "^1.0.12",
+    "marked": "^2.1.3",
+    "mini-css-extract-plugin": "^2.6.1",
+    "minimist": "^1.2.6",
+    "node-abi": "^2.30.1",
+    "postcss": "^8.4.31",
+    "postcss-loader": "^6.2.1",
+    "sass": "~1.32.13",
+    "sass-loader": "^12.6.0",
+    "vue": "2.7.10",
+    "vue-i18n": "^8.27.2",
+    "vue-loader": "15.10.0",
+    "vue-router": "^3.6.5",
+    "vue-template-compiler": "2.7.10",
+    "vuedraggable": "^2.24.3",
+    "vuex": "^3.6.2",
+    "webpack": "^5.111.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "optionalDependencies": {
+    "active-win": "^7.7.2"
+  },
+  "packageManager": "npm@12.0.2+sha512.b885e890b9418fa1693544d05f53e64f9a73ec194837d4258b15fecdd692347b1dd2a517b1b0cbaf9d31cd8e92c3b70956bd2ecc72833a57b4b3098f5bfa7943",
+  "volta": {
+    "node": "24.21.0",
+    "npm": "12.0.2"
+  },
+  "allowScripts": {
+    "@sentry/cli@1.77.3": true,
+    "core-js@2.6.12": true,
+    "electron@14.2.9": true,
+    "ffi-napi@4.0.3": true,
+    "iconv@2.3.5": true,
+    "keytar@7.9.0": true,
+    "lzma-native@8.0.6": true,
+    "msgpackr-extract@3.0.4": true,
+    "ref-napi@3.0.3": true,
+    "sqlite3@5.1.6": true
+  }
 }

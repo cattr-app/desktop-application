@@ -1,0 +1,76 @@
+{
+  "appId": "app.cattr",
+  "artifactName": "Cattr.${ext}",
+  "productName": "Cattr",
+  "protocols": [
+    {
+      "name": "Cattr SSO protocol",
+      "schemes": [
+        "cattr"
+      ]
+    }
+  ],
+  "afterSign": "tools/macos-notarization.js",
+  "afterAllArtifactBuild": "tools/artifact-manifest.js",
+  "asar": "true",
+  "directories": {
+    "buildResources": "resources",
+    "output": "target"
+  },
+  "files": [
+    "app/**",
+    "!app/renderer",
+    "build/**"
+  ],
+  "mac": {
+    "target": "dmg",
+    "category": "public.app-category.productivity",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "extendInfo": {
+      "NSAppleEventsUsageDescription": "Please allow access to script browser applications to detect the current URL when triggering instant lookup.",
+      "NSUserNotificationAlertStyle": "alert",
+      "CFBundleURLTypes": [
+        {
+          "CFBundleTypeRole": "Viewer",
+          "CFBundleURLName": "app.cattr.sso",
+          "CFBundleURLSchemes": [
+            "cattr"
+          ]
+        }
+      ]
+    }
+  },
+  "linux": {
+    "icon": "./resources/icons",
+    "synopsis": "Desktop time tracking application",
+    "target": "AppImage",
+    "category": "Office",
+    "desktop": {
+      "Name": "Cattr",
+      "Terminal": "false",
+      "Type": "Application",
+      "Keywords": "time;tracker;cattr;tracking;",
+      "MimeType": "x-scheme-handler/cattr;"
+    }
+  },
+  "win": {
+    "publisherName": "amazingcat LLC",
+    "icon": "icon.ico"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "artifactName": "Cattr_Setup.${ext}"
+  },
+  "appx": {
+    "identityName": "AmazingcatLLC.Cattr",
+    "displayName": "Cattr",
+    "publisher": "CN=3CE10A6B-6A65-461A-A33A-E6AD2673F412",
+    "publisherDisplayName": "amazingcat LLC",
+    "languages": [
+      "en-US",
+      "ru-RU"
+    ]
+  }
+}

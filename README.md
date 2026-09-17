@@ -42,8 +42,6 @@ yarn -v # 3.2.1
 #### Windows
 ##### Download and install Docker Desktop from the [official site](https://www.docker.com/).
 
-![docker](docker-desktop.png)
-
 For Docker to work in Windows you may need to enable virtualization in BIOS and [install WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install). The installation process is described in details [in the Docker user manual](https://docs.docker.com/desktop/setup/install/windows-install/).
 
 
