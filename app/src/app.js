@@ -6,7 +6,6 @@ const config = require('./base/config');
 const appIcons = require('./utils/icons');
 
 const { WEBCONTENTS_ALLOWED_PROTOCOLS } = require('./constants/url');
-const userPreferences = require('./base/user-preferences');
 
 /**
  * Object, containing Electron browser window
@@ -77,7 +76,7 @@ app.once('ready', async () => {
   require('./components')();
 
   /**
-   * Loads a page into browser window + passing Sentry configuration
+   * Loads a page into browser window
    * @param  {String} page Page to load
    * @return {Boolean}     Returns true if succeed
    */
@@ -90,23 +89,8 @@ app.once('ready', async () => {
     if (!fs.existsSync(pathToPage))
       throw new Error(`Requested page ${page} was not found`);
 
-    // Encoding the Sentry configuration
-    let sentryConfiguration = {};
-
-    // Cloning the original configuration
-    Object.assign(sentryConfiguration, config.sentry);
-
-    // Removing large but useless field which can potentialy broke Sentry on renderer
-    delete sentryConfiguration.defaultIntegrations;
-
-    // Apply user's decision on error reporting
-    sentryConfiguration.enabled = config.sentry.enabled && userPreferences.get('errorReporting');
-
-    // Encode to JSON, then encode to URIEncoded
-    sentryConfiguration = encodeURIComponent(JSON.stringify(sentryConfiguration));
-
     // Load this page
-    window.loadURL(`file://${pathToPage}?sentry=${sentryConfiguration}`);
+    window.loadURL(`file://${pathToPage}`);
     return true;
 
   };
@@ -142,17 +126,6 @@ app.once('ready', async () => {
       cspValue += "script-src 'self' 'unsafe-eval';";
     else
       cspValue += "script-src 'self';";
-
-    // If Sentry is enabled, inject also a connect-src CSP allowing requests to Sentry host
-    if (config.sentry.enabled && userPreferences.get('errorReporting')) {
-
-      // Parse frontend's DSN to extract the host
-      const frontendDsnUrl = new URL(config.sentry.dsnFrontend);
-
-      // Inject connect-src policy allowing connections to self and Sentry hostname
-      cspValue += `connect-src 'self' ${frontendDsnUrl.origin};`;
-
-    }
 
     // Returning injection by callback
     callback({

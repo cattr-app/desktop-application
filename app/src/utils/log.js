@@ -9,7 +9,6 @@ const { resolve } = require('path');
 const chalk = require('chalk');
 const config = require('../base/config');
 
-const { Sentry: { Sentry } } = require('./sentry');
 const ApiError = require("@amazingcat/node-cattr/src/errors/api");
 
 // Checkings logs directory availability
@@ -24,7 +23,7 @@ const logStream = fs.createWriteStream(resolve(config.logger.directory, logFileN
 logStream.on('open', () => {
 
   // Say hi
-  console.log(`Hello / ${config.sentry.release} in ${config.isDeveloperModeEnabled ? 'dev' : 'prod'} mode`);
+  console.log(`Hello / ${config.packageVersion} in ${config.isDeveloperModeEnabled ? 'dev' : 'prod'} mode`);
 
 });
 
@@ -155,10 +154,6 @@ class Logger {
           ...error.context
         }, null, 2);
 
-        // Suppress submission of validation errors to Sentry
-        if (error.message !== 'Validation error')
-          this.constructor.captureApiError(message, error);
-
         // Log error into stderr
         console.error(`${chalk.red('[E]')} ${chalk.dim(`[${Logger._getFormattedDateTime()}]`)} ${chalk.green(`[${this.moduleName}]`)} ${chalk.red(`(API${error.statusCode}) ${message}: ${error}\n<BEGIN CONTEXT>\n${errorContext}\n<END CONTEXT>\n<BEGIN STACK TRACE>\n${stack}\n<END STACK TRACE>`)}`);
 
@@ -193,8 +188,6 @@ class Logger {
 
       }
 
-      // Capture Error in Sentry
-      Sentry.captureException(error);
       return;
 
     }
@@ -203,7 +196,7 @@ class Logger {
     if (typeof arguments_[0] === 'string' && typeof arguments_[1] === 'string') {
 
       // Getting error code and message variables from passed arguments
-      const [code, message, disableCapture] = arguments_;
+      const [code, message] = arguments_;
 
       // Obtaining stack trace to logger call
       const errorInstance = new Error(message);
@@ -219,32 +212,7 @@ class Logger {
       if (logStream.writable)
         logStream.write(`[E] [${Logger._getFormattedDateTime()}] [${this.moduleName}] (${code}) ${message}\n<BEGIN STACK TRACE>\n${stackTrace}\n<END STACK TRACE>\n`);
 
-      // Send to Sentry
-      if (!disableCapture)
-        Sentry.captureException(errorInstance);
-
     }
-
-  }
-
-  /**
-   * Capture an API error to Sentry
-   * @param  {String} message       Message for this error
-   * @param  {Object} responseError Axios response error object
-   */
-  static captureApiError(message, responseError) {
-
-    Sentry.withScope(scope => {
-
-      scope.setLevel('error');
-      scope.setTag('api_error', true);
-      scope.setTag('api_response_code', responseError.statusCode);
-      scope.setTag('api_request_url', responseError.url);
-      scope.setExtra('api_response_body', responseError.responseBody);
-      scope.setExtra('api_request_body', responseError.requestBody);
-      Sentry.captureMessage(message);
-
-    });
 
   }
 

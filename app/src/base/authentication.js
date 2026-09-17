@@ -7,7 +7,6 @@ const { UIError } = require('../utils/errors');
 const db = require('../models');
 const OfflineUser = require('../controller/offline-user');
 const OfflineMode = require('./offline-mode');
-const Sentry = require('../utils/sentry');
 const trackingFeatures = require('../controller/tracking-features');
 
 const log = new Log('AuthenticationProvider');
@@ -36,9 +35,6 @@ let _currentUser = null;
  */
 module.exports.events = new EventEmitter();
 
-// Save company identifier to Sentry
-module.exports.events.once('company-instance-fetched', cid => Sentry.configureScope(s => s.setTag('companyIdentifier', cid)));
-
 /**
  * Fetches company identifier
  * @async
@@ -46,7 +42,7 @@ module.exports.events.once('company-instance-fetched', cid => Sentry.configureSc
  */
 const fetchCompanyIdentifier = async () => {
 
-  // Fetch company identifier submittable to Sentry
+  // Fetch company identifier
   try {
 
     const companyDetails = await api.company.about();

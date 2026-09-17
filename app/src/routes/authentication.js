@@ -199,9 +199,6 @@ module.exports = router => {
 
   });
 
-  // Pass company identifier to Sentry on frontend
-  auth.events.once('company-instance-fetched', cid => router.emit('auth/company-instance-fetched', { cid }));
-
   // Pass detected SSO URLs from duplicating instances
   auth.events.on('sso-detected', ssoParams => router.emit('auth/sso-detected', ssoParams));
 

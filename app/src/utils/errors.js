@@ -1,6 +1,5 @@
 /* Error suppressed because this warning doesn't make much sense  */
 /* eslint-disable max-classes-per-file */
-const Sentry = require('./sentry');
 
 class UIError extends Error {
 
@@ -47,9 +46,6 @@ class AppError extends Error {
     // Set our error name and code
     this.name = this.constructor.name;
     this.code = errorId;
-
-    // Push to Sentry
-    Sentry.captureException(this);
 
   }
 

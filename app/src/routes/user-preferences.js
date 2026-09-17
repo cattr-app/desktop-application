@@ -22,7 +22,6 @@ module.exports = router => {
           package: config.packageId,
           number: config.packageVersion,
           devMode: config.isDeveloperModeEnabled,
-          sentry: config.sentry.enabled,
         },
       });
 

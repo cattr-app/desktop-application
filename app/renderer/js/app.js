@@ -1,8 +1,6 @@
 import { ipcRenderer } from 'electron';
 import Vue from 'vue';
 import IPCRouter from '@amazingcat/electron-ipc-router';
-import * as Sentry from '@sentry/browser';
-import * as Integrations from '@sentry/integrations';
 import VueI18n from 'vue-i18n';
 import Element from 'element-ui';
 
@@ -38,71 +36,6 @@ Vue.use(Element);
 
   // Initialize IPC
   Vue.prototype.$ipc = new IPCRouter(ipcRenderer);
-
-  // Initialise Sentry
-  (() => {
-
-    // eslint-disable-next-line no-restricted-globals
-    let sentryConfig = new URL(location.href);
-    if (!sentryConfig.searchParams.has('sentry'))
-      return;
-
-    // Extract Sentry configuration from query params
-    sentryConfig = JSON.parse(sentryConfig.searchParams.get('sentry'));
-
-    if (!sentryConfig.enabled)
-      return;
-
-    Sentry.init({
-      dsn: sentryConfig.dsnFrontend,
-      release: sentryConfig.release,
-      integrations: [new Integrations.Vue({ Vue, attachProps: true })],
-
-      // Patching error report right before sending to normalize frontend paths
-      beforeSend: data => {
-
-        // Filter only requests with known structure which we can modify
-        if (!data || !data.exception || !data.exception.values)
-          return data;
-
-        // Iterate over exceptions
-        // eslint-disable-next-line no-param-reassign
-        data.exception.values = data.exception.values.map(exception => {
-
-          // Filter only exceptions we can modify
-          if (!exception.stacktrace || !exception.stacktrace.frames)
-            return exception;
-
-          // Rewrite exception file path to "build/app.js" since we always
-          // building frontend into the single bundle
-          // eslint-disable-next-line no-param-reassign
-          exception.stacktrace.frames = exception.stacktrace.frames.map(frame => {
-
-            // Modify only exceptions with the "filename" property
-            if (frame.filename)
-              frame.filename = 'build/app.js'; // eslint-disable-line no-param-reassign
-
-            return frame;
-
-          });
-
-          return exception;
-
-        });
-
-        return data;
-
-      },
-    });
-
-    // Populate Sentry error reports with company identifier
-    Vue.prototype.$ipc.serve(
-      'auth/company-instance-fetched',
-      req => Sentry.configureScope(scope => scope.setTag('companyIdentifier', req.packet.body.cid)),
-    );
-
-
-  })();
 
   // Initialise translations
   const i18n = await (async () => {

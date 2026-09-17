@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
-const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const autoprefixer = require('autoprefixer');
 
 const projectRoot = __dirname;
@@ -78,40 +77,6 @@ const plugins = [
   new MiniCssExtractPlugin({ filename: 'app.css' }),
   new CopyStaticAssetsPlugin(),
 ];
-
-if (isProduction && process.env.MAKE_RELEASE) {
-
-  // eslint-disable-next-line global-require
-  const packageManifest = require('./package.json');
-
-  // eslint-disable-next-line global-require
-  const sentryConfiguration = require('./.sentry.json');
-
-  plugins.push(
-    new SentryWebpackPlugin({
-      include: 'build',
-      urlPrefix: 'build/',
-      ignore: ['app.css.map'],
-      configFile: '.sentry.renderer',
-      release: `${packageManifest.name}@${packageManifest.version}`,
-      setCommits: { auto: true },
-      url: sentryConfiguration.url,
-      org: sentryConfiguration.org,
-      project: sentryConfiguration.frontend.project,
-    }),
-    new SentryWebpackPlugin({
-      include: 'app/src',
-      urlPrefix: 'app/src/',
-      configFile: '.sentry.main',
-      release: `${packageManifest.name}@${packageManifest.version}`,
-      setCommits: { auto: true },
-      url: sentryConfiguration.url,
-      org: sentryConfiguration.org,
-      project: sentryConfiguration.backend.project,
-    }),
-  );
-
-}
 
 module.exports = {
   mode: isProduction ? 'production' : 'development',

@@ -41,23 +41,6 @@ const configuration = {
 
 };
 
-// Sentry error handling
-configuration.sentry = {
-
-  // Is Sentry enabled?
-  enabled: !isDeveloperModeEnabled || process.env.AT_SENTRY === 'force',
-
-  // Main application DSN
-  dsn: 'https://b0ab7e30102244948431ecf5b1eb9c9a@sentry.amazingcat.net/15',
-
-  // Frontend application DSN
-  dsnFrontend: 'https://00bd1ee1db824310812252bb96e96945@sentry.amazingcat.net/14',
-
-  // Setting the current release
-  release: `cattr@${packageVersion}`,
-
-};
-
 // Ensure that application data directory actually exists
 if (!fs.existsSync(configuration.appdata))
   fs.mkdirSync(configuration.appdata);

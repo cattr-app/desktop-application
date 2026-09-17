@@ -203,17 +203,6 @@ const showBrowserNotification = async (screenshot, interval) => {
     else
       cspValue += "script-src 'self' 'unsafe-inline';";
 
-    // If Sentry is enabled, inject also a connect-src CSP allowing requests to Sentry host
-    if (config.sentry.enabled && userPreferences.get('errorReporting')) {
-
-      // Parse frontend's DSN to extract the host
-      const frontendDsnUrl = new URL(config.sentry.dsnFrontend);
-
-      // Inject connect-src policy allowing connections to self and Sentry hostname
-      cspValue += `connect-src 'self' ${frontendDsnUrl.origin};`;
-
-    }
-
     // Returning injection by callback
     callback({
       responseHeaders: {

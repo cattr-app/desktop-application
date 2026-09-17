@@ -70,7 +70,6 @@
         Cattr {{ version.number }} 💖 
         <br>
         {{ version.devMode ? '+dev ' : '' }}
-        {{ version.sentry ? '+sentry' : '' }}
       </small>
     </div>
   </el-container>
