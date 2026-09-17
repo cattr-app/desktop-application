@@ -40,11 +40,20 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24.21.0
+          node-version: 14.21
           cache: npm
 
+      - name: Set up Python for node-gyp
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Install dependencies
+        env:
+          npm_config_python: python
         run: npm ci
+
+      - run: npm --no-git-tag-version version from-git
 
       - name: Build application
         run: npm run build-release
