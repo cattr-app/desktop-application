@@ -5,8 +5,8 @@ Cross-platform Electron desktop client for [Cattr](https://cattr.app/). The appl
 ## Build requirements
 
 - x64 macOS, Windows, or Linux
-- Node.js `14.21.x` (the version range declared in `package.json`)
-- npm `9.9.4` (the package manager pinned in `package.json`)
+- Node.js `14.21.x`
+- npm `9.9.4`
 - Python 3.10 and a native C/C++ toolchain for native Node modules
 - Git
 
