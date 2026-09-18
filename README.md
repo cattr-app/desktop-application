@@ -1,83 +1,120 @@
-Cattr Desktop App  
-==========
-Electron desktop application for Cattr  
+# Cattr Desktop App
 
-Minimum system requirements to build the app
-- MacOS: Monterey 12.3.1  
-- Windows: 22H2 10.0.19045, 11.0.22621
-- Debian: bullseye+kde 11
-- Ubuntu: LTS 22.04
-- Alt linux: kworkstation 10
-- Astra linux: orel 2.12
-- CPU: amd64
+Cross-platform Electron desktop client for [Cattr](https://cattr.app/). The application uses Electron 14, Vue 2, Webpack 5, SQLite/Sequelize, and electron-builder.
 
-### For build to work, you need to have following dependencies:
-#### MacOS
-You need to install xcode from [official website](https://developer.apple.com/xcode/)
+## Build requirements
 
-#### Linux (apt based)
+- x64 macOS, Windows, or Linux
+- Node.js `14.21.x` (the version range declared in `package.json`)
+- npm `9.9.4` (the package manager pinned in `package.json`)
+- Python 3.10 and a native C/C++ toolchain for native Node modules
+- Git
+
+The current Node.js and Electron versions are compatibility constraints of the existing native dependency stack. Do not assume that a newer host Node.js version is a drop-in replacement.
+
+### Platform prerequisites
+
+#### macOS
+
+Install Xcode from the [Apple Developer website](https://developer.apple.com/xcode/). A signed and notarized package also requires an Apple signing identity and App Store Connect API credentials.
+
+#### Debian/Ubuntu and other apt-based distributions
+
 ```bash
-apt-get update
-apt-get install -y git cmake curl python3 build-essential pkg-config libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
-```
-##### Installl nodejs 14.19.0 (MacOS & Linux)  
-Easiest way to do so is by using nvm, here is the [official guide on how to install it](https://github.com/nvm-sh/nvm?tab=readme-ov-file#install--update-script).  
-
-Now we can use it to install nodejs.  
-```bash
-nvm install 14.19.0
-nvm use 14.19.0
-```
-Install yarn
-```bash
-npm install -g yarn
-```
-
-You can verify the installation like so:
-```bash
-node -v # v14.19.0
-yarn -v # 3.2.1
+sudo apt-get update
+sudo apt-get install -y git cmake curl python3 build-essential pkg-config \
+  libsecret-1-0 libsecret-1-dev ca-certificates openssh-client dpkg-dev dpkg-sig
 ```
 
 #### Windows
-##### Download and install Docker Desktop from the [official site](https://www.docker.com/).
 
-For Docker to work in Windows you may need to enable virtualization in BIOS and [install WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install). The installation process is described in details [in the Docker user manual](https://docs.docker.com/desktop/setup/install/windows-install/).
+Install Python 3.10 and Visual Studio 2022 Build Tools with the **Desktop development with C++** workload. Docker is not required for a native Windows build.
 
+### Node.js and npm
 
-## Launch development version (Linux & MacOS only)
-1. Clone this repository and open it's directory
-2. Install dependencies via `yarn`
-3. Specify version, for example `v1.0.0"`
+Use a version manager such as [nvm](https://github.com/nvm-sh/nvm) or its equivalent to install Node.js `14.21.x`, then install the npm version pinned by this repository:
+
 ```bash
-npm config set git-tag-version false
-npm version v1.0.0
+npm install --global npm@9.9.4
+node --version
+npm --version
 ```
-4. Run webpack via `yarn build-development` for development version
-5. When build completes, run `yarn dev` to launch client in development mode
 
-## Development mode
-Development installation uses different keychain service name and application folder path (with "-develop" suffix).
+Expected versions are Node.js `v14.21.x` and npm `9.9.4`.
 
-## Build production version
-1. Clone this repository and open its directory
-2. (Windows only) run in PowerShell `docker run -it -v ${PWD}:/project electronuserland/builder:14-wine` next commands should be executed inside running container.
-3. Install dependencies via `yarn`
-4. Specify version, for example `v1.0.0`
+## Development
+
+Install the exact dependency versions from `package-lock.json`:
+
 ```bash
-npm config set git-tag-version false
-npm version v1.0.0
+npm ci
 ```
-5. Build application in production mode via `yarn build-production`
-6. Build executable for your favourite platform (output directory is `/target`).
 
+Build the renderer, then start Electron:
 
-How to build executable?
-  - **macOS:** `yarn package-mac` will produce signed & notarized DMG
-  - **Linux:** `yarn package-linux` will produce Tarball, DPKG and AppImage
-  - **Windows:** `yarn package-windows` will produce installer and portable executables
+```bash
+npm run build-development
+npm run dev
+```
 
-Compatibility sheet:
-  - **Host with macOS:** can produce builds only for macOS
-  - **Host with Linux:** can produce builds for Linux and Windows (using Wine)
-  - **Host with Windows:** can produce builds only for Windows
+On Windows, use `npm run dev-win` for the second command. The renderer must be built at least once because Electron loads `build/app.html`.
+
+Development mode uses a separate keychain service and application data directory with a `-develop` suffix. Useful variants are:
+
+| Command | Purpose |
+| --- | --- |
+| `npm run build-watch` | Rebuild the renderer when source files change |
+| `npm run dev-vue` | Start development mode with Vue DevTools support enabled |
+| `npm run no-scr` | Start without real screenshots |
+| `npm run dev-no-scr` | Start development mode without real screenshots |
+| `npm run dev-no-scr-no-devtools` | Start development mode without screenshots or DevTools |
+| `npm run clean-development` | Remove development-mode application data |
+| `npm run lint` | Run ESLint for the project |
+
+## Production builds
+
+Install dependencies, set the application version without creating a Git tag, and build the renderer:
+
+```bash
+npm ci
+npm --no-git-tag-version version 1.0.0
+npm run build-production
+```
+
+Package for the current target platform:
+
+| Host | Command | Output |
+| --- | --- | --- |
+| macOS | `npm run package-mac` | Signed and notarized DMG when signing credentials are configured |
+| macOS | `npm run package-mac-unsigned` | DMG without notarization |
+| Linux | `npm run package-linux` | AppImage, DEB, and tar.gz |
+| Windows | `npm run package-windows` | NSIS installer and portable executable |
+
+Artifacts are written to `target/`. macOS packages can only be built on macOS. Linux can also build Windows packages when Wine is installed; Windows builds Windows packages only.
+
+### macOS notarization
+
+Copy `.env.example` to `.env` and provide the App Store Connect values before running `npm run package-mac`:
+
+```dotenv
+APPLE_API_KEY=1234XXXXZZ
+APPLE_API_ISSUER=issuer-id-uuid-should-be-here
+```
+
+## Releases
+
+Pushing a tag matching `v*` starts `.github/workflows/release.yml`. The workflow uses npm to install dependencies, builds Linux, Windows, and unsigned macOS packages, attests the generated artifacts, uploads them to a draft GitHub release, and publishes the release after every platform build succeeds.
+
+## Project layout
+
+- `app/src/` — Electron main process, local database, tracking, OS integration, and IPC routes
+- `app/renderer/` — Vue renderer application, styles, templates, and fonts
+- `webpack.config.js` — renderer build configuration
+- `electron-builder.json` — platform packaging configuration
+- `tools/` — packaging and maintenance helpers
+- `build/` — generated renderer bundle
+- `target/` — generated installers and archives
+
+## License
+
+[Server Side Public License 1.0](LICENSE)
