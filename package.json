@@ -35,7 +35,7 @@
   "dependencies": {
     "@amazingcat/electron-ipc-router": "~1.3.5",
     "@amazingcat/node-cattr": "^4.1.2",
-    "axios": "^0.27.2",
+    "axios": "^1.20.0",
     "chalk": "^4.1.2",
     "electron-hotkey": "0.0.1-alpha.1",
     "fflate": "^0.8.1",
