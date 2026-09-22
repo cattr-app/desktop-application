@@ -83,10 +83,7 @@ module.exports = {
   target: 'electron-renderer',
   devtool: 'source-map',
   entry: {
-    app: [
-      './app/renderer/js/app.js',
-      './app/renderer/scss/app.scss',
-    ],
+    app: './app/renderer/js/app.js',
   },
   output: {
     path: outputPath,
