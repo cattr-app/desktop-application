@@ -1,4 +1,5 @@
-import { ipcRenderer } from 'electron';
+import '../scss/app.scss';
+import {ipcRenderer} from 'electron';
 import Vue from 'vue';
 import IPCRouter from '@amazingcat/electron-ipc-router';
 import VueI18n from 'vue-i18n';
