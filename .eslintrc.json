@@ -1,4 +1,5 @@
 {
+  "root": true,
   "env": {
     "browser": true,
     "node": true
@@ -35,6 +36,10 @@
     }
   },
   "rules": {
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
     "max-len": [
       "warn",
       {
