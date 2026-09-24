@@ -85,25 +85,45 @@ Package for the current target platform:
 
 | Host | Command | Output |
 | --- | --- | --- |
-| macOS | `npm run package-mac` | Signed and notarized DMG when signing credentials are configured |
-| macOS | `npm run package-mac-unsigned` | DMG without notarization |
+| macOS | `npm run package-mac` | DMG; signed when signing credentials are available and notarized when notarization credentials are also available |
 | Linux | `npm run package-linux` | AppImage, DEB, and tar.gz |
 | Windows | `npm run package-windows` | NSIS installer and portable executable |
 
 Artifacts are written to `target/`. macOS packages can only be built on macOS. Linux can also build Windows packages when Wine is installed; Windows builds Windows packages only.
 
-### macOS notarization
+### macOS signing and notarization
 
-Copy `.env.example` to `.env` and provide the App Store Connect values before running `npm run package-mac`:
+Signing is optional. To sign a local build, provide the standard electron-builder code-signing variables:
 
 ```dotenv
-APPLE_API_KEY=1234XXXXZZ
-APPLE_API_ISSUER=issuer-id-uuid-should-be-here
+CSC_LINK=<path, URL, or base64-encoded Developer ID Application .p12>
+CSC_KEY_PASSWORD=<p12 password>
 ```
+
+Notarization is also optional, but Apple requires the application to be signed first. The notarization helper uses App Store Connect API key credentials:
+
+```dotenv
+APPLE_API_KEY=/path/to/AuthKey_XXXXXXXXXX.p8
+APPLE_API_KEY_ID=XXXXXXXXXX
+APPLE_API_ISSUER=issuer-id-uuid
+```
+
+The release workflow reads credentials from repository secrets. Configure both signing secrets to enable signing:
+
+- `MACOS_CSC_LINK` — base64-encoded Developer ID Application `.p12` containing the certificate and private key.
+- `MACOS_CSC_KEY_PASSWORD` — password protecting the `.p12`.
+
+Configure all three notarization secrets to enable notarization:
+
+- `APPLE_API_KEY_P8` — base64-encoded App Store Connect `.p8` private key.
+- `APPLE_API_KEY_ID` — App Store Connect API key ID.
+- `APPLE_API_ISSUER` — App Store Connect issuer ID.
+
+If no macOS secrets are configured, the workflow continues to produce an unsigned DMG. If signing secrets are configured, electron-builder signs the application. If notarization secrets are configured as well, the signed application is submitted through `notarytool` and the resulting ticket is stapled before the DMG is created. Partial credential sets fail the release job instead of silently producing a different artifact.
 
 ## Releases
 
-Pushing a tag matching `v*` starts `.github/workflows/release.yml`. The workflow uses npm to install dependencies, builds Linux, Windows, and unsigned macOS packages, attests the generated artifacts, uploads them to a draft GitHub release, and publishes the release after every platform build succeeds.
+Pushing a tag matching `v*` starts `.github/workflows/release.yml`. The workflow uses npm to install dependencies, builds Linux and Windows packages plus a macOS DMG, optionally signs and notarizes the macOS application when the corresponding repository secrets are configured, attests the generated artifacts, uploads them to a draft GitHub release, and publishes the release after every platform build succeeds.
 
 ## Project layout
 
