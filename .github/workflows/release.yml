@@ -62,9 +62,9 @@ jobs:
           - name: macOS
             # macos-13 is no longer available as a standard hosted image.
             # Use the current Intel image so the release remains compatible
-            # with existing x64 macOS installations. The build is unsigned.
+            # with existing x64 macOS installations.
             os: macos-15-intel
-            package-command: package-mac-unsigned
+            package-command: package-mac
             attestation-subject-path: target/*.dmg
 
     steps:
@@ -97,8 +97,94 @@ jobs:
       - name: Build application
         run: npm run build-release
 
+      - name: Prepare macOS signing and notarization credentials
+        if: matrix.name == 'macOS'
+        id: macos-credentials
+        shell: bash
+        env:
+          MACOS_CSC_LINK: ${{ secrets.MACOS_CSC_LINK }}
+          MACOS_CSC_KEY_PASSWORD: ${{ secrets.MACOS_CSC_KEY_PASSWORD }}
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        run: |
+          signing=no
+          notarization=no
+
+          if [[ -n "$MACOS_CSC_LINK" || -n "$MACOS_CSC_KEY_PASSWORD" ]]; then
+            if [[ -z "$MACOS_CSC_LINK" || -z "$MACOS_CSC_KEY_PASSWORD" ]]; then
+              echo 'Incomplete macOS signing credentials.' >&2
+              exit 1
+            fi
+            signing=yes
+          fi
+
+          if [[ -n "$APPLE_API_KEY_P8" || -n "$APPLE_API_KEY_ID" || -n "$APPLE_API_ISSUER" ]]; then
+            if [[ -z "$APPLE_API_KEY_P8" || -z "$APPLE_API_KEY_ID" || -z "$APPLE_API_ISSUER" ]]; then
+              echo 'Incomplete Apple notarization credentials.' >&2
+              exit 1
+            fi
+            notarization=yes
+          fi
+
+          if [[ "$notarization" == yes && "$signing" != yes ]]; then
+            echo 'Apple notarization requires a signed Developer ID Application build.' >&2
+            exit 1
+          fi
+
+          if [[ "$notarization" == yes ]]; then
+            key_path="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+            printf '%s' "$APPLE_API_KEY_P8" | base64 -D > "$key_path"
+            chmod 600 "$key_path"
+            echo "apple-api-key=$key_path" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "signing=$signing" >> "$GITHUB_OUTPUT"
+          echo "notarization=$notarization" >> "$GITHUB_OUTPUT"
+
+          echo "macOS signing: $signing"
+          echo "macOS notarization: $notarization"
+
       - name: Package application
+        if: matrix.name != 'macOS'
         run: npm run ${{ matrix.package-command }}
+
+      - name: Package unsigned macOS application
+        if: matrix.name == 'macOS' && steps.macos-credentials.outputs.signing == 'no'
+        run: npm run package-mac
+
+      - name: Package signed macOS application
+        if: matrix.name == 'macOS' && steps.macos-credentials.outputs.signing == 'yes'
+        env:
+          CSC_LINK: ${{ secrets.MACOS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MACOS_CSC_KEY_PASSWORD }}
+          APPLE_API_KEY: ${{ steps.macos-credentials.outputs.apple-api-key }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        run: npm run package-mac
+
+      - name: Verify macOS application signature
+        if: matrix.name == 'macOS' && steps.macos-credentials.outputs.signing == 'yes'
+        shell: bash
+        run: |
+          app_path="$(find target -type d -name 'Cattr.app' -print -quit)"
+          if [[ -z "$app_path" ]]; then
+            echo 'Packaged Cattr.app was not found.' >&2
+            exit 1
+          fi
+          codesign --verify --deep --strict --verbose=2 "$app_path"
+
+      - name: Validate macOS notarization ticket
+        if: matrix.name == 'macOS' && steps.macos-credentials.outputs.notarization == 'yes'
+        shell: bash
+        run: |
+          app_path="$(find target -type d -name 'Cattr.app' -print -quit)"
+          if [[ -z "$app_path" ]]; then
+            echo 'Packaged Cattr.app was not found.' >&2
+            exit 1
+          fi
+          xcrun stapler validate "$app_path"
+          spctl --assess --type execute --verbose=2 "$app_path"
 
       - name: Attest build provenance
         uses: actions/attest@v4
