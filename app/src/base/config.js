@@ -119,10 +119,10 @@ configuration.updateNotification = {
   enabled: (!process.windowsStore && !process.mas),
 
   /**
-   * Base URL to retrieve releases manifest
+   * URL of the latest published GitHub release
    * @type {String}
    */
-  manifestBaseUrl: 'https://git.amazingcat.net/api/v4/projects/353/releases/permalink/latest',
+  latestReleaseUrl: 'https://api.github.com/repos/cattr-app/desktop-application/releases/latest',
 
   /**
    * URL to downloads page

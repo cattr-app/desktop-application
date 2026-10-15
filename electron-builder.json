@@ -11,7 +11,6 @@
     }
   ],
   "afterSign": "tools/macos-notarization.js",
-  "afterAllArtifactBuild": "tools/artifact-manifest.js",
   "asar": "true",
   "directories": {
     "buildResources": "resources",
