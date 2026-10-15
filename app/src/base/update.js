@@ -20,7 +20,7 @@ const log = new Log('Update');
 class Update extends EventEmitter {
 
   /**
-   * Retrieve update data from DL server
+   * Retrieve update data from GitHub Releases
    * @async
    * @returns {Promise.<UpdateData|null>} Object with update info if newer version is available, null otherwise
    */
@@ -49,19 +49,19 @@ class Update extends EventEmitter {
 
     try {
 
-      // Retrieve manifest, then check its structure
-      const manifestReq = await axios.get(configuration.updateNotification.manifestBaseUrl);
-      if (manifestReq.status !== 200 || !manifestReq.data?.name)
+      // Retrieve the latest GitHub release and extract the version from its tag
+      const releaseReq = await axios.get(configuration.updateNotification.latestReleaseUrl);
+      if (releaseReq.status !== 200 || typeof releaseReq.data?.tag_name !== 'string')
         return null;
 
-      const manifestVersion = manifestReq.data.name.replace('v', '');
+      const releaseVersion = releaseReq.data.tag_name.replace(/^v/, '');
 
-      // Filer incorrect, older, or current version
-      if (configuration.packageVersion === 'dev' || !semver.valid(manifestVersion) || semver.lte(manifestVersion, configuration.packageVersion))
+      // Filter invalid, older, or current versions
+      if (configuration.packageVersion === 'dev' || !semver.valid(releaseVersion) || semver.lte(releaseVersion, configuration.packageVersion))
         return null;
 
       const updateData = {
-        version: manifestVersion,
+        version: releaseVersion,
         current: configuration.packageVersion,
         downloadsPageUrl: configuration.updateNotification.downloadsPageUrl,
       };
@@ -71,7 +71,7 @@ class Update extends EventEmitter {
 
     } catch (err) {
 
-      log.error('Error occured during update manifest retrival', err);
+      log.error('Error occurred during latest release retrieval', err);
       return null;
 
     }
