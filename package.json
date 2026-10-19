@@ -82,7 +82,7 @@
     "sass-loader": "^12.6.0",
     "vue": "2.7.10",
     "vue-i18n": "^8.27.2",
-    "vue-loader": "15.10.0",
+    "vue-loader": "17.4.2",
     "vue-router": "^3.6.5",
     "vue-template-compiler": "2.7.10",
     "vuedraggable": "^2.24.3",
