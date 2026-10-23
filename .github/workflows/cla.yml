@@ -1,0 +1,69 @@
+name: CLA
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+  issue_comment:
+    types:
+      - created
+
+  push:
+    paths:
+      - CLA.md
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: github.event_name == 'pull_request_target'
+    uses: cattr-app/cla-actions/.github/workflows/check.yml@v1
+    secrets:
+      CATTR_CLA_BOT_PRIVATE_KEY: ${{ secrets.CATTR_CLA_BOT_PRIVATE_KEY }}
+
+  check-comment:
+    if: >
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
+      github.event.comment.body == '/cla-check'
+    uses: cattr-app/cla-actions/.github/workflows/check.yml@v1
+    secrets:
+      CATTR_CLA_BOT_PRIVATE_KEY: ${{ secrets.CATTR_CLA_BOT_PRIVATE_KEY }}
+
+  sign:
+    if: >
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
+      startsWith(github.event.comment.body, '/cla-sign')
+    uses: cattr-app/cla-actions/.github/workflows/sign.yml@v1
+    secrets:
+      CATTR_CLA_BOT_PRIVATE_KEY: ${{ secrets.CATTR_CLA_BOT_PRIVATE_KEY }}
+      CATTR_CLA_REGISTRY_PRIVATE_KEY: ${{ secrets.CATTR_CLA_REGISTRY_PRIVATE_KEY }}
+
+  claim:
+    if: >
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
+      startsWith(github.event.comment.body, '/cla-claim')
+    uses: cattr-app/cla-actions/.github/workflows/claim.yml@v1
+    secrets:
+      CATTR_CLA_BOT_PRIVATE_KEY: ${{ secrets.CATTR_CLA_BOT_PRIVATE_KEY }}
+      CATTR_CLA_REGISTRY_PRIVATE_KEY: ${{ secrets.CATTR_CLA_REGISTRY_PRIVATE_KEY }}
+
+  sync:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'push' &&
+        github.ref_name == github.event.repository.default_branch
+      )
+    uses: cattr-app/cla-actions/.github/workflows/sync.yml@v1
+    secrets:
+      CATTR_CLA_REGISTRY_PRIVATE_KEY: ${{ secrets.CATTR_CLA_REGISTRY_PRIVATE_KEY }}
