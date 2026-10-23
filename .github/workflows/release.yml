@@ -173,6 +173,12 @@ jobs:
             exit 1
           fi
           codesign --verify --deep --strict --verbose=2 "$app_path"
+          signature_details="$(codesign --display --verbose=4 "$app_path" 2>&1)"
+          signing_authority="$(printf '%s\n' "$signature_details" | sed -n '/^Authority=/{s/^Authority=//;p;q;}')"
+          if [[ "$signing_authority" != "Developer ID Application: "* ]]; then
+            echo "Unexpected macOS signing authority: ${signing_authority:-missing} (expected Developer ID Application)." >&2
+            exit 1
+          fi
 
       - name: Validate macOS notarization ticket
         if: matrix.name == 'macOS' && steps.macos-credentials.outputs.notarization == 'yes'
