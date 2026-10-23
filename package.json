@@ -60,7 +60,7 @@
     "debug": "^4.3.4",
     "dompurify": "^2.4.0",
     "dotenv": "^10.0.0",
-    "electron": "14.2.9",
+    "electron": "42.11.9",
     "electron-builder": "^23.6.0",
     "element-theme-chalk": "^2.15.10",
     "element-ui": "^2.15.10",
