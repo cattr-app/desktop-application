@@ -6,41 +6,43 @@ require('dotenv').config();
 debug.enable('cattr:notarization');
 const log = debug('cattr:notarization');
 
-/**
- * Application ID
- * @type {String}
- */
-const appId = 'app.cattr';
-
 module.exports = async params => {
 
   if (process.platform !== 'darwin')
     return;
 
-  if (process.env.CATTR_NOTARIZE !== 'yes') {
+  const credentials = {
+    appleApiKey: process.env.APPLE_API_KEY,
+    appleApiKeyId: process.env.APPLE_API_KEY_ID,
+    appleApiIssuer: process.env.APPLE_API_ISSUER,
+  };
 
-    log('notarization skipped');
+  const configuredCredentials = Object.values(credentials).filter(Boolean).length;
+
+  if (configuredCredentials === 0) {
+
+    log('notarization skipped: credentials are not configured');
     return;
 
   }
 
-  // eslint-disable-next-line global-require
-  const electronNotarize = require('electron-notarize');
+  if (configuredCredentials !== Object.keys(credentials).length)
+    throw new Error('Incomplete Apple notarization credentials');
 
-  log('notarization triggered');
+  // eslint-disable-next-line global-require
+  const { notarize } = require('@electron/notarize');
 
   const appPath = path.join(params.appOutDir, `${params.packager.appInfo.productFilename}.app`);
   if (!fs.existsSync(appPath))
     throw new Error(`Cannot find application at: ${appPath}`);
 
-  log('notarizing %s found at %s', appId, appPath);
-  log('take your seats, this might take a while (usually up to 15 minutes)');
-  await electronNotarize.notarize({
+  log('notarizing application at %s', appPath);
+
+  await notarize({
     appPath,
-    appBundleId: appId,
-    appleApiKey: process.env.APPLE_API_KEY,
-    appleApiIssuer: process.env.APPLE_API_ISSUER,
+    ...credentials,
   });
-  log('notarization... um.. completed');
+
+  log('notarization completed');
 
 };

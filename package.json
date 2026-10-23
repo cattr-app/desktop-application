@@ -22,8 +22,7 @@
     "package-dev-linux": "npx cross-env AT_DEVMODE=meow npx electron-builder -p never -l appimage deb tar.gz",
     "package-windows": "npx electron-builder -p never -w portable nsis",
     "package-dev-windows": "npx cross-env AT_DEVMODE=meow npx electron-builder -p never -w portable nsis",
-    "package-mac": "npx cross-env CATTR_NOTARIZE=yes electron-builder -p never -m",
-    "package-mac-unsigned": "npx electron-builder -m -p never",
+    "package-mac": "npx electron-builder -p never -m",
     "clean-development": "npx cross-env AT_DEVMODE=meow electron ./tools/clean-development.js"
   },
   "repository": "github:cattr-app/desktop-application",
@@ -63,7 +62,6 @@
     "dotenv": "^10.0.0",
     "electron": "14.2.9",
     "electron-builder": "^23.6.0",
-    "electron-notarize": "^1.2.1",
     "element-theme-chalk": "^2.15.10",
     "element-ui": "^2.15.10",
     "eslint": "^7.32.0",
@@ -88,7 +86,8 @@
     "vuedraggable": "^2.24.3",
     "vuex": "^3.6.2",
     "webpack": "^5.111.0",
-    "webpack-cli": "^4.10.0"
+    "webpack-cli": "^4.10.0",
+    "@electron/notarize": "2.5.0"
   },
   "optionalDependencies": {
     "@msgpackr-extract/msgpackr-extract-darwin-arm64": "3.0.4",
